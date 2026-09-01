@@ -82,7 +82,7 @@ export function ImportCookiesModal({folderId, onClose}: {
 
   async function pickFiles() {
     if (!native?.selectCookieFiles) {
-      toast.setMessage('Native cookie file picker is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native cookie file picker is not available. Restart EasyDeck and try again.');
       return;
     }
     const picked = await native.selectCookieFiles();

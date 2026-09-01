@@ -544,7 +544,7 @@ export function ProfileModal({
 
             {/* Its own card, not the tail of Account.
               *
-              * These three are the only fields in this dialog that Monti itself
+              * These three are the only fields in this dialog that EasyDeck itself
               * never acts on, and the only ones that are dangerous to
               * misunderstand -- so the block needs a heading that says what
               * they are and a hint that says what they are not. Buried under
@@ -556,7 +556,7 @@ export function ProfileModal({
               info={
                 <InfoHint label="Credentials">
                   <p>
-                    <strong>Monti does not fill these in.</strong> Nothing is typed into a page
+                    <strong>EasyDeck does not fill these in.</strong> Nothing is typed into a page
                     when the profile launches, and they are never sent to the browser. They are
                     here so the login travels with the profile instead of in someone&apos;s head.
                   </p>

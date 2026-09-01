@@ -415,7 +415,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   async function exportEntries(
       label: string, entries: CookieEntry[], format: 'json' | 'netscape'): Promise<void> {
     if (!native?.saveTextFile) {
-      toast.setMessage('Native file export is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native file export is not available. Restart EasyDeck and try again.');
       return;
     }
     if (!entries.length) {

@@ -63,7 +63,7 @@ export function AppearanceSection() {
     <SettingsGroup>
       <SettingsRow
         label="Theme"
-        description="How Monti Gate looks on this computer. System follows your macOS appearance and switches as it does."
+        description="How EasyDeck looks on this computer. System follows your macOS appearance and switches as it does."
         wide
       >
         <div className="theme-choices" role="radiogroup" aria-label="Theme">

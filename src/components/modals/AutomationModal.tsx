@@ -116,7 +116,7 @@ function TimeoutField({value, onChange}: {
           <span className="field-echo">= {describeSeconds(seconds)}</span>
         </>
       }
-      hint="The whole run, not one step. The most Monti allows is 10 minutes."
+      hint="The whole run, not one step. The most EasyDeck allows is 10 minutes."
     >
       <span className="field-suffixed">
         <input
@@ -711,8 +711,8 @@ export function AutomationModal({
             {draft.notify_on && (
               <Field
                 label="Send to"
-                hint="Monti always rings the bell and raises a desktop notification;
-                  a connector additionally sends the outcome out of Monti."
+                hint="EasyDeck always rings the bell and raises a desktop notification;
+                  a connector additionally sends the outcome out of EasyDeck."
               >
                 <select
                   value={draft.notify_connector_id || ''}
@@ -721,7 +721,7 @@ export function AutomationModal({
                     notify_connector_id: event.target.value || null,
                   })}
                 >
-                  <option value="">Monti (bell + desktop)</option>
+                  <option value="">EasyDeck (bell + desktop)</option>
                   {connectors
                       .filter((connector) => connector.category === 'message')
                       .map((connector) => (
@@ -731,7 +731,7 @@ export function AutomationModal({
                       ))}
                   {/* A connector that has been deleted. Listed so the setting
                       keeps showing what it names instead of silently snapping
-                      to Monti-only -- the run will say the connector is gone. */}
+                      to EasyDeck-only -- the run will say the connector is gone. */}
                   {Boolean(draft.notify_connector_id) &&
                     !connectors.some((c) => c.id === draft.notify_connector_id) && (
                     <option value={String(draft.notify_connector_id)}>Missing connector</option>
@@ -747,9 +747,9 @@ export function AutomationModal({
               <Field
                 label="Personal Telegram"
                 hint={telegramLinked ?
-                  'Messages you, and only you, through the Monti bot. ' +
+                  'Messages you, and only you, through the EasyDeck bot. ' +
                     'Teammates set their own.' :
-                  'One-time setup: open the Monti bot and press Start.'}
+                  'One-time setup: open the EasyDeck bot and press Start.'}
               >
                 {telegramLinked ? (
                   <select

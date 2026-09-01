@@ -10,7 +10,7 @@ import {SettingsGroup, SettingsRow} from '../rows';
 type Props = {
   onMessage: (text: string) => void;
   onOpenIntro: () => void;
-  // Where the managed Monti Browser build is installed -- shown beside the
+  // Where the managed EasyDeck Browser build is installed -- shown beside the
   // profile data folder because both answer "where does this app keep its
   // things on this machine". Empty until a build has been installed.
   browserPath: string;
@@ -82,10 +82,10 @@ export function GeneralSection({onMessage, onOpenIntro, browserPath}: Props) {
         <SettingsRow
           label="Open at login"
           description={loginItem && !loginItem.packaged ?
-            'Unavailable in a development run — the entry would point at Electron, not at Monti Gate.' :
-            'Start Monti Gate when you sign in to this computer.'}
+            'Unavailable in a development run — the entry would point at Electron, not at EasyDeck.' :
+            'Start EasyDeck when you sign in to this computer.'}
         >
-          <label className="switch" aria-label="Open Monti Gate at login">
+          <label className="switch" aria-label="Open EasyDeck at login">
             <input
               checked={Boolean(loginItem?.openAtLogin)}
               disabled={loginDisabled}
@@ -112,7 +112,7 @@ export function GeneralSection({onMessage, onOpenIntro, browserPath}: Props) {
         </SettingsRow>
         <SettingsRow
           label="Browser location"
-          description="The managed Monti Browser build that profiles launch into."
+          description="The managed EasyDeck Browser build that profiles launch into."
           wide
         >
           <div className="settings-path">

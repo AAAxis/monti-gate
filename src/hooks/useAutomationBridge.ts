@@ -214,7 +214,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       ({folderPath, profileIds}) => profileActions.matchCookies(folderPath, profileIds),
       cloud);
 
-  // Monti Cookie Manager extensions can push decrypted local browser cookies
+  // EasyDeck Cookie Manager extensions can push decrypted local browser cookies
   // over the loopback automation API. Store that snapshot as the profile's
   // cloud cookie-import source so other machines and later launches seed it.
   useChannel(
@@ -319,7 +319,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         if (!sameWorkspace) {
           throw Object.assign(
               new Error('This profile belongs to another workspace. Switch back to it ' +
-                  'in Monti Gate to resume syncing, or relaunch the profile here.'),
+                  'in EasyDeck to resume syncing, or relaunch the profile here.'),
               {status: 409});
         }
         const entries = cookiesFromJsonValue(pushed);
@@ -985,7 +985,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // empty and stop. Failing loudly is the only honest answer.
   function requireSignedIn() {
     if (!data.orgId) {
-      throw new Error('Monti Gate is signed out. Sign in to use the automation API.');
+      throw new Error('EasyDeck is signed out. Sign in to use the automation API.');
     }
   }
 
@@ -2051,7 +2051,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         // it -- four times this API's own request timeout. So it stays in the
         // app, and this says so rather than leaving a caller to invent a reason.
         ...(state.telegram_link ? {} : {
-          howToLink: 'Open Monti → Automations → Notification bot and press ' +
+          howToLink: 'Open EasyDeck → Automations → Notification bot and press ' +
             'Link Telegram. It needs someone to press Start in the bot, so it ' +
             'cannot be done over this API.',
         }),
@@ -2072,7 +2072,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         // whole route exists to make diagnosable.
         if (wanted && !state.telegram_link) {
           throw new ApiError(
-              'This user has not linked their Telegram. Open Monti → Automations → ' +
+              'This user has not linked their Telegram. Open EasyDeck → Automations → ' +
               'Notification bot and press Link Telegram first.', 409);
         }
         await automationActions.setTelegramPref(

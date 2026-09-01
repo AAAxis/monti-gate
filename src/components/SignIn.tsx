@@ -9,7 +9,7 @@ export function SignIn({state}: {state: SignInState}) {
     <main className="login-shell">
       <section className="login-panel">
         {/* The product's own mark, not a generic padlock. This is the first
-            Monti screen anyone sees, and a lucide shield said "some security
+            EasyDeck screen anyone sees, and a lucide shield said "some security
             app". Masked from the same PNG the sidebar's .brand-mark uses, so it
             inverts with the theme instead of stamping a plate into the dark
             panel -- see .login-mark in styles.css. */}
@@ -23,7 +23,7 @@ export function SignIn({state}: {state: SignInState}) {
 function EmailStep({state}: {state: SignInState}) {
   return (
     <>
-      <h1>Sign in to Monti Gate</h1>
+      <h1>Sign in to EasyDeck</h1>
       <p>Cloud account required for profiles, proxies, bookmarks, and shared extensions.</p>
       <button
         type="button"

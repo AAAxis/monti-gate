@@ -9,7 +9,7 @@ import type {WorkspaceCore} from './core';
 import type {ProxyCheckResult, ProxyConfig} from '../native';
 import type {MontiProfile, MontiProxy} from '../types';
 
-const NO_CHECKER = 'Native proxy checker is not available. Restart Monti Gate and try again.';
+const NO_CHECKER = 'Native proxy checker is not available. Restart EasyDeck and try again.';
 
 // How many checks run at once in a batch. Kept the same as the import dialog's
 // limit, and for the same reason: each check is a curl with a 10s ceiling, so
@@ -544,7 +544,7 @@ export function useProxyActions(
       return;
     }
     if (!native?.saveTextFile) {
-      toast.setMessage('Native file export is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native file export is not available. Restart EasyDeck and try again.');
       return;
     }
     const header = [

@@ -6,7 +6,7 @@ function resource(overrides: Partial<ResourceState> = {}): ResourceState {
   return {
     browserStatus: 'ready',
     browserVersion: '151.0.7906.0',
-    browserPath: '/Applications/Monti.app',
+    browserPath: '/Applications/EasyDeck.app',
     installedBuildId: 'aRSCo2r',
     installedVersion: '151.0.7906.0',
     installedAt: '2026-08-08T00:00:00.000Z',
@@ -34,7 +34,7 @@ describe('describeStartup', () => {
   it('blocks on the first check, before the browser has ever been ready', () => {
     const startup = describeStartup(true, resource({browserStatus: 'checking'}), API, false);
     expect(startup.blocked).toBe(true);
-    expect(startup.detail).toBe('Checking Monti Browser resource.');
+    expect(startup.detail).toBe('Checking EasyDeck Browser resource.');
   });
 
   // The regression this file exists for. A manual "Check for updates", and the

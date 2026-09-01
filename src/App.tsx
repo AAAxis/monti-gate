@@ -372,7 +372,7 @@ export function App() {
     return (
       <main className="login-shell">
         <LoadingState
-          label={startup.failed ? 'Monti Gate is not ready' : 'Preparing Monti Gate'}
+          label={startup.failed ? 'EasyDeck is not ready' : 'Preparing EasyDeck'}
           detail={startup.detail}
           failed={startup.failed}
           onRetry={startup.canRetryBrowser ? retryBrowserDownload : undefined}

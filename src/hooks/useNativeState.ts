@@ -41,18 +41,18 @@ export function useResourceStatus(toast: Toast) {
   useEffect(() => {
     if (resourceState?.browserStatus === 'downloading') {
       const percent = resourceState.progress?.percent ? ` ${resourceState.progress.percent}%` : '';
-      setMessage(`Downloading Monti Browser${percent}`);
+      setMessage(`Downloading EasyDeck Browser${percent}`);
     } else if (resourceState?.browserStatus === 'installing') {
-      setMessage('Installing Monti Browser');
+      setMessage('Installing EasyDeck Browser');
     } else if (resourceState?.browserStatus === 'ready') {
       // Only clear our own progress line -- another action's toast may have
       // landed in the meantime and is not ours to wipe.
       updateMessage((current) =>
-        current.startsWith('Downloading Monti Browser') || current === 'Installing Monti Browser' ?
+        current.startsWith('Downloading EasyDeck Browser') || current === 'Installing EasyDeck Browser' ?
           '' :
           current);
     } else if (resourceState?.browserStatus === 'error') {
-      setMessage(resourceState.error || 'Failed to download Monti Browser');
+      setMessage(resourceState.error || 'Failed to download EasyDeck Browser');
     }
   }, [resourceState, setMessage, updateMessage]);
 

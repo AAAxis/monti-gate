@@ -73,8 +73,8 @@ export function curlFor(endpoint: ApiEndpoint) {
 
 export function apiExampleScript() {
   return `#!/usr/bin/env node
-// Monti Gate Browser API example.
-// Keep Monti Gate open and signed in while running this script.
+// EasyDeck Browser API example.
+// Keep EasyDeck open and signed in while running this script.
 
 const BASE_URL = ${JSON.stringify(API_BASE_URL)};
 // Create a key in Settings -> API and paste it here. Keys are only shown
@@ -108,7 +108,7 @@ async function main() {
   console.log('Profiles:', profiles);
   const profile = profiles[0];
   if (!profile) {
-    throw new Error('Create a profile in Monti Gate first.');
+    throw new Error('Create a profile in EasyDeck first.');
   }
 
   // The step vocabulary, so nothing below is guesswork.
@@ -163,13 +163,13 @@ export function agentPrompt(tool: AgentTool) {
   return [
     `You are working in ${tool.name}. ${tool.wiring}`,
     '',
-    '## Monti local automation API',
+    '## EasyDeck local automation API',
     '',
     `Base URL: ${API_BASE_URL} (loopback only — it is not reachable off this machine)`,
     'Auth: every /v1/* request needs `Authorization: Bearer <MONTI_API_TOKEN>`.',
     'Content-Type: application/json for requests with a body.',
     '',
-    'Monti manages anti-detect browser profiles. Each profile is an isolated',
+    'EasyDeck manages anti-detect browser profiles. Each profile is an isolated',
     'browser identity with its own proxy, fingerprint and cookie jar. The API',
     'lets you list, update and launch them, and author the automations that run',
     'against them.',

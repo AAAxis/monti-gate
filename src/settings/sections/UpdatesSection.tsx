@@ -1,6 +1,6 @@
 // Updates: the two programs this app is responsible for keeping current.
 //
-// Monti is two pieces of software -- this launcher, and the Chromium fork it
+// EasyDeck is two pieces of software -- this launcher, and the Chromium fork it
 // starts profiles in -- and they update through entirely separate feeds. The
 // old version of this page made that the user's problem: the browser was a
 // "Status" row reading "Installed · 1.0.0" (a version the publisher never
@@ -107,7 +107,7 @@ function launcherView(
     notes: ReleaseEntry[]): ComponentView {
   const base = {
     key: 'launcher' as const,
-    name: 'Monti Gate',
+    name: 'EasyDeck',
     description: 'This app: profiles, proxies, cookies and automations.',
     icon: <AppWindow size={17} />,
     version: state?.currentVersion || '',
@@ -215,7 +215,7 @@ function browserView(
   const installed = state?.installedVersion || state?.browserVersion || '';
   const base = {
     key: 'browser' as const,
-    name: 'Monti Browser',
+    name: 'EasyDeck Browser',
     description: 'The browser profiles launch into. It updates separately from the launcher.',
     icon: <Globe size={17} />,
     version: installed,

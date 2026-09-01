@@ -143,7 +143,7 @@ export function profileImportExampleCsv() {
 // imported as-is cannot point a browser at someone else's machine.
 export function proxyImportExampleList() {
   return [
-    '# Example proxy list for Monti Gate.',
+    '# Example proxy list for EasyDeck.',
     '# One proxy per line. Lines starting with # are ignored.',
     '#',
     '# host:port:username:password -- what most vendors hand out.',

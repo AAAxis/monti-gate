@@ -38,14 +38,14 @@ export function describeStartup(
   const browserReady = resourceState?.browserStatus === 'ready';
   const apiReady = apiState?.status === 'ready';
   const detail = !orgReady ? 'Checking cloud session and loading workspace.' :
-    browserFailed ? resourceState?.error || 'Monti Browser resource failed to install.' :
+    browserFailed ? resourceState?.error || 'EasyDeck Browser resource failed to install.' :
       apiFailed ? apiState?.error || 'Local API failed to start.' :
         !browserReady ? (
           resourceState?.browserStatus === 'downloading' ?
-            `Downloading Monti Browser ${resourceState.progress?.percent || 0}%` :
+            `Downloading EasyDeck Browser ${resourceState.progress?.percent || 0}%` :
             resourceState?.browserStatus === 'installing' ?
-              'Installing Monti Browser.' :
-              'Checking Monti Browser resource.'
+              'Installing EasyDeck Browser.' :
+              'Checking EasyDeck Browser resource.'
         ) :
           !apiReady ? 'Starting local API.' : 'Ready.';
   return {

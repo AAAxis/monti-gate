@@ -12,7 +12,7 @@ const os = require('node:os');
 const path = require('node:path');
 const {pathToFileURL} = require('node:url');
 
-// Product rename (Monti Launcher -> Monti Gate). The app name is what
+// Product rename (Monti Launcher -> Monti Gate -> EasyDeck). The app name is what
 // app.getPath('userData') is built from, and that directory holds settings.json,
 // run tokens, cached browser resources and favicons. This has to run before the
 // single-instance lock and before the modules below, since both read userData at
@@ -21,8 +21,8 @@ const {pathToFileURL} = require('node:url');
 // appData), keep the old name so the install reads its own data rather than
 // silently starting empty. A fresh install has none of these dirs and gets the
 // new name.
-const APP_NAME = 'Monti Gate';
-const PRIOR_APP_NAMES = ['Monti Launcher'];
+const APP_NAME = 'EasyDeck';
+const PRIOR_APP_NAMES = ['Monti Gate', 'Monti Launcher'];
 let resolvedAppName = APP_NAME;
 try {
   const appDataRoot = app.getPath('appData');
@@ -203,7 +203,7 @@ app.on('open-url', (event, url) => {
 });
 
 app.setAboutPanelOptions({
-  applicationName: 'Monti Gate',
+  applicationName: 'EasyDeck',
   applicationVersion: app.getVersion(),
   credits: 'Developed by Dmitry Polskoy\nhttps://www.linkedin.com/in/dmitry-polskoy-a46103177/',
   website: 'https://www.linkedin.com/in/dmitry-polskoy-a46103177/',
@@ -994,7 +994,7 @@ function createWindow() {
   const icon = appIconPath();
   applyDockIcon();
   const win = new BrowserWindow({
-    title: 'Monti Gate',
+    title: 'EasyDeck',
     width: 1180,
     height: 760,
     minWidth: 980,
@@ -2513,7 +2513,7 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
         ok: false,
         error: `Proxy ${payload.proxy.host}:${payload.proxy.port} did not respond` +
           `${proxyCheck.error ? ` (${proxyCheck.error})` : ''}. Fix the proxy in ` +
-          'Monti Gate and try again.',
+          'EasyDeck and try again.',
       };
     }
     proxyGeo = proxyCheck;
@@ -2710,6 +2710,11 @@ ipcMain.handle('monti:check-proxy', async (_event, proxy) => {
 // value is a command-injection surface (file:, and on Windows anything the
 // shell knows how to run). Only ever pass through https: URLs on a host we own.
 const EXTERNAL_URL_HOSTS = new Set([
+  'browser.chatkit.cc',
+  'referral.chatkit.cc',
+  // Kept alongside the new hosts: builds already installed still point at the
+  // old site, and dropping it here would break sign-in for them before they
+  // have taken this update.
   'montigate.com',
   'www.montigate.com',
   // The notification bot's deep link (t.me/<bot>?start=<code>). Telegram's
@@ -3390,7 +3395,7 @@ ipcMain.handle('monti:install-update', async () => {
       message: running === 1 ?
         '1 profile is open and will be closed.' :
         `${running} profiles are open and will be closed.`,
-      detail: 'Installing the update restarts Monti Gate. Anything unsaved in those ' +
+      detail: 'Installing the update restarts EasyDeck. Anything unsaved in those ' +
         'browser windows is lost.',
     });
     if (response !== 1) {
@@ -3669,13 +3674,13 @@ const TABLE_ROUTES = apiRoutes.filter((route) => route.channel || route.local);
 // a thirteenth copy.
 function askRenderer(res, channel, payload) {
   if (!mainWindow) {
-    sendJson(res, 503, {status: false, msg: 'Monti Gate window is not open'});
+    sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
     return;
   }
   const requestId = crypto.randomUUID();
   const timeout = setTimeout(() => {
     pendingAutomationRequests.delete(requestId);
-    sendJson(res, 504, {status: false, msg: 'Timed out waiting for Monti Gate to respond'});
+    sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
   }, AUTOMATION_REQUEST_TIMEOUT_MS);
   pendingAutomationRequests.set(requestId, {res, timeout});
   mainWindow.webContents.send(channel, {requestId, ...payload});
@@ -4773,7 +4778,13 @@ ipcMain.on('monti:list-profiles-result', (_event, {requestId, result, error}) =>
 });
 
 function sendJson(res, statusCode, body) {
-  res.writeHead(statusCode, {'Content-Type': 'application/json'});
+  // CORS on every answer: the EasyDeck dashboard (an HTTPS page) calls this
+  // loopback API directly from the browser, and a passing preflight alone
+  // isn't enough — the actual response must carry the header too.
+  res.writeHead(statusCode, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  });
   res.end(JSON.stringify(body));
 }
 
@@ -4848,7 +4859,7 @@ function handleOAuthAuthorize(req, res, parsedUrl) {
     return;
   }
   if (!mainWindow) {
-    sendJson(res, 503, {status: false, msg: 'Monti Gate window is not open'});
+    sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
     return;
   }
   mainWindow.show();
@@ -4858,7 +4869,7 @@ function handleOAuthAuthorize(req, res, parsedUrl) {
   // give it real time instead of the usual short automation timeout.
   const timeout = setTimeout(() => {
     pendingAutomationRequests.delete(requestId);
-    sendJson(res, 504, {status: false, msg: 'Timed out waiting for approval in Monti Gate'});
+    sendJson(res, 504, {status: false, msg: 'Timed out waiting for approval in EasyDeck'});
   }, 5 * 60 * 1000);
   pendingAutomationRequests.set(requestId, {res, timeout, redirectUri, state});
   mainWindow.webContents.send('monti:oauth-authorize-request', {
@@ -5073,7 +5084,7 @@ const pendingPageRequests = new Map();
 function askRendererForRecheck(profileId) {
   return new Promise((resolve, reject) => {
     if (!mainWindow) {
-      reject(Object.assign(new Error('Monti Gate is not open'), {status: 503}));
+      reject(Object.assign(new Error('EasyDeck is not open'), {status: 503}));
       return;
     }
     const requestId = crypto.randomUUID();
@@ -5082,7 +5093,7 @@ function askRendererForRecheck(profileId) {
     const timeout = setTimeout(() => {
       pendingPageRequests.delete(requestId);
       reject(Object.assign(
-          new Error('Timed out waiting for Monti Gate to answer'), {status: 504}));
+          new Error('Timed out waiting for EasyDeck to answer'), {status: 504}));
     }, AUTOMATION_REQUEST_TIMEOUT_MS);
     pendingPageRequests.set(requestId, {resolve, reject, timeout});
     mainWindow.webContents.send('monti:recheck-proxy-request', {requestId, profileId});
@@ -5119,7 +5130,7 @@ function recheckFromPage(req, res) {
 function askRendererOnPageChannel(channel, payload) {
   return new Promise((resolve, reject) => {
     if (!mainWindow) {
-      reject(Object.assign(new Error('Monti Gate is not open'), {status: 503}));
+      reject(Object.assign(new Error('EasyDeck is not open'), {status: 503}));
       return;
     }
     const requestId = crypto.randomUUID();
@@ -5133,8 +5144,8 @@ function askRendererOnPageChannel(channel, payload) {
       // exactly like a slow launcher for twenty seconds and then reports as
       // one. With the channel in the message it reads as what it is.
       reject(Object.assign(
-          new Error(`Monti Gate did not answer (${channel}). If this ` +
-              'started after an update, quit Monti Gate completely and ' +
+          new Error(`EasyDeck did not answer (${channel}). If this ` +
+              'started after an update, quit EasyDeck completely and ' +
               'reopen it.'),
           {status: 504}));
     }, AUTOMATION_REQUEST_TIMEOUT_MS);
@@ -5286,7 +5297,10 @@ function startAutomationApiServer() {
       res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
+        // Chrome's Private Network Access: an HTTPS page reaching 127.0.0.1
+        // is refused outright unless the preflight opts in.
+        'Access-Control-Allow-Private-Network': 'true',
       });
       res.end();
       return;
@@ -5436,13 +5450,13 @@ function startAutomationApiServer() {
 
     if (req.method === 'GET' && parsedUrl.pathname === '/v1/profiles') {
       if (!mainWindow) {
-        sendJson(res, 503, {status: false, msg: 'Monti Gate window is not open'});
+        sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
         return;
       }
       const requestId = crypto.randomUUID();
       const timeout = setTimeout(() => {
         pendingAutomationRequests.delete(requestId);
-        sendJson(res, 504, {status: false, msg: 'Timed out waiting for Monti Gate to respond'});
+        sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, {res, timeout});
       mainWindow.webContents.send('monti:list-profiles-request', {
@@ -5454,13 +5468,13 @@ function startAutomationApiServer() {
     }
     if (req.method === 'GET' && parsedUrl.pathname === '/v1/proxies') {
       if (!mainWindow) {
-        sendJson(res, 503, {status: false, msg: 'Monti Gate window is not open'});
+        sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
         return;
       }
       const requestId = crypto.randomUUID();
       const timeout = setTimeout(() => {
         pendingAutomationRequests.delete(requestId);
-        sendJson(res, 504, {status: false, msg: 'Timed out waiting for Monti Gate to respond'});
+        sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, {res, timeout});
       mainWindow.webContents.send('monti:list-proxies-request', {requestId});
@@ -5533,7 +5547,7 @@ function startAutomationApiServer() {
         return;
       }
       if (!mainWindow) {
-        sendJson(res, 503, {status: false, msg: 'Monti Gate window is not open'});
+        sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
         return;
       }
       const isPushLocal = parsedUrl.pathname === '/v1/cookies/push-local';
@@ -5700,7 +5714,7 @@ function startAutomationApiServer() {
       const requestId = crypto.randomUUID();
       const timeout = setTimeout(() => {
         pendingAutomationRequests.delete(requestId);
-        sendJson(res, 504, {status: false, msg: 'Timed out waiting for Monti Gate to respond'});
+        sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, isLaunchAutomation ?
         {res, timeout, cdpPort, profileId: payload.profileId, keyId: key.id} :

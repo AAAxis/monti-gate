@@ -166,7 +166,7 @@ export function useSignIn() {
       return;
     }
     if (!native?.openExternal) {
-      setError('Google sign-in needs the desktop app shell. Restart Monti Gate and try again.');
+      setError('Google sign-in needs the desktop app shell. Restart EasyDeck and try again.');
       return;
     }
     setBusy(true);
@@ -208,7 +208,7 @@ export function useSignIn() {
   // it loudly, with a library message about SSR frameworks that means nothing
   // to someone looking at a desktop app. The user gets a repeat delivery
   // whenever they reload the hand-off tab or re-accept the browser's "Open
-  // Monti Launcher?" prompt, which is common enough to be the normal case.
+  // EasyDeck Launcher?" prompt, which is common enough to be the normal case.
   const attemptedAuthCodes = useRef<Set<string>>(new Set());
 
   useEffect(() => {

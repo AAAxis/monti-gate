@@ -213,7 +213,7 @@ export type ApiState = {
 export type LoginItemState = {
   openAtLogin: boolean;
   // False in a dev run (`npm run dev`), where the login item would point at the
-  // Electron binary rather than at Monti Launcher.
+  // Electron binary rather than at EasyDeck Launcher.
   packaged: boolean;
 };
 
@@ -290,7 +290,7 @@ type MontiNative = {
     // Path to the per-profile wrapper .app that was actually spawned (see
     // electron/main.cjs's writeProfileLauncherApp) -- its Dock/Cmd+Tab name is
     // the profile's own name, since that identity comes from the bundle, not
-    // from the shared Monti Browser binary or any window title.
+    // from the shared EasyDeck Browser binary or any window title.
     launcherAppPath?: string;
     error?: string;
   }>;

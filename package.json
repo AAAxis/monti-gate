@@ -1,6 +1,6 @@
 {
   "name": "monti-anty",
-  "version": "1.0.70",
+  "version": "1.0.71",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
@@ -45,12 +45,12 @@
   },
   "build": {
     "appId": "com.monti.anty",
-    "productName": "Monti Gate",
+    "productName": "EasyDeck",
     "icon": "assets/icons/launcher-light.icns",
-    "artifactName": "Monti-Gate-${version}-${os}-${arch}.${ext}",
+    "artifactName": "EasyDeck-${version}-${os}-${arch}.${ext}",
     "protocols": [
       {
-        "name": "Monti Gate",
+        "name": "EasyDeck",
         "schemes": [
           "monti"
         ]

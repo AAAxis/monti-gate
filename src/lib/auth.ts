@@ -9,7 +9,7 @@
 // The main process independently allowlists which hosts it will open, so
 // pointing this at some other origin does not widen what can be launched.
 export const SITE_URL = (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/+$/, '') ||
-  'https://www.montigate.com';
+  'https://browser.chatkit.cc';
 
 // Supabase's per-address cooldown between sending one code and the next.
 export const OTP_RESEND_COOLDOWN_MS = 60_000;

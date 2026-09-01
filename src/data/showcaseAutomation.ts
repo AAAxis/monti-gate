@@ -22,7 +22,7 @@
 import type {MontiAutomation} from '../types';
 
 export const SHOWCASE_AUTOMATION: Omit<MontiAutomation, 'id'> = {
-  name: 'Search Google for Monti',
+  name: 'Search Google for EasyDeck',
   description: 'Opens Google, searches for us, and ends on montigate.com with a ' +
     'screenshot. Edit it, rename it or delete it — it is a normal automation.',
   // Matches newAutomation(): a run that hangs on a bot check should fail on the

@@ -130,7 +130,7 @@ export function ImportProfilesModal({onClose}: {onClose: () => void}) {
 
   async function pickCsv() {
     if (!native?.selectImportCsv) {
-      toast.setMessage('Native CSV picker is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native CSV picker is not available. Restart EasyDeck and try again.');
       return;
     }
     const picked = await native.selectImportCsv();

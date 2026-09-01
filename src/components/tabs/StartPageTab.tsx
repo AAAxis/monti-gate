@@ -51,7 +51,7 @@ export function StartPageTab({onEditBookmark, onAddBookmark}: {
           sidebar's .brand-mark. */}
       <p className="start-brand">
         <span aria-hidden="true" className="start-brand-mark" />
-        <span className="visually-hidden">Monti</span>
+        <span className="visually-hidden">EasyDeck</span>
       </p>
       <SearchBox />
       {/* The same note block the Integrations and Extensions tabs use, above the
@@ -112,7 +112,7 @@ export function StartPageTab({onEditBookmark, onAddBookmark}: {
 // it is reachable without a mouse.
 //
 // Every heading carries a mark, so the three blocks are told apart by shape
-// before they are read. Only Automations used to have one and it was the Monti
+// before they are read. Only Automations used to have one and it was the EasyDeck
 // mark -- the brand mark from the top of this tab repeating itself about the
 // wrong noun. They are lucide's Bookmark, Workflow and Shield now: Workflow is
 // what the sidebar rail gives the Automations tab (data/tabs.ts), Shield is

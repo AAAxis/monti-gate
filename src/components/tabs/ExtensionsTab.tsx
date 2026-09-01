@@ -343,7 +343,7 @@ function ExtensionCard({action, badge, enabled, logo, name, note, onToggle, stat
         {/* Where an extension came from, beside its name rather than in the
           * card's foot -- it is part of the extension's identity, not of the
           * controls. Bundled ones carry a verified mark in the blue "checked
-          * fact" tone: they ship with Monti and were not fetched from a store,
+          * fact" tone: they ship with EasyDeck and were not fetched from a store,
           * which is the one thing about a browser extension worth vouching for.
           * Everything else -- Web Store, Shared folder -- states its provenance
           * in the neutral tone and makes no claim about it. */}

@@ -55,7 +55,7 @@ export function PlanWelcomeModal({plan, limits, previous, orgName, onClose}: {
         <div className="plan-welcome-hero">
           {/* The product's own mark rather than a generic celebration glyph:
               this dialog is the moment the workspace becomes a paid one, and
-              the thing being welcomed to is Monti. Masked from the same PNG the
+              the thing being welcomed to is EasyDeck. Masked from the same PNG the
               sidebar uses, so it tints with the plan accent -- see .brand-mark
               in styles.css. */}
           <span className="plan-welcome-mark" aria-hidden="true">

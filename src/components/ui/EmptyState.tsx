@@ -6,7 +6,7 @@
 // Not for a tab whose whole collection is empty -- that drops the toolbar and
 // the table with it, and is .tab-empty in styles.css. Profiles, Proxies,
 // Cookies and Automations all render that directly; it is a fixed distance
-// below the topbar so its glyph lands where the Start page's Monti mark does.
+// below the topbar so its glyph lands where the Start page's EasyDeck mark does.
 //
 // Lifted out of ProfilesTab when the Proxies tab grew the same states.
 import type {ReactNode} from 'react';

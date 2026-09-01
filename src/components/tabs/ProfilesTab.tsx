@@ -193,7 +193,7 @@ export function ProfilesTab({
       return;
     }
     if (!native?.selectCookieFolder || !native?.matchCookieFiles) {
-      toast.setMessage('Native cookie import is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native cookie import is not available. Restart EasyDeck and try again.');
       return;
     }
     const folderPath = await native.selectCookieFolder();

@@ -415,7 +415,7 @@ export type MontiAutomation = {
   // the user just did it themselves.
   notify_on?: 'always' | 'failure' | null;
   // Where the finish message additionally goes: a message connector's id, or
-  // null for delivery to Monti alone (the topbar bell and a desktop
+  // null for delivery to EasyDeck alone (the topbar bell and a desktop
   // notification, which fire whenever notify_on says to regardless of this
   // field). Deliberately no FK behind it -- a deleted connector fails the send
   // with a sentence naming it rather than silently notifying nobody.

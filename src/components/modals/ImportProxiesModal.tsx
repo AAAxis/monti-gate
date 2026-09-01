@@ -130,7 +130,7 @@ export function ImportProxiesModal({folderId, onClose}: {
 
   async function pickFile() {
     if (!native?.selectProxyFile) {
-      toast.setMessage('Native file picker is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native file picker is not available. Restart EasyDeck and try again.');
       return;
     }
     const picked = await native.selectProxyFile();

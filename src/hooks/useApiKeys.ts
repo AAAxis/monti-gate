@@ -361,7 +361,7 @@ export function useIntegrations(apiKeys: ApiKeys, apiState: ApiState | null) {
           ok: false,
           checks: [{
             id: 'native',
-            label: 'Monti Gate',
+            label: 'EasyDeck',
             ok: false,
             detail: 'Verification is only available in the desktop app.',
           }],

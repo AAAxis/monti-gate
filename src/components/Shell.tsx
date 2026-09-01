@@ -31,7 +31,7 @@ export function Sidebar({activeTab, onTab, onSettings, onSignOut, onCreateWorksp
   const rail = tabs;
   return (
     <aside className="sidebar">
-      {/* The mark alone -- the window title already says "Monti Launcher", so
+      {/* The mark alone -- the window title already says "EasyDeck Launcher", so
           the wordmark was saying it twice. Alpha-masked PNG, tinted by the
           stylesheet so it inverts cleanly in dark mode.
 
@@ -57,7 +57,7 @@ export function Sidebar({activeTab, onTab, onSettings, onSignOut, onCreateWorksp
           </button>
         ) : (
           <>
-            <span className="brand-mark" role="img" aria-label="Monti" />
+            <span className="brand-mark" role="img" aria-label="EasyDeck" />
             <button
               aria-expanded={true}
               aria-label="Collapse sidebar"
@@ -127,8 +127,8 @@ export function Topbar({activeTab, actions, onViewShares, onOpenAutomationHistor
 }) {
   return (
     <header className="topbar">
-      {/* The title alone. There used to be a line under it -- "Monti Launcher
-          owns cloud data. Monti Browser starts as a separate anonymous
+      {/* The title alone. There used to be a line under it -- "EasyDeck Launcher
+          owns cloud data. EasyDeck Browser starts as a separate anonymous
           process." -- which was the same sentence on all nine tabs, so it said
           nothing about the one you were on and was read once and then never
           again. */}

@@ -1,4 +1,4 @@
-// The Monti Panel's sync card, tested at the level the bugs actually lived at:
+// The EasyDeck Panel's sync card, tested at the level the bugs actually lived at:
 // which branch wins.
 //
 // Two user-visible failures came out of this ordering, and both looked like

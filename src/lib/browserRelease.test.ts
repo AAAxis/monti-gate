@@ -15,7 +15,7 @@ const SHA = 'aRSCo2r/F7erpSXjjxTIN2lebcuOWiNE9XnCdARPP2YkvRVNMfqFHeJ68/sjQ7qCD/g
 function manifest(overrides = {}) {
   return normalizeManifest({
     version: '151.0.7906.0',
-    url: 'Monti-Browser-mac-arm64.zip',
+    url: 'EasyDeck-Browser-mac-arm64.zip',
     sha512: SHA,
     size: 184499616,
     releaseDate: '2026-08-09T12:00:00.000Z',

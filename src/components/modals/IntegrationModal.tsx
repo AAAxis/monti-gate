@@ -34,7 +34,7 @@ function manualSnippet(integration: Integration, token: string | undefined, base
     mcpServers: {
       monti: {
         type: 'stdio',
-        command: 'Monti Gate',
+        command: 'EasyDeck',
         args: ['<the path shown after you connect>'],
         env: {
           ELECTRON_RUN_AS_NODE: '1',
@@ -146,7 +146,7 @@ export function IntegrationModal({integration, integrations, apiKeys, apiState}:
             <li>Creates an API key scoped to the folders you pick.</li>
             <li>
               {manual ?
-                `Shows you that key once, to paste into ${integration.configLabel} — there is no config file here for Monti to write.` :
+                `Shows you that key once, to paste into ${integration.configLabel} — there is no config file here for EasyDeck to write.` :
                 `Writes an "monti" MCP server into ${integration.configLabel}, pointing at the server bundled in this app. Nothing to install.`}
             </li>
             <li>{integration.restartLabel}. {integration.confirmLabel}</li>

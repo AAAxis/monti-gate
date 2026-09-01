@@ -272,7 +272,7 @@ describe('pinning the panel to the toolbar', () => {
     expect(readPinned(userDataDir)).toBeUndefined();
   });
 
-  // The id the native "Monti Helper" toolbar button drives the panel by --
+  // The id the native "EasyDeck Helper" toolbar button drives the panel by --
   // passed to the browser as --monti-panel-extension-id.
   it('derives the panel extension id once its directory exists', () => {
     const userDataDir = tempDir();
@@ -291,7 +291,7 @@ describe('pinning the panel to the toolbar', () => {
 // The other half of dropping `pinned`. Flipping the flag only helps profiles
 // that have never launched -- seedPinnedExtensions bails on an existing list --
 // so every profile that ran the old build carries the stale pin, and therefore a
-// second, icon-only Monti Helper button beside the native labelled one.
+// second, icon-only EasyDeck Helper button beside the native labelled one.
 //
 // This is a pass over a list the user also owns, which is why every test here is
 // about what it must NOT touch.
@@ -383,7 +383,7 @@ describe('unpinning a retired built-in', () => {
 // so nothing else in this repo would notice these going wrong. Dropping
 // default_popup without declaring the panel leaves the toolbar button doing
 // nothing at all, which is silent in every other test.
-describe('Monti Panel manifest', () => {
+describe('EasyDeck Panel manifest', () => {
   const manifest = JSON.parse(fs.readFileSync(
       path.join(__dirname, '../../extensions/cookie-manager/manifest.json'), 'utf8'));
 

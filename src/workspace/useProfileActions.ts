@@ -251,7 +251,7 @@ export function useProfileActions(
       const tiles = startPageAutomations(state.automations, target)
           .map((tile) => buildRunTile(tile, target, state.automations));
 
-      // The Monti Helper panel offers EVERY automation in the workspace, not
+      // The EasyDeck Helper panel offers EVERY automation in the workspace, not
       // just this profile's pinned tiles -- that is what
       // /v1/automations/run-any-from-page is for, and the panel resolves the
       // chosen one through the launcher window on demand.
@@ -370,7 +370,7 @@ export function useProfileActions(
       return;
     }
     if (!native?.saveTextFile) {
-      toast.setMessage('Native file export is not available. Restart Monti Gate and try again.');
+      toast.setMessage('Native file export is not available. Restart EasyDeck and try again.');
       return;
     }
     // The importer's own column names, in the importer's own value formats, so
@@ -393,7 +393,7 @@ export function useProfileActions(
       folderPath: string,
       targetProfileIds: string[] | null): Promise<{matched: number; total: number}> {
     if (!native?.matchCookieFiles) {
-      throw new Error('Native cookie import is not available. Restart Monti Gate and try again.');
+      throw new Error('Native cookie import is not available. Restart EasyDeck and try again.');
     }
     const targetIds = targetProfileIds ? new Set(targetProfileIds) : null;
     const isTarget = (profile: MontiProfile) =>
