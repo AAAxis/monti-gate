@@ -166,7 +166,7 @@ function ConnectorCard({connector, canEdit, onEdit}: {
       <p>
         {preset ?
           [preset.label, detail].filter(Boolean).join(' · ') :
-          `This version of EasyDeck doesn't recognise "${connector.kind}". ` +
+          `This version of Scout Web doesn't recognise "${connector.kind}". ` +
             'It keeps working for newer builds; update the app to edit it here.'}
       </p>
 

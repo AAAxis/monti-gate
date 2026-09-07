@@ -8,7 +8,7 @@
 // styles.css by scripts/verify-palette.mjs) and follows the launcher's theme, so
 // a session opens looking like the app that opened it. It used to carry a warm
 // paper palette of its own, from before the launcher went achromatic.
-// The EasyDeck mark that sits above the search box, imported ?raw rather than as a
+// The Scout Web mark that sits above the search box, imported ?raw rather than as a
 // URL so it can be inlined. Same constraint as the four icon constants below:
 // this document is written to disk and opened from file://, with no bundler, no
 // asset directory beside it and no network it is allowed to need, so an
@@ -435,7 +435,7 @@ export function anonymousHomeHtml(
 <button type="button" class="auto-run" title="Run ${name} in this session" aria-label="Run ${name} in this session">${RUN_ICON}</button>
 <div class="auto-text"><strong title="${name}">${name}</strong><small title="${sub}">${sub}</small></div>
 <div class="auto-actions">
-<button type="button" class="auto-open icon-button" title="Open ${name} in EasyDeck" aria-label="Open ${name} in EasyDeck">${EXTERNAL_ICON}</button>
+<button type="button" class="auto-open icon-button" title="Open ${name} in Scout Web" aria-label="Open ${name} in Scout Web">${EXTERNAL_ICON}</button>
 </div>
 </article>`;
       })
@@ -472,7 +472,7 @@ body{margin:0;min-height:100vh;display:grid;align-content:center;justify-items:c
 main{width:100%;max-width:640px}
 h1{font-size:20px;letter-spacing:-0.01em;margin:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sub{margin:4px 0 0;color:var(--ink-soft);font-size:13px}
-/* The EasyDeck mark, over the profile name and the search box. The launcher's own
+/* The Scout Web mark, over the profile name and the search box. The launcher's own
    Start page tab puts the same mark in the same place (.start-brand in
    styles.css) -- the two are one page in two places, and a session that opens
    on an anonymous window is the half that most needs to say who opened it.
@@ -637,7 +637,7 @@ h1{font-size:20px;letter-spacing:-0.01em;margin:0;font-weight:700;overflow:hidde
    sidebar rail gives its Automations tab, so the heading here and the tab there
    are recognisably the same thing.
 
-   It used to be the EasyDeck helmet, at 18px, which was the header mark from 30px
+   It used to be the Scout Web helmet, at 18px, which was the header mark from 30px
    above saying the same sentence twice -- and saying it about the wrong noun. A
    heading's mark should name what is under it, not who drew the window.
 
@@ -718,7 +718,7 @@ h1{font-size:20px;letter-spacing:-0.01em;margin:0;font-weight:700;overflow:hidde
 <main>
 <div class="brand">${montiMark}</div>
 <h1>${safeName}</h1>
-<p class="sub">Anonymous EasyDeck Browser session</p>
+<p class="sub">Anonymous Scout Web Browser session</p>
 <div class="search-wrap">
 <form class="search" id="search" autocomplete="off">
 <input type="text" aria-label="Search or enter address" placeholder="Search ${escapeHtml(engine.name)} or enter address" autofocus>
@@ -837,7 +837,7 @@ ${run ? `(function () {
         .then(function (result) {
           if (!result.ok || !result.body.status) {
             /* The launcher's own words, not a sentence invented here. Every
-               refusal on this route already carries one -- "EasyDeck Launcher is
+               refusal on this route already carries one -- "Scout Web Launcher is
                not open", "Too many requests", "That profile is no longer in
                this workspace" -- and each names something the person reading
                this page can act on. They used to be thrown away and replaced
@@ -872,7 +872,7 @@ ${run ? `(function () {
              launcher had explained in full. */
           sessionCard.dataset.tone = 'bad';
           line.textContent = error && error.fromLauncher ? error.message :
-            'The check did not complete. Try again from the EasyDeck panel.';
+            'The check did not complete. Try again from the Scout Web panel.';
         })
         .then(function () {
           recheck.disabled = false;

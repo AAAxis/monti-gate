@@ -12,7 +12,7 @@ const os = require('node:os');
 const path = require('node:path');
 const {pathToFileURL} = require('node:url');
 
-// Product rename (Monti Launcher -> Monti Gate -> EasyDeck). The app name is what
+// Product rename (Monti Launcher -> Monti Gate -> Scout Web -> Scout Web). The app name is what
 // app.getPath('userData') is built from, and that directory holds settings.json,
 // run tokens, cached browser resources and favicons. This has to run before the
 // single-instance lock and before the modules below, since both read userData at
@@ -21,8 +21,8 @@ const {pathToFileURL} = require('node:url');
 // appData), keep the old name so the install reads its own data rather than
 // silently starting empty. A fresh install has none of these dirs and gets the
 // new name.
-const APP_NAME = 'EasyDeck';
-const PRIOR_APP_NAMES = ['Monti Gate', 'Monti Launcher'];
+const APP_NAME = 'Scout Web';
+const PRIOR_APP_NAMES = ['EasyDeck', 'Monti Gate', 'Monti Launcher'];
 let resolvedAppName = APP_NAME;
 try {
   const appDataRoot = app.getPath('appData');
@@ -203,7 +203,7 @@ app.on('open-url', (event, url) => {
 });
 
 app.setAboutPanelOptions({
-  applicationName: 'EasyDeck',
+  applicationName: 'Scout Web',
   applicationVersion: app.getVersion(),
   credits: 'Developed by Dmitry Polskoy\nhttps://www.linkedin.com/in/dmitry-polskoy-a46103177/',
   website: 'https://www.linkedin.com/in/dmitry-polskoy-a46103177/',
@@ -749,10 +749,13 @@ function extractBrowserArchive(archivePath, destinationDir) {
 // Reflects what the marker on disk says onto the state the UI reads. Called
 // on startup before any network is involved, so the Updates page can name the
 // installed version offline rather than showing a blank until a check lands.
-// What the browser calls itself where Windows can be told. The launcher is
-// EasyDeck and the app on the phone is Scout Web; "Monti Browser" is a name
-// from before either.
-const BROWSER_PRODUCT_NAME = 'Scout Web';
+// What the browser calls itself where Windows can be told. "Monti Browser" is
+// the name from before this was Scout Web, and it is still the name of the
+// bundle on disk — which is why the lookups above keep it and only the strings
+// Windows reads out of the .exe change here. Its own name, not the launcher's:
+// two different programs both called "Scout Web" in Task Manager would be
+// worse than the name it had.
+const BROWSER_PRODUCT_NAME = 'Scout Web Browser';
 
 // The browser's icon and name on Windows.
 //
@@ -1086,7 +1089,7 @@ function createWindow() {
   const icon = appIconPath();
   applyDockIcon();
   const win = new BrowserWindow({
-    title: 'EasyDeck',
+    title: 'Scout Web',
     width: 1180,
     height: 760,
     minWidth: 980,
@@ -2624,7 +2627,7 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
         ok: false,
         error: `Proxy ${payload.proxy.host}:${payload.proxy.port} did not respond` +
           `${proxyCheck.error ? ` (${proxyCheck.error})` : ''}. Fix the proxy in ` +
-          'EasyDeck and try again.',
+          'Scout Web and try again.',
       };
     }
     proxyGeo = proxyCheck;
@@ -3506,7 +3509,7 @@ ipcMain.handle('monti:install-update', async () => {
       message: running === 1 ?
         '1 profile is open and will be closed.' :
         `${running} profiles are open and will be closed.`,
-      detail: 'Installing the update restarts EasyDeck. Anything unsaved in those ' +
+      detail: 'Installing the update restarts Scout Web. Anything unsaved in those ' +
         'browser windows is lost.',
     });
     if (response !== 1) {
@@ -3785,13 +3788,13 @@ const TABLE_ROUTES = apiRoutes.filter((route) => route.channel || route.local);
 // a thirteenth copy.
 function askRenderer(res, channel, payload) {
   if (!mainWindow) {
-    sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
+    sendJson(res, 503, {status: false, msg: 'Scout Web window is not open'});
     return;
   }
   const requestId = crypto.randomUUID();
   const timeout = setTimeout(() => {
     pendingAutomationRequests.delete(requestId);
-    sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
+    sendJson(res, 504, {status: false, msg: 'Timed out waiting for Scout Web to respond'});
   }, AUTOMATION_REQUEST_TIMEOUT_MS);
   pendingAutomationRequests.set(requestId, {res, timeout});
   mainWindow.webContents.send(channel, {requestId, ...payload});
@@ -4889,7 +4892,7 @@ ipcMain.on('monti:list-profiles-result', (_event, {requestId, result, error}) =>
 });
 
 function sendJson(res, statusCode, body) {
-  // CORS on every answer: the EasyDeck dashboard (an HTTPS page) calls this
+  // CORS on every answer: the Scout Web dashboard (an HTTPS page) calls this
   // loopback API directly from the browser, and a passing preflight alone
   // isn't enough — the actual response must carry the header too.
   res.writeHead(statusCode, {
@@ -4970,7 +4973,7 @@ function handleOAuthAuthorize(req, res, parsedUrl) {
     return;
   }
   if (!mainWindow) {
-    sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
+    sendJson(res, 503, {status: false, msg: 'Scout Web window is not open'});
     return;
   }
   mainWindow.show();
@@ -4980,7 +4983,7 @@ function handleOAuthAuthorize(req, res, parsedUrl) {
   // give it real time instead of the usual short automation timeout.
   const timeout = setTimeout(() => {
     pendingAutomationRequests.delete(requestId);
-    sendJson(res, 504, {status: false, msg: 'Timed out waiting for approval in EasyDeck'});
+    sendJson(res, 504, {status: false, msg: 'Timed out waiting for approval in Scout Web'});
   }, 5 * 60 * 1000);
   pendingAutomationRequests.set(requestId, {res, timeout, redirectUri, state});
   mainWindow.webContents.send('monti:oauth-authorize-request', {
@@ -5195,7 +5198,7 @@ const pendingPageRequests = new Map();
 function askRendererForRecheck(profileId) {
   return new Promise((resolve, reject) => {
     if (!mainWindow) {
-      reject(Object.assign(new Error('EasyDeck is not open'), {status: 503}));
+      reject(Object.assign(new Error('Scout Web is not open'), {status: 503}));
       return;
     }
     const requestId = crypto.randomUUID();
@@ -5204,7 +5207,7 @@ function askRendererForRecheck(profileId) {
     const timeout = setTimeout(() => {
       pendingPageRequests.delete(requestId);
       reject(Object.assign(
-          new Error('Timed out waiting for EasyDeck to answer'), {status: 504}));
+          new Error('Timed out waiting for Scout Web to answer'), {status: 504}));
     }, AUTOMATION_REQUEST_TIMEOUT_MS);
     pendingPageRequests.set(requestId, {resolve, reject, timeout});
     mainWindow.webContents.send('monti:recheck-proxy-request', {requestId, profileId});
@@ -5241,7 +5244,7 @@ function recheckFromPage(req, res) {
 function askRendererOnPageChannel(channel, payload) {
   return new Promise((resolve, reject) => {
     if (!mainWindow) {
-      reject(Object.assign(new Error('EasyDeck is not open'), {status: 503}));
+      reject(Object.assign(new Error('Scout Web is not open'), {status: 503}));
       return;
     }
     const requestId = crypto.randomUUID();
@@ -5255,8 +5258,8 @@ function askRendererOnPageChannel(channel, payload) {
       // exactly like a slow launcher for twenty seconds and then reports as
       // one. With the channel in the message it reads as what it is.
       reject(Object.assign(
-          new Error(`EasyDeck did not answer (${channel}). If this ` +
-              'started after an update, quit EasyDeck completely and ' +
+          new Error(`Scout Web did not answer (${channel}). If this ` +
+              'started after an update, quit Scout Web completely and ' +
               'reopen it.'),
           {status: 504}));
     }, AUTOMATION_REQUEST_TIMEOUT_MS);
@@ -5561,13 +5564,13 @@ function startAutomationApiServer() {
 
     if (req.method === 'GET' && parsedUrl.pathname === '/v1/profiles') {
       if (!mainWindow) {
-        sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
+        sendJson(res, 503, {status: false, msg: 'Scout Web window is not open'});
         return;
       }
       const requestId = crypto.randomUUID();
       const timeout = setTimeout(() => {
         pendingAutomationRequests.delete(requestId);
-        sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
+        sendJson(res, 504, {status: false, msg: 'Timed out waiting for Scout Web to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, {res, timeout});
       mainWindow.webContents.send('monti:list-profiles-request', {
@@ -5579,13 +5582,13 @@ function startAutomationApiServer() {
     }
     if (req.method === 'GET' && parsedUrl.pathname === '/v1/proxies') {
       if (!mainWindow) {
-        sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
+        sendJson(res, 503, {status: false, msg: 'Scout Web window is not open'});
         return;
       }
       const requestId = crypto.randomUUID();
       const timeout = setTimeout(() => {
         pendingAutomationRequests.delete(requestId);
-        sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
+        sendJson(res, 504, {status: false, msg: 'Timed out waiting for Scout Web to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, {res, timeout});
       mainWindow.webContents.send('monti:list-proxies-request', {requestId});
@@ -5658,7 +5661,7 @@ function startAutomationApiServer() {
         return;
       }
       if (!mainWindow) {
-        sendJson(res, 503, {status: false, msg: 'EasyDeck window is not open'});
+        sendJson(res, 503, {status: false, msg: 'Scout Web window is not open'});
         return;
       }
       const isPushLocal = parsedUrl.pathname === '/v1/cookies/push-local';
@@ -5825,7 +5828,7 @@ function startAutomationApiServer() {
       const requestId = crypto.randomUUID();
       const timeout = setTimeout(() => {
         pendingAutomationRequests.delete(requestId);
-        sendJson(res, 504, {status: false, msg: 'Timed out waiting for EasyDeck to respond'});
+        sendJson(res, 504, {status: false, msg: 'Timed out waiting for Scout Web to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, isLaunchAutomation ?
         {res, timeout, cdpPort, profileId: payload.profileId, keyId: key.id} :

@@ -55,7 +55,7 @@ export const PLANS: Record<PlanKey, PlanInfo> = {
   free: {
     key: 'free',
     label: 'Free',
-    tagline: 'Try EasyDeck',
+    tagline: 'Try Scout Web',
     priceMonthly: 0,
     profiles: 5,
     seats: 1,

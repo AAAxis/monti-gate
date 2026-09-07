@@ -308,7 +308,7 @@ export function IntegrationsTab({apiKeys, integrations, onOpen, onOpenApiPage}: 
           Until the local API is running, nothing here can reach your profiles.
           {apiState?.error ?
             ` It reported: ${apiState.error}` :
-            ' It starts with the app — reopening EasyDeck is usually enough.'}
+            ' It starts with the app — reopening Scout Web is usually enough.'}
         </p>
       )}
 

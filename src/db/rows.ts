@@ -346,7 +346,7 @@ export type AutomationRow = {
   close_on_finish: boolean | null;
   // "Tell me when this finishes." notify_on is 'always' | 'failure' | null,
   // null meaning the automation does not notify. notify_connector_id names a
-  // message connector, or null for delivery to EasyDeck alone (the bell and a
+  // message connector, or null for delivery to Scout Web alone (the bell and a
   // desktop notification); deliberately no FK -- see the migration.
   notify_connector_id: string | null;
   notify_on: string | null;

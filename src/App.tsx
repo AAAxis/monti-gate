@@ -372,7 +372,7 @@ export function App() {
     return (
       <main className="login-shell">
         <LoadingState
-          label={startup.failed ? 'EasyDeck is not ready' : 'Preparing EasyDeck'}
+          label={startup.failed ? 'Scout Web is not ready' : 'Preparing Scout Web'}
           detail={startup.detail}
           failed={startup.failed}
           onRetry={startup.canRetryBrowser ? retryBrowserDownload : undefined}

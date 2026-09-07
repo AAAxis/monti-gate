@@ -46,9 +46,9 @@
   },
   "build": {
     "appId": "com.monti.anty",
-    "productName": "EasyDeck",
+    "productName": "Scout Web",
     "icon": "assets/icons/launcher-light.icns",
-    "artifactName": "EasyDeck-${version}-${os}-${arch}.${ext}",
+    "artifactName": "Scout-Web-${version}-${os}-${arch}.${ext}",
     "protocols": [
       {
         "name": "EasyDeck",

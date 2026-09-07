@@ -188,7 +188,7 @@ export function ProxyModal({draft, source, onChange, onClose, onSaved, onRequest
       title={draft.id ? 'Edit proxy' : source === 'profile' ? 'Name your proxy' : 'Add proxy'}
       subtitle={source === 'profile' ?
         'Create a proxy and assign it to this profile.' :
-        'Proxy settings are stored in EasyDeck and assigned to profiles on launch.'}
+        'Proxy settings are stored in Scout Web and assigned to profiles on launch.'}
       footer={
         <>
           {draft.id && (

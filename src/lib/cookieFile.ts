@@ -187,7 +187,7 @@ export function toCookieJson(cookies: CookieEntry[]): string {
 // one.
 export function toNetscapeCookies(cookies: CookieEntry[]): string {
   const header = '# Netscape HTTP Cookie File\n' +
-    '# Exported by EasyDeck. Tab-separated; do not edit by hand.\n';
+    '# Exported by Scout Web. Tab-separated; do not edit by hand.\n';
   const lines = cookies.map((cookie) => {
     const domain = cookie.domain || hostnameOf(cookie.url);
     return [

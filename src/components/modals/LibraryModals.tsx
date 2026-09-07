@@ -36,7 +36,7 @@ export function CookiePickerModal({search, onSearch, selectedId, onSelect, onClo
 
   async function upload() {
     if (!native?.selectCookieFile) {
-      toast.setMessage('Native cookie file picker is not available. Restart EasyDeck and try again.');
+      toast.setMessage('Native cookie file picker is not available. Restart Scout Web and try again.');
       return;
     }
     try {
@@ -226,7 +226,7 @@ export function BookmarkImportModal({onClose}: {onClose: () => void}) {
 
   async function pickFile() {
     if (!native?.selectBookmarkFile) {
-      toast.setMessage('Native file picker is not available. Restart EasyDeck and try again.');
+      toast.setMessage('Native file picker is not available. Restart Scout Web and try again.');
       return;
     }
     const picked = await native.selectBookmarkFile();

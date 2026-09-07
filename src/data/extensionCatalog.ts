@@ -50,7 +50,7 @@ export type BuiltInExtension = {
   // Basename under src/assets/extensions/, or omitted for `tint`.
   slug?: string;
   // Single-colour artwork, drawn as a CSS mask in the current ink colour
-  // rather than as an <img>. The EasyDeck mark is black-on-transparent, so as an
+  // rather than as an <img>. The Scout Web mark is black-on-transparent, so as an
   // image it would vanish against the dark theme's raised surface.
   tint?: boolean;
   // True for a built-in whose files are not vendored in extensions/ but pulled
@@ -77,7 +77,7 @@ export const BUILT_IN_EXTENSIONS: BuiltInExtension[] = [
     // built_in_extensions state agree on, and renaming it would read as a
     // missing key, fall back to defaultEnabled, and discard every org's saved
     // preference.
-    name: 'EasyDeck Helper',
+    name: 'Scout Web Helper',
     tagline: 'The side panel in every profile window: proxy status, cookies and this launch’s automations.',
     // Spells out what else goes away, because the name no longer does. Turning
     // this off used to cost cookie tooling alone; it now also takes the proxy
@@ -85,7 +85,7 @@ export const BUILT_IN_EXTENSIONS: BuiltInExtension[] = [
     note: 'Switching this off removes the whole panel — the session’s exit, timezone and device ' +
       'checks, cookie sync, and the automation runner. It also seeds a profile with the cookie set ' +
       'assigned to it, once, on its first launch.',
-    // Its icon is the EasyDeck mark itself -- same winged helmet as
+    // Its icon is the Scout Web mark itself -- same winged helmet as
     // extensions/cookie-manager/icons/on-light/icon-128.png, reused from the
     // copy the sidebar already masks so there is one file to change if the mark
     // does. (Masked here, so it takes --ink and inverts with the theme. The

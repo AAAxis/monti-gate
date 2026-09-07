@@ -85,12 +85,12 @@ export function IntegrationMark({integration, size = 20}: {integration: Integrat
   return <img alt="" className={className} src={integration.logo} style={{height: size, width: size}} />;
 }
 
-// An extension's artwork: its store icon, the EasyDeck mark for the one we ship
+// An extension's artwork: its store icon, the Scout Web mark for the one we ship
 // ourselves, or a Lucide stand-in when neither is available. Shared by the
 // Installed cards and the Discover cards so an extension is drawn the same way
 // before and after it is added.
 //
-// `tint` renders the EasyDeck mark as a CSS mask instead of an <img>, because it
+// `tint` renders the Scout Web mark as a CSS mask instead of an <img>, because it
 // is black-on-transparent line art and would disappear on the dark theme's
 // raised surface. Store icons are full-colour and stay images.
 // The card's own heading carries the name, so every branch here is decorative.

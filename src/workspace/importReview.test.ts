@@ -46,7 +46,7 @@ function one(csv: string, lib: ImportLibrary = empty) {
   return review(csv, lib)[0];
 }
 
-// The file the user actually hit this with: an EasyDeck export, whose proxies
+// The file the user actually hit this with: an Scout Web export, whose proxies
 // carry no credentials at all.
 const legacyCsv = readFileSync(
     join(__dirname, '__fixtures__', 'legacy-profiles-export.csv'), 'utf8');

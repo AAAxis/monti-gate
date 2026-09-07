@@ -212,7 +212,7 @@ export function useLibraryActions({data, toast}: WorkspaceCore) {
   // URL, never the extension's files directly.
   async function addExtensionFromFolder(): Promise<boolean> {
     if (!native?.selectExtensionFolder || !native?.zipExtensionFolder) {
-      toast.setMessage('Native folder picker is not available. Restart EasyDeck and try again.');
+      toast.setMessage('Native folder picker is not available. Restart Scout Web and try again.');
       return false;
     }
     const folderPath = await native.selectExtensionFolder();

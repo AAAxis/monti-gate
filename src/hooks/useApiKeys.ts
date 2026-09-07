@@ -361,7 +361,7 @@ export function useIntegrations(apiKeys: ApiKeys, apiState: ApiState | null) {
           ok: false,
           checks: [{
             id: 'native',
-            label: 'EasyDeck',
+            label: 'Scout Web',
             ok: false,
             detail: 'Verification is only available in the desktop app.',
           }],

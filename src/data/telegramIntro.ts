@@ -11,7 +11,7 @@ import type {IntroStep} from './profileIntro';
 
 export const TELEGRAM_INTRO_STEPS: IntroStep[] = [
   {
-    title: 'EasyDeck can message you on Telegram',
+    title: 'Scout Web can message you on Telegram',
     body: 'When an automation finishes — at three in the morning, on a schedule, or ' +
       'started by an agent — the workspace\'s bot sends the verdict to your own ' +
       'Telegram chat: what ran, on which profile, and whether it succeeded. One bot ' +

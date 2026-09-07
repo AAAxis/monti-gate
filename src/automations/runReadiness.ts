@@ -5,7 +5,7 @@
 // a profile with runTarget() and handed it to the runner, and the first anyone
 // heard about a dead proxy was the main process refusing the spawn several
 // seconds later with "Proxy 1.2.3.4:5678 did not respond ... Fix the proxy in
-// EasyDeck Launcher and try again." -- a sentence about a profile the user never
+// Scout Web Launcher and try again." -- a sentence about a profile the user never
 // chose.
 //
 // Kept pure and separate from the dialog so the row chip, the tick-box's

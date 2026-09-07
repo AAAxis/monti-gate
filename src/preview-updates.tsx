@@ -33,7 +33,7 @@ const LAUNCHER_RELEASES: ReleaseEntry[] = [
   {
     tag: 'v1.0.57', version: '1.0.57', name: 'v1.0.57',
     publishedAt: minutesAgo(60 * 48),
-    notes: 'EasyDeck Panel follow-ups, statuses for proxies and cookie-sets, and the\ncollapsible sidebar rail.',
+    notes: 'Scout Web Panel follow-ups, statuses for proxies and cookie-sets, and the\ncollapsible sidebar rail.',
   },
   // Every release published before body_path was wired into the workflow.
   {tag: 'v1.0.56', version: '1.0.56', name: 'v1.0.56', publishedAt: minutesAgo(60 * 120), notes: ''},
@@ -41,12 +41,12 @@ const LAUNCHER_RELEASES: ReleaseEntry[] = [
 
 const BROWSER_RELEASES: ReleaseEntry[] = [
   {
-    tag: 'browser-v151.0.7906.0-mac-arm64', version: '151.0.7906.0', name: 'EasyDeck Browser 151.0.7906.0',
+    tag: 'browser-v151.0.7906.0-mac-arm64', version: '151.0.7906.0', name: 'Scout Web Browser 151.0.7906.0',
     publishedAt: minutesAgo(60 * 10),
     notes: 'Chromium 151. Injector rebuilt against the new bindings.',
   },
   {
-    tag: 'browser-v150.0.7100.0-mac-arm64', version: '150.0.7100.0', name: 'EasyDeck Browser 150.0.7100.0',
+    tag: 'browser-v150.0.7100.0-mac-arm64', version: '150.0.7100.0', name: 'Scout Web Browser 150.0.7100.0',
     publishedAt: minutesAgo(60 * 24 * 30), notes: 'Chromium 150.',
   },
 ];
@@ -74,7 +74,7 @@ function resource(overrides: Partial<ResourceState> = {}): ResourceState {
   return {
     browserStatus: 'ready',
     browserVersion: '151.0.7906.0',
-    browserPath: '/Users/roman/Library/Application Support/monti-anty/Browser/v-aRSCo2rF7erpS/EasyDeck.app',
+    browserPath: '/Users/roman/Library/Application Support/monti-anty/Browser/v-aRSCo2rF7erpS/Scout Web.app',
     installedBuildId: 'aRSCo2r/F7erpSX',
     installedVersion: '151.0.7906.0',
     installedAt: minutesAgo(60 * 10),

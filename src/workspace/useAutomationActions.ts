@@ -54,7 +54,7 @@ export function useAutomationActions(
       // same value applied to the render cache, guarded the same way (only
       // forward).
       //
-      // Notify-on-finish delivered to EasyDeck, only when the event carries a
+      // Notify-on-finish delivered to Scout Web, only when the event carries a
       // notification: one row in `notifications` (main composed it; only this
       // side can write it) and the same row patched into the bell immediately
       // -- the reload-on-focus would show it anyway, but the machine that ran
@@ -318,7 +318,7 @@ export function useAutomationActions(
           (membership.org.telegram_bot_name || '').replace(/^@/, '') === botSlug)
         .map((membership) => membership.org.name);
     const welcome =
-      'Welcome! Your Telegram is now linked to EasyDeck.\n\n' +
+      'Welcome! Your Telegram is now linked to Scout Web.\n\n' +
       'This chat will receive automation updates from: ' +
       `${serving.length > 0 ? serving.join(', ') : org.org?.name || 'your workspace'}.\n\n` +
       'Pick which automations message you in each automation\'s editor, under ' +
@@ -349,7 +349,7 @@ export function useAutomationActions(
       telegram_username: username,
       linked_at: new Date().toISOString(),
     });
-    toast.notify('Telegram linked. EasyDeck can message you now.', {tone: 'ok'});
+    toast.notify('Telegram linked. Scout Web can message you now.', {tone: 'ok'});
   }
 
   // Severs MY chat only. The per-automation prefs survive on purpose --
@@ -373,7 +373,7 @@ export function useAutomationActions(
     // a plain test and still mangle every notification after it.
     const sent = await sendTelegram(
         botToken, link.chat_id,
-        '✅ <b>Test message from EasyDeck</b>\nYour notifications work.', 'HTML');
+        '✅ <b>Test message from Scout Web</b>\nYour notifications work.', 'HTML');
     return sent.ok ? null : (sent.error || 'The send failed.');
   }
 
@@ -486,9 +486,9 @@ export function useAutomationActions(
         }
         // Minted here for the same reason the Launch button and the local API
         // both mint one: without it built-in-extensions.cjs writes neither
-        // monti-launch.json nor monti-session.json, and the EasyDeck Helper in the
+        // monti-launch.json nor monti-session.json, and the Scout Web Helper in the
         // window this run opens answers every question with "This window was not
-        // launched from EasyDeck Launcher" -- no proxy card, no automations, and,
+        // launched from Scout Web Launcher" -- no proxy card, no automations, and,
         // the part that actually costs something, no cookie sync. A run that
         // logs a profile in would leave those cookies in the local jar and never
         // push them to the launcher or the cloud.

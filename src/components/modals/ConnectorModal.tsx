@@ -250,7 +250,7 @@ export function ConnectorModal({connector, exists, onClose}: {
         (preset.category === 'message' ?
           'Automations send messages through this.' :
           'AI steps ask this model.') :
-        `This version of EasyDeck doesn't recognise "${draft.kind}", so its fields can't be edited here.`}
+        `This version of Scout Web doesn't recognise "${draft.kind}", so its fields can't be edited here.`}
       footer={
         <>
           {!exists && (

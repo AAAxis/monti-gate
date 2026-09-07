@@ -53,7 +53,7 @@ export const PROFILE_INTRO_STEPS: IntroStep[] = [
     // paragraph under the figure is the same depth on all three and Next does
     // not shift the footer. Around 235 characters is the budget.
     body: 'The platform and fingerprint decide what a site sees; the proxy decides where ' +
-      'it appears to be. EasyDeck keeps those consistent for you: pick a platform and the ' +
+      'it appears to be. Scout Web keeps those consistent for you: pick a platform and the ' +
       'hardware re-rolls to match it, and the timezone and language follow the proxy.',
     caption: 'A new profile: its proxy and fingerprint.',
     figure: 'profile-identity',
@@ -62,7 +62,7 @@ export const PROFILE_INTRO_STEPS: IntroStep[] = [
   },
   {
     title: 'Launch, then keep it organised',
-    body: 'Launch opens EasyDeck Browser on that identity. As the list grows, folders group ' +
+    body: 'Launch opens Scout Web Browser on that identity. As the list grows, folders group ' +
       'profiles, statuses track where each one stands, and colours and tags make a row ' +
       'findable at a glance. Deleted profiles wait in Trash for 30 days before they go.',
     caption: 'A folder being named, given an icon and a colour.',

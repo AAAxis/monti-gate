@@ -174,7 +174,7 @@ describe('the launch snapshot the panel reads for its first paint', () => {
 // `startPage` is buildLaunchPayload's *optional fourth argument*. Omitting it is
 // not a type error, not a test failure and not visible in the launcher -- it is
 // visible only inside the browser it opened, where the panel says "This window
-// was not launched from EasyDeck Launcher", shows no proxy card and no automations,
+// was not launched from Scout Web Launcher", shows no proxy card and no automations,
 // and the cookie sync engine never runs. An automation that logs a profile in
 // then leaves those cookies in the local jar and pushes them nowhere.
 //

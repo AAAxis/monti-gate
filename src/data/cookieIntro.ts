@@ -28,15 +28,15 @@ export const COOKIE_INTRO_STEPS: IntroStep[] = [
   },
   {
     title: 'Where to get them',
-    body: 'Launch any profile and use the built-in EasyDeck Cookie Manager to export the ' +
+    body: 'Launch any profile and use the built-in Scout Web Cookie Manager to export the ' +
       'session you are signed into — that is the shortest route, and the file lands in ' +
       'the right shape. Anything else that exports cookies works too: Cookie-Editor or ' +
       'EditThisCookie in a normal Chrome, an export from another anti-detect tool, or a ' +
-      'cookies.txt from curl. EasyDeck reads JSON and Netscape cookies.txt, so drop the ' +
+      'cookies.txt from curl. Scout Web reads JSON and Netscape cookies.txt, so drop the ' +
       'file on "+ Cookie-set" and it is in the library. Cookies expire, so a set that ' +
       'worked last month may need re-exporting — open one to see what is in it and when ' +
       'it runs out.',
-    caption: 'The EasyDeck Cookie Manager, in a launched profile\'s extensions menu.',
+    caption: 'The Scout Web Cookie Manager, in a launched profile\'s extensions menu.',
     figure: 'cookie-manager',
     image: cookieManagerShot,
     fill: true,

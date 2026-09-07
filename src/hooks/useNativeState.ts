@@ -41,18 +41,18 @@ export function useResourceStatus(toast: Toast) {
   useEffect(() => {
     if (resourceState?.browserStatus === 'downloading') {
       const percent = resourceState.progress?.percent ? ` ${resourceState.progress.percent}%` : '';
-      setMessage(`Downloading EasyDeck Browser${percent}`);
+      setMessage(`Downloading Scout Web Browser${percent}`);
     } else if (resourceState?.browserStatus === 'installing') {
-      setMessage('Installing EasyDeck Browser');
+      setMessage('Installing Scout Web Browser');
     } else if (resourceState?.browserStatus === 'ready') {
       // Only clear our own progress line -- another action's toast may have
       // landed in the meantime and is not ours to wipe.
       updateMessage((current) =>
-        current.startsWith('Downloading EasyDeck Browser') || current === 'Installing EasyDeck Browser' ?
+        current.startsWith('Downloading Scout Web Browser') || current === 'Installing Scout Web Browser' ?
           '' :
           current);
     } else if (resourceState?.browserStatus === 'error') {
-      setMessage(resourceState.error || 'Failed to download EasyDeck Browser');
+      setMessage(resourceState.error || 'Failed to download Scout Web Browser');
     }
   }, [resourceState, setMessage, updateMessage]);
 

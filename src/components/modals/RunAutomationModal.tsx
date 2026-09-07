@@ -7,7 +7,7 @@
 // process refusing the spawn several seconds later:
 //
 //   Proxy 204.252.87.159:47403 did not respond (curl: (7) Failed to connect).
-//   Fix the proxy in EasyDeck Launcher and try again.
+//   Fix the proxy in Scout Web Launcher and try again.
 //
 // A sentence about a profile the user never chose, arriving after the run was
 // already lost. So the choice is explicit, the health is on screen before the
