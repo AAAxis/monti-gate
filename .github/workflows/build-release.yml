@@ -76,8 +76,18 @@ jobs:
         # further change.
         run: |
           set -uo pipefail
+          # Turning notarization off has to be said out loud. Left unset,
+          # electron-builder starts notarizing on its own the moment it sees
+          # APPLE_ID and APPLE_APP_SPECIFIC_PASSWORD in the environment, and
+          # its own legacy path then dies on `Cannot destructure property
+          # 'appBundleId' of 'options'` — a second failure wearing a different
+          # message, from the same cause.
+          skip_notarization() {
+            node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.build.mac.notarize=false; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
+          }
           if [ -z "$APPLE_TEAM_ID" ] || [ -z "$APPLE_ID" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
             echo "::warning::No Apple credentials — building signed but not notarized."
+            skip_notarization
             exit 0
           fi
           if ! xcrun notarytool history \
@@ -87,6 +97,7 @@ jobs:
                 --output-format json > /tmp/notarytool-check.json 2>/tmp/notarytool-check.err; then
             echo "::warning::Apple rejected these credentials — building signed but not notarized. Renew the app-specific password at appleid.apple.com and re-tag to ship a notarized build."
             head -c 400 /tmp/notarytool-check.err || true
+            skip_notarization
             exit 0
           fi
           echo "Apple credentials accepted; this build will be notarized."

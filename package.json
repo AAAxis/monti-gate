@@ -1,6 +1,6 @@
 {
   "name": "monti-anty",
-  "version": "1.0.73",
+  "version": "1.0.74",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
