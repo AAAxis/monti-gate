@@ -532,6 +532,16 @@ function errorDetail(error) {
   return `${error.message}${pathPart}${error.stack ? `\n\n${error.stack}` : ''}`;
 }
 
+// A manifest that is not there is not a failure. It means no build has been
+// published for this platform — nothing the person running it can act on, and
+// nothing a stack trace helps with. The launcher's own updater already draws
+// this line for its feed; the browser resource never did, so a check on a
+// platform with no published build reported ten lines of Node internals under
+// a browser that was working fine.
+function isMissingBrowserManifest(error) {
+  return Number(error?.statusCode) === 404;
+}
+
 function isMissingUpdateFeedError(error) {
   const message = error instanceof Error ? error.message : String(error);
   return /(404|not_found|object not found)/i.test(message) &&
@@ -608,7 +618,11 @@ function downloadJson(url) {
     https.get(url, {headers: {'User-Agent': 'MontiAnty/1.0'}}, (res) => {
       if (res.statusCode !== 200) {
         res.resume();
-        reject(new Error(`HTTP ${res.statusCode} fetching ${url}`));
+        const failure = new Error(`HTTP ${res.statusCode} fetching ${url}`);
+        // Carried so a caller can tell "there is nothing published" from "the
+        // check went wrong", which read identically before.
+        failure.statusCode = res.statusCode;
+        reject(failure);
         return;
       }
       res.setEncoding('utf8');
@@ -913,6 +927,10 @@ async function installBrowserResource({manifest = null, manual = false, resolved
 }
 
 function applyBrowserResourceError(error, {manual, resolved}) {
+  const missing = isMissingBrowserManifest(error);
+  const detail = missing ?
+    `No browser build is published for ${browserResourceKey()} yet.` :
+    errorDetail(error);
   if (resolved) {
     // The check or install failed (e.g. offline) but a previously-installed
     // browser still resolves -- launch must keep working without network, so
@@ -920,12 +938,15 @@ function applyBrowserResourceError(error, {manual, resolved}) {
     // attempt still surfaces why it failed; an automatic one stays quiet.
     resourceState.browserStatus = 'ready';
     resourceState.browserPath = resolved.appPath;
-    resourceState.error = manual ? errorDetail(error) : null;
+    resourceState.error = manual ? detail : null;
     resourceState.progress = null;
     return broadcastResourceState();
   }
-  resourceState.browserStatus = manual ? 'error' : 'idle';
-  resourceState.error = errorDetail(error);
+  // Nothing installed and nothing published is a real dead end, so that stays
+  // an error — just one naming the platform with no build rather than the line
+  // of node:_http_client that noticed.
+  resourceState.browserStatus = manual || missing ? 'error' : 'idle';
+  resourceState.error = detail;
   resourceState.progress = null;
   return broadcastResourceState();
 }
@@ -1256,7 +1277,11 @@ function downloadBuffer(url, redirectsLeft = 5, onProgress = null) {
       }
       if (res.statusCode !== 200) {
         res.resume();
-        reject(new Error(`HTTP ${res.statusCode} fetching ${url}`));
+        const failure = new Error(`HTTP ${res.statusCode} fetching ${url}`);
+        // Carried so a caller can tell "there is nothing published" from "the
+        // check went wrong", which read identically before.
+        failure.statusCode = res.statusCode;
+        reject(failure);
         return;
       }
       const totalBytes = Number(res.headers['content-length']) || 0;
