@@ -367,7 +367,12 @@ jobs:
           aws s3 cp release-artifacts/latest-mac.yml "s3://${R2_BUCKET}/latest-mac.yml" \
             --endpoint-url "${R2_ENDPOINT}" \
             --cache-control "public, max-age=60"
-          for file in release-artifacts/*-mac-arm64.dmg*; do
+          # Every mac artifact, not just the .dmg. latest-mac.yml names the
+          # .zip as the file to download — that is what electron-updater
+          # fetches, the .dmg is only for a person clicking Download — so
+          # uploading the .dmg alone publishes a feed pointing at a 404 and
+          # every mac update fails with one.
+          for file in release-artifacts/*-mac-arm64.*; do
             aws s3 cp "${file}" "s3://${R2_BUCKET}/$(basename "${file}")" \
               --endpoint-url "${R2_ENDPOINT}" \
               --cache-control "public, max-age=60"
