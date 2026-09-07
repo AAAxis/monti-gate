@@ -305,7 +305,18 @@ const EXECUTORS = {
 
   async screenshot({cdp, step, saveScreenshot}) {
     await cdp.send('Page.enable');
-    const params = {format: 'png', captureBeyondViewport: Boolean(step.fullPage)};
+    // A shot kept for the run history is a PNG, because it is looked at once
+    // and space is cheap. One a workflow is going to carry -- into a variable,
+    // through a POST, over somebody's phone signal -- is a JPEG, because none
+    // of that is cheap.
+    const wanted = step.into ? 'jpeg' : 'png';
+    const params = {
+      format: step.format || wanted,
+      captureBeyondViewport: Boolean(step.fullPage),
+    };
+    if (params.format === 'jpeg') {
+      params.quality = Number.isFinite(Number(step.quality)) ? Number(step.quality) : 55;
+    }
     if (step.selector) {
       const box = await evaluateValue(cdp, `(() => {
         const el = document.querySelector(${JSON.stringify(step.selector)});
@@ -323,7 +334,10 @@ const EXECUTORS = {
     if (!result.data) {
       throw new Error('The browser returned an empty screenshot');
     }
-    return {screenshot: await saveScreenshot(result.data)};
+    const saved = {screenshot: await saveScreenshot(result.data)};
+    // The picture itself, for a step that wants to do something with it. Base64
+    // as the browser handed it over, so an httpRequest can post it as-is.
+    return step.into ? {...saved, vars: {[step.into]: result.data}} : saved;
   },
 
   async wait({step}) {
