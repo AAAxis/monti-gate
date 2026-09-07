@@ -1,6 +1,6 @@
 {
   "name": "monti-anty",
-  "version": "1.0.75",
+  "version": "1.0.76",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
@@ -51,7 +51,7 @@
     "artifactName": "Scout-Web-${version}-${os}-${arch}.${ext}",
     "protocols": [
       {
-        "name": "EasyDeck",
+        "name": "Scout Web",
         "schemes": [
           "monti"
         ]
