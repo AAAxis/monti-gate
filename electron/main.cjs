@@ -2254,7 +2254,22 @@ function writeProfileIcon(payload, browserAppPath, resourcesDir) {
   ];
   const iconPath = candidates.find((candidate) => candidate && fs.existsSync(candidate));
   if (iconPath) {
-    fs.copyFileSync(iconPath, path.join(resourcesDir, 'app.icns'));
+    // Read and write rather than copyFileSync. assets/ ships inside app.asar,
+    // and Electron implements copyFileSync from an archive by extracting to a
+    // temp file first and copying from that -- which is where
+    //   ENOENT ... copyfile '/var/folders/.../T/.com.monti.anty.XXXXXX'
+    // comes from when that temp file is gone by the time the copy runs.
+    // readFileSync reads out of the archive directly and has no such window.
+    //
+    // And it is wrapped, because this is the Finder icon: failing to dress the
+    // wrapper must never stop the profile from launching. It used to -- the
+    // throw unwound writeProfileLauncherApp and spawnProfile with it, so a
+    // missing temp file meant the browser never opened at all.
+    try {
+      fs.writeFileSync(path.join(resourcesDir, 'app.icns'), fs.readFileSync(iconPath));
+    } catch (iconError) {
+      console.warn(`Profile icon for "${payload.name}" could not be written: ${iconError.message}`);
+    }
   }
   // Logged because "the Dock tile did not change" has two very different
   // causes that look identical from outside: assets/icons is missing (falls
