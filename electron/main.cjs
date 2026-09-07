@@ -749,7 +749,12 @@ function extractBrowserArchive(archivePath, destinationDir) {
 // Reflects what the marker on disk says onto the state the UI reads. Called
 // on startup before any network is involved, so the Updates page can name the
 // installed version offline rather than showing a blank until a check lands.
-// The browser's icon on Windows.
+// What the browser calls itself where Windows can be told. The launcher is
+// EasyDeck and the app on the phone is Scout Web; "Monti Browser" is a name
+// from before either.
+const BROWSER_PRODUCT_NAME = 'Scout Web';
+
+// The browser's icon and name on Windows.
 //
 // The mac build of the browser is branded -- its icon is the same octopus the
 // launcher wears -- but the Windows build is not: it carries the icon its
@@ -778,7 +783,7 @@ function stampWindowsBrowserIcon(exePath) {
   }
   // One line naming the icon this exe already wears. Cheap to read on every
   // start, and it keeps a reinstall of the same build from re-stamping.
-  const want = `${path.basename(icon)} ${fs.statSync(icon).size}`;
+  const want = `${path.basename(icon)} ${fs.statSync(icon).size} ${BROWSER_PRODUCT_NAME}`;
   try {
     if (fs.readFileSync(marker, 'utf8').trim() === want) {
       return;
@@ -792,15 +797,25 @@ function stampWindowsBrowserIcon(exePath) {
     const rcedit = require.resolve('rcedit/package.json')
       .replace(`${path.sep}package.json`, path.join(path.sep, 'bin', 'rcedit-x64.exe'))
       .replace('app.asar', 'app.asar.unpacked');
-    const result = spawnSync(rcedit, [exePath, '--set-icon', icon], {encoding: 'utf8'});
+    // The name goes on with the icon. Windows reads both out of the .exe --
+    // Task Manager, the taskbar tooltip, the file's Properties -- so a browser
+    // that says "Monti Browser" there says it because of these two strings,
+    // not because of anything Chromium was built with. Renaming inside the
+    // fork needs a five-hour rebuild; this is the half that ships today.
+    const result = spawnSync(rcedit, [
+      exePath,
+      '--set-icon', icon,
+      '--set-version-string', 'ProductName', BROWSER_PRODUCT_NAME,
+      '--set-version-string', 'FileDescription', BROWSER_PRODUCT_NAME,
+    ], {encoding: 'utf8'});
     if (result.status !== 0) {
-      console.warn(`Browser icon not stamped: ${result.stderr || result.stdout || `rcedit exited ${result.status}`}`);
+      console.warn(`Browser not branded: ${result.stderr || result.stdout || `rcedit exited ${result.status}`}`);
       return;
     }
     fs.writeFileSync(marker, `${want}\n`);
-    console.log(`Browser icon stamped: ${exePath}`);
+    console.log(`Browser branded as "${BROWSER_PRODUCT_NAME}": ${exePath}`);
   } catch (error) {
-    console.warn(`Browser icon not stamped: ${error.message}`);
+    console.warn(`Browser not branded: ${error.message}`);
   }
 }
 
