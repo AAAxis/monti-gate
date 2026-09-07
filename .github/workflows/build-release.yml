@@ -183,7 +183,7 @@ jobs:
           aws s3 cp release/latest.yml "s3://${R2_BUCKET}/latest.yml" \
             --endpoint-url "${R2_ENDPOINT}" \
             --cache-control "public, max-age=60"
-          for file in release/Monti-Gate-*-win-x64.exe*; do
+          for file in release/*-win-x64.exe*; do
             aws s3 cp "${file}" "s3://${R2_BUCKET}/$(basename "${file}")" \
               --endpoint-url "${R2_ENDPOINT}" \
               --cache-control "public, max-age=60"
@@ -215,7 +215,15 @@ jobs:
     #
     # Releasing is now deliberate: bump package.json, commit, tag vX.Y.Z, push
     # the tag. A plain push still builds and typechecks; it just cannot publish.
-    if: startsWith(github.ref, 'refs/tags/v')
+    #
+    # A failed mac build no longer takes the release with it. Notarization is
+    # the flakiest step in this file and it is Apple's to answer for; holding
+    # a Windows fix hostage to it left Windows users on a build with the wrong
+    # name and the wrong icon. Windows must have built, and what mac did is
+    # reported below rather than assumed.
+    if: |
+      always() && startsWith(github.ref, 'refs/tags/v') &&
+      needs.build-windows.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -270,7 +278,9 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           body_path: build/release-notes.md
           files: release-artifacts/*
-          fail_on_unmatched_files: true
+          # The glob is what varies now: a Windows-only release is a real
+          # outcome, so an unmatched pattern is not a reason to fail.
+          fail_on_unmatched_files: false
 
       - name: Upload updater files to R2
         # Non-fatal for the same reason as the Windows one: stale secrets must
@@ -287,16 +297,28 @@ jobs:
           aws s3 cp release-artifacts/latest.yml "s3://${R2_BUCKET}/latest.yml" \
             --endpoint-url "${R2_ENDPOINT}" \
             --cache-control "public, max-age=60"
-          for file in release-artifacts/Monti-Gate-*-win-x64.exe*; do
+          # Matched by platform, not by product name. These said "Monti-Gate-"
+          # through two renames, so they matched nothing and every tagged
+          # release quietly uploaded no installer at all — the step failed and
+          # continue-on-error swallowed it.
+          for file in release-artifacts/*-win-x64.exe*; do
             aws s3 cp "${file}" "s3://${R2_BUCKET}/$(basename "${file}")" \
               --endpoint-url "${R2_ENDPOINT}" \
               --cache-control "public, max-age=60"
           done
-          # Fatal, not a warning. An unsigned mac build genuinely must not reach
-          # the feed -- ShipIt refuses to install one -- but this step used to
-          # skip with an echo, which produced a green "release" that shipped
-          # Windows only and left every mac user silently on the old version.
-          # A tagged release that cannot publish mac is a failed release.
+          # Three different situations, and they used to share one exit 1.
+          #
+          # No mac artifact at all: the mac job failed (notarization, usually).
+          # Windows still ships; mac stays on the version it has, which is a
+          # stalled update rather than a broken one. Said out loud, because the
+          # silent version of this is how a platform gets left behind.
+          if [ ! -f release-artifacts/latest-mac.yml ]; then
+            echo "::warning::No mac build in this release — mac stays on the previous version."
+            echo "Windows published; fix the mac build and re-tag to catch it up."
+            exit 0
+          fi
+          # An unsigned mac build genuinely must not reach the feed: ShipIt
+          # refuses to install one, so publishing it strands every mac user.
           if [ -z "${CSC_LINK}" ]; then
             echo "CSC_LINK is not set, so the mac build is unsigned and cannot be published."
             echo "Set the signing secrets, or delete this tag if you meant to ship Windows only."
@@ -305,7 +327,7 @@ jobs:
           aws s3 cp release-artifacts/latest-mac.yml "s3://${R2_BUCKET}/latest-mac.yml" \
             --endpoint-url "${R2_ENDPOINT}" \
             --cache-control "public, max-age=60"
-          for file in release-artifacts/Monti-Gate-*-mac-arm64.*; do
+          for file in release-artifacts/*-mac-arm64.dmg*; do
             aws s3 cp "${file}" "s3://${R2_BUCKET}/$(basename "${file}")" \
               --endpoint-url "${R2_ENDPOINT}" \
               --cache-control "public, max-age=60"
