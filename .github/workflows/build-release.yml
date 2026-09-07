@@ -52,16 +52,45 @@ jobs:
       - name: Configure notarization
         shell: bash
         env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         # notarytool rejects Apple ID + app-specific-password auth without an
         # explicit teamId (see @electron/notarize's validate-args.js), so it
         # has to be injected here rather than left as `notarize: true`.
         # (Guarded with a shell `if`, not a step-level `if:`, because the
         # `secrets` context isn't allowed in step conditionals.)
+        #
+        # The credentials are tried here, on a call that costs seconds, rather
+        # than discovered forty-eight seconds into signing a 100 MB app. When
+        # they are rejected, notarytool prints "Error: HTTP status code: ..."
+        # where @electron/notarize expects JSON, and the whole build dies on
+        # `Unexpected token 'E'` — a message that names neither Apple nor the
+        # password. That failure kept every mac user on an old version while
+        # the log blamed a JSON parser.
+        #
+        # Rejected now means: build anyway, signed but not notarized, and say
+        # so loudly. Gatekeeper will warn on a fresh download until the
+        # password is renewed; a stalled release warns nobody at all. The
+        # moment a working password lands, this step notarizes again with no
+        # further change.
         run: |
-          if [ -n "$APPLE_TEAM_ID" ]; then
-            node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.build.mac.notarize={teamId:process.env.APPLE_TEAM_ID}; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
+          set -uo pipefail
+          if [ -z "$APPLE_TEAM_ID" ] || [ -z "$APPLE_ID" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
+            echo "::warning::No Apple credentials — building signed but not notarized."
+            exit 0
           fi
+          if ! xcrun notarytool history \
+                --apple-id "$APPLE_ID" \
+                --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+                --team-id "$APPLE_TEAM_ID" \
+                --output-format json > /tmp/notarytool-check.json 2>/tmp/notarytool-check.err; then
+            echo "::warning::Apple rejected these credentials — building signed but not notarized. Renew the app-specific password at appleid.apple.com and re-tag to ship a notarized build."
+            head -c 400 /tmp/notarytool-check.err || true
+            exit 0
+          fi
+          echo "Apple credentials accepted; this build will be notarized."
+          node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.build.mac.notarize={teamId:process.env.APPLE_TEAM_ID}; fs.writeFileSync('package.json', JSON.stringify(p,null,2)+'\n');"
 
       - name: Write release notes
         shell: bash

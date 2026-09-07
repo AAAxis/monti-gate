@@ -822,6 +822,33 @@ function stampWindowsBrowserIcon(exePath) {
   }
 }
 
+// The browser that will actually launch, but only if we own it.
+//
+// Stamping only the managed directory was why Windows kept opening a browser
+// with a mountain on it: an install whose browser came bundled inside the
+// launcher never has a managed copy, so nothing was ever stamped. What gets
+// launched is what resolveBrowserExecutable() picks, and that is what has to
+// be branded.
+//
+// Still never a browser we did not ship. A system Chrome belongs to whoever
+// uses this computer, and rewriting resources inside Program Files would need
+// admin rights and would break Google's signature on a binary that is not ours.
+function ownBrowserExecutable() {
+  const resolved = resolveBrowserExecutable();
+  if (!resolved) {
+    return '';
+  }
+  const executable = path.resolve(resolved.executable || appExecutable(resolved.appPath));
+  const ours = [managedBrowserRoot(), bundledBrowserRoot()]
+      .filter(Boolean)
+      .map((root) => path.resolve(root));
+  // Windows paths are case-insensitive, and the two halves of this comparison
+  // come from different places -- one from a settings file, one from
+  // app.getPath -- so they routinely disagree on case.
+  const within = (root) => executable.toLowerCase().startsWith(`${root.toLowerCase()}${path.sep}`);
+  return ours.some(within) ? executable : '';
+}
+
 function applyInstalledBrowserRecord() {
   const record = readManagedBrowserRecord();
   resourceState.installedBuildId = record?.buildId || '';
@@ -6011,9 +6038,10 @@ app.whenReady().then(() => {
   // Name the installed build before any network call, so the Updates page has
   // something true to show offline instead of a blank.
   applyInstalledBrowserRecord();
-  // Repairs a browser installed before the stamping existed. It does nothing
-  // on every start after the first, and nothing at all off Windows.
-  stampWindowsBrowserIcon(appExecutable(managedBrowserAppPath() || ''));
+  // Repairs a browser that shipped before the stamping existed -- bundled or
+  // managed, whichever this install actually launches. It does nothing on
+  // every start after the first, and nothing at all off Windows.
+  stampWindowsBrowserIcon(ownBrowserExecutable());
   void checkBrowserResource({manual: false});
   // The browser used to be checked exactly once, here, while the launcher
   // re-checked every four hours -- so a machine left running for a week never
