@@ -735,6 +735,61 @@ function extractBrowserArchive(archivePath, destinationDir) {
 // Reflects what the marker on disk says onto the state the UI reads. Called
 // on startup before any network is involved, so the Updates page can name the
 // installed version offline rather than showing a blank until a check lands.
+// The browser's icon on Windows.
+//
+// The mac build of the browser is branded -- its icon is the same octopus the
+// launcher wears -- but the Windows build is not: it carries the icon its
+// Chromium came with, a mountain from a name we stopped using. On mac that is
+// invisible because nothing here has to fix it; on Windows the taskbar reads
+// the icon out of the .exe, so a session and the launcher that started it look
+// like two unrelated programs.
+//
+// So the exe is stamped after it is installed. Only ever inside our own
+// managed browser directory: a system Chrome belongs to the person using this
+// computer, and rewriting resources in Program Files would need admin rights
+// and would break Google's signature on a binary that is not ours to change.
+//
+// Best effort throughout. rcedit cannot write an exe another process holds
+// open, so a stamp attempted while a profile is running simply fails and is
+// retried on the next launcher start -- a wrong icon is not worth failing an
+// install over.
+function stampWindowsBrowserIcon(exePath) {
+  if (process.platform !== 'win32' || !exePath) {
+    return;
+  }
+  const icon = path.join(__dirname, '..', 'assets', 'app.ico');
+  const marker = path.join(path.dirname(exePath), '.monti-icon');
+  if (!fs.existsSync(icon) || !fs.existsSync(exePath)) {
+    return;
+  }
+  // One line naming the icon this exe already wears. Cheap to read on every
+  // start, and it keeps a reinstall of the same build from re-stamping.
+  const want = `${path.basename(icon)} ${fs.statSync(icon).size}`;
+  try {
+    if (fs.readFileSync(marker, 'utf8').trim() === want) {
+      return;
+    }
+  } catch {
+    // No marker yet, or unreadable: stamp, and write a fresh one.
+  }
+  try {
+    // Spawned directly rather than through the rcedit wrapper, which resolves
+    // its binary relative to itself and would look inside app.asar.
+    const rcedit = require.resolve('rcedit/package.json')
+      .replace(`${path.sep}package.json`, path.join(path.sep, 'bin', 'rcedit-x64.exe'))
+      .replace('app.asar', 'app.asar.unpacked');
+    const result = spawnSync(rcedit, [exePath, '--set-icon', icon], {encoding: 'utf8'});
+    if (result.status !== 0) {
+      console.warn(`Browser icon not stamped: ${result.stderr || result.stdout || `rcedit exited ${result.status}`}`);
+      return;
+    }
+    fs.writeFileSync(marker, `${want}\n`);
+    console.log(`Browser icon stamped: ${exePath}`);
+  } catch (error) {
+    console.warn(`Browser icon not stamped: ${error.message}`);
+  }
+}
+
 function applyInstalledBrowserRecord() {
   const record = readManagedBrowserRecord();
   resourceState.installedBuildId = record?.buildId || '';
@@ -841,6 +896,7 @@ async function installBrowserResource({manifest = null, manual = false, resolved
       throw new Error(`Downloaded browser did not contain a supported app for ${browserResourceKey()}.`);
     }
     writeManagedBrowserRecord(current);
+    stampWindowsBrowserIcon(appExecutable(installedBrowserPath));
     // Best-effort cleanup of the previous build(s). Anything still backing a
     // running profile simply fails to delete and is retried on a later check.
     pruneStaleManagedBrowserDirs();
@@ -5912,6 +5968,9 @@ app.whenReady().then(() => {
   // Name the installed build before any network call, so the Updates page has
   // something true to show offline instead of a blank.
   applyInstalledBrowserRecord();
+  // Repairs a browser installed before the stamping existed. It does nothing
+  // on every start after the first, and nothing at all off Windows.
+  stampWindowsBrowserIcon(appExecutable(managedBrowserAppPath() || ''));
   void checkBrowserResource({manual: false});
   // The browser used to be checked exactly once, here, while the launcher
   // re-checked every four hours -- so a machine left running for a week never

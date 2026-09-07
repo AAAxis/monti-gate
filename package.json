@@ -24,6 +24,7 @@
     "electron-updater": "^6.8.9",
     "lucide-react": "^0.468.0",
     "nodemailer": "^9.0.4",
+    "rcedit": "^4.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "ws": "^8.21.0"
@@ -101,6 +102,9 @@
         "provider": "generic",
         "url": "https://pub-ab898453f3794cc8b9d0117b4111a778.r2.dev"
       }
+    ],
+    "asarUnpack": [
+      "node_modules/rcedit/**"
     ]
   }
 }
