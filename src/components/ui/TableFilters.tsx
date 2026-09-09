@@ -22,7 +22,7 @@ import {StatusChip} from './StatusChip';
 import {TagBadge, TagChip} from './TagChip';
 import {tagKey, tagLabel, tagPresetFor} from '../../lib/tags';
 import type {TagUsage} from '../../lib/tags';
-import type {MontiFolder} from '../../types';
+import type {ScoutFolder} from '../../types';
 
 const ALL_STATUSES = 'All statuses';
 
@@ -170,7 +170,7 @@ export function TagFilter({value, options, onChange}: {
 // how the user tells their folders apart everywhere else in the app, and the
 // list of names alone made this the one place they had to read instead.
 export function FolderSelect({folders, noFolderLabel, onPick}: {
-  folders: MontiFolder[];
+  folders: ScoutFolder[];
   // What "out of every folder" is called in this library: All profiles, All
   // proxies, All cookie-sets. Maps to '' , the same value the select used.
   noFolderLabel: string;

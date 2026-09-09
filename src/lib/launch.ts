@@ -16,11 +16,11 @@ import {readSearchEngine} from './searchEngines';
 import {startPageAutomations} from './startPageAutomations';
 import {readStoredPreference} from '../theme';
 import type {LaunchProfilePayload} from '../native';
-import type {MontiProfile, MontiProxy, CloudState} from '../types';
+import type {ScoutProfile, ScoutProxy, CloudState} from '../types';
 
 export function buildLaunchPayload(
-    profile: MontiProfile,
-    proxy: MontiProxy | null,
+    profile: ScoutProfile,
+    proxy: ScoutProxy | null,
     state: CloudState,
     // This launch's page credential and the port to spend it on. Supplied on
     // every launch: the start page needs it to re-check its own proxy even when

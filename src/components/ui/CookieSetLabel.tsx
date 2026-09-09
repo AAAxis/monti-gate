@@ -12,13 +12,13 @@
 import {Cookie} from 'lucide-react';
 import {cookieSetColor} from '../../lib/cookieMark';
 import {profileColorStyle} from '../../lib/profileColors';
-import type {MontiCookie, MontiFolder} from '../../types';
+import type {ScoutCookie, ScoutFolder} from '../../types';
 
 export function CookieSetLabel({cookie, folders, text}: {
-  cookie: MontiCookie;
+  cookie: ScoutCookie;
   // For the colour fallback -- see cookieSetColor. Passed rather than read off a
   // store, so this stays a pure function of its props the way FolderLabel is.
-  folders: MontiFolder[];
+  folders: ScoutFolder[];
   // What to say beside the mark. Defaults to the set's name; the profile dialog
   // appends the cookie count it has always shown.
   text?: string;

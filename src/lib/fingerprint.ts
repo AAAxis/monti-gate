@@ -4,7 +4,7 @@
 import {AUTO_FROM_PROXY, portsToProtect} from './fingerprintPresets';
 import {randomSeed, stableSeedFor} from './random';
 import {numberOrNull} from './text';
-import type {MontiProfile, RuntimeFingerprint} from '../types';
+import type {ScoutProfile, RuntimeFingerprint} from '../types';
 
 // Maps the profile-edit UI's os preset to monti::Fingerprint's `preset` and
 // `platform` keys. Desktop presets use Chromium's UA-CH override path; mobile
@@ -171,7 +171,7 @@ function fingerprintGeolocationModeFor(value?: string): string | undefined {
 
 // The few fingerprint fields that reach the browser as plain switches rather
 // than through the runtime fingerprint dict.
-export function fingerprintSwitches(profile: MontiProfile) {
+export function fingerprintSwitches(profile: ScoutProfile) {
   const fingerprint = profile.fingerprint;
   if (!fingerprint) {
     return '';
@@ -207,7 +207,7 @@ export function fingerprintSwitches(profile: MontiProfile) {
 // electron/main.cjs fills those in immediately before serializing, reusing
 // its existing COUNTRY_DEFAULTS-based resolution so that logic isn't
 // duplicated between the renderer and the main process.
-export function buildRuntimeFingerprint(profile: MontiProfile): RuntimeFingerprint {
+export function buildRuntimeFingerprint(profile: ScoutProfile): RuntimeFingerprint {
   const fingerprint = profile.fingerprint || {};
   const preset = fingerprintPresetFor(fingerprint.os);
   const explicitTimezone = fingerprint.timezone && fingerprint.timezone !== AUTO_FROM_PROXY ?

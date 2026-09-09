@@ -12,7 +12,7 @@ import {native} from './native';
 export type ThemePreference = 'system' | 'light' | 'dark';
 export type ResolvedTheme = 'light' | 'dark';
 
-const STORAGE_KEY = 'monti.theme';
+const STORAGE_KEY = 'scout.theme';
 
 export const THEME_OPTIONS: Array<{value: ThemePreference; label: string}> = [
   {value: 'system', label: 'System'},
@@ -76,7 +76,7 @@ export function ThemeProvider({children}: {children: React.ReactNode}) {
 
   // The main process gets the preference rather than the resolved theme, so it
   // can leave nativeTheme.themeSource on 'system' and keep prefers-color-scheme
-  // live in here. See the monti:set-theme handler in electron/main.cjs.
+  // live in here. See the scout:set-theme handler in electron/main.cjs.
   useEffect(() => {
     void native?.setTheme?.(preference);
   }, [preference]);

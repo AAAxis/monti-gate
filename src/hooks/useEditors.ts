@@ -14,7 +14,7 @@ import type {
   BookmarkDraft, FolderDraft, ProfileDraft, ProxyDraft, StatusDraft,
 } from '../drafts';
 import type {ProfileDeleteRequest, ProxyDeleteRequest} from '../components/modals/ConfirmModals';
-import type {MontiCookie, MontiProfile, MontiProxy, SharedBookmark} from '../types';
+import type {ScoutCookie, ScoutProfile, ScoutProxy, SharedBookmark} from '../types';
 
 export function useEditors() {
   const {data, profiles, setSelectedProfileId} = useWorkspace();
@@ -42,8 +42,8 @@ export function useEditors() {
   // profiles. Two separate pieces of state rather than one mode flag: the
   // inspector's own "Assign to profiles" button opens the second over the
   // first, and closing it has to leave the inspector standing.
-  const [cookieSetOpen, setCookieSetOpen] = useState<MontiCookie | null>(null);
-  const [assignCookieSet, setAssignCookieSet] = useState<MontiCookie | null>(null);
+  const [cookieSetOpen, setCookieSetOpen] = useState<ScoutCookie | null>(null);
+  const [assignCookieSet, setAssignCookieSet] = useState<ScoutCookie | null>(null);
   const [extensionAddOpen, setExtensionAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [proxyImportOpen, setProxyImportOpen] = useState(false);
@@ -67,7 +67,7 @@ export function useEditors() {
     // The section is an optional second argument rather than a second function,
     // so `onEditProfile={editors.editProfile}` still passes straight through
     // wherever a caller only wants the form.
-    editProfile: (profile: MontiProfile, section: 'fingerprint' | null = null) => {
+    editProfile: (profile: ScoutProfile, section: 'fingerprint' | null = null) => {
       setSelectedProfileId(profile.id);
       setProfileDraftSection(section);
       setProfileDraft(draftFromProfile(profile));
@@ -84,7 +84,7 @@ export function useEditors() {
       setProxyDraftSource(null);
       setProxyDraft(newProxyDraft());
     },
-    editProxy: (proxy: MontiProxy) => {
+    editProxy: (proxy: ScoutProxy) => {
       setProxyDraftSource(null);
       setProxyDraft(draftFromProxy(proxy));
     },

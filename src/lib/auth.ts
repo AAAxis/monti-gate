@@ -22,7 +22,7 @@ export const OTP_MAX_AGE_MS = 10 * 60_000;
 // throw this away, so reopening it meant retyping the email and getting refused
 // by the 60s cooldown -- a dead end that did not exist with passwords, since the
 // code sitting in the user's inbox is still perfectly valid.
-const PENDING_OTP_KEY = 'monti.pendingOtp';
+const PENDING_OTP_KEY = 'scout.pendingOtp';
 
 export type PendingOtp = {email: string; resendAt: number; sentAt: number};
 

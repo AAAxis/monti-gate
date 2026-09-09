@@ -13,7 +13,7 @@
 //    profiles/create, update-fingerprint and profiles/delete WERE in that set
 //    and are now exposed, at the owner's explicit request -- profile creation
 //    and editing was the largest "the app can, the agent cannot" gap. Delete is
-//    soft-only here (monti_delete_profile never sends permanent: true); a purge
+//    soft-only here (scout_delete_profile never sends permanent: true); a purge
 //    stays in the app. When the toolPacks model from the 2026-08-05 design
 //    lands, update-fingerprint and delete belong in its default-off
 //    `destructive` pack.
@@ -29,7 +29,7 @@ async function requireCdpUrl(api, profileId) {
   const session = await api.post('/v1/profiles/cdp', {profileId});
   if (!session.running || !session.cdpUrl) {
     throw new Error(
-        `Profile ${profileId} is not open. Call monti_launch_profile first.`);
+        `Profile ${profileId} is not open. Call scout_launch_profile first.`);
   }
   return session.cdpUrl;
 }
@@ -45,9 +45,9 @@ function text(value) {
 
 const TOOLS = [
   {
-    name: 'monti_list_profiles',
+    name: 'scout_list_profiles',
     description:
-      'List the Monti browser profiles this key can see. Each profile is an ' +
+      'List the Scout browser profiles this key can see. Each profile is an ' +
       'isolated browser identity with its own proxy, fingerprint and cookies.',
     inputSchema: {
       type: 'object',
@@ -59,7 +59,7 @@ const TOOLS = [
         args.folder ? `/v1/profiles?folder=${encodeURIComponent(args.folder)}` : '/v1/profiles')),
   },
   {
-    name: 'monti_get_profile',
+    name: 'scout_get_profile',
     description: 'Read one profile: its proxy, status, tags, folder and fingerprint.',
     inputSchema: {
       type: 'object',
@@ -69,7 +69,7 @@ const TOOLS = [
     run: async ({api, args}) => text(await api.post('/v1/profiles/get', {profileId: args.profileId})),
   },
   {
-    name: 'monti_profile_session',
+    name: 'scout_profile_session',
     description:
       'Check whether a profile is currently open for automation, and where its ' +
       'debugging endpoint is. Call this before launching to avoid disturbing a ' +
@@ -82,7 +82,7 @@ const TOOLS = [
     run: async ({api, args}) => text(await api.post('/v1/profiles/cdp', {profileId: args.profileId})),
   },
   {
-    name: 'monti_launch_profile',
+    name: 'scout_launch_profile',
     // Two earlier sentences here were simply untrue, and a false statement in a
     // tool description is worse than no statement: the model plans around it.
     // "The browser session is anonymous" is wrong whenever the profile has a
@@ -90,7 +90,7 @@ const TOOLS = [
     // always required is wrong too -- proxy_mode is 'assigned' | 'direct' |
     // 'free_proxy', and only the first requires one.
     description:
-      'Open a profile in the Monti browser, ready for automation. If it is ' +
+      'Open a profile in the Scout browser, ready for automation. If it is ' +
       'already open this returns the existing session rather than restarting ' +
       'it; pass relaunch=true to force a fresh window (which closes the current ' +
       'one). A profile set to use an assigned proxy needs that proxy to be ' +
@@ -114,7 +114,7 @@ const TOOLS = [
     })),
   },
   {
-    name: 'monti_close_profile',
+    name: 'scout_close_profile',
     description: 'Close a profile session this key opened.',
     inputSchema: {
       type: 'object',
@@ -125,21 +125,21 @@ const TOOLS = [
       profileId: args.profileId,
     })),
   },
-  // monti_create_profile is generated from the /v1/profiles/create route in
+  // scout_create_profile is generated from the /v1/profiles/create route in
   // routes.json (it carries a `channel`, so the generator builds its schema from
   // the route's `fields`). It must NOT be hand-written here too -- a second
   // definition of the same name shadows the generated one in BY_NAME and the
   // verify script fails on the duplicate. Fingerprint and delete are the reverse
   // case: their routes have no channel, so they ARE hand-written below.
   {
-    name: 'monti_update_profile',
+    name: 'scout_update_profile',
     // `notes` used to be advertised here and silently did nothing -- the route's
     // field whitelist has no such column, so an agent could report success on a
     // write that never happened.
     description:
       'Change a profile\'s name, status, tags, colour, avatar, folder, proxy mode, ' +
       'start URL, login URL or launch automation. Assigning a specific proxy is a separate ' +
-      'call (monti_assign_proxy); setting proxyMode to direct or free_proxy here ' +
+      'call (scout_assign_proxy); setting proxyMode to direct or free_proxy here ' +
       'clears whatever proxy the profile was on.',
     inputSchema: {
       type: 'object',
@@ -157,7 +157,7 @@ const TOOLS = [
         folderId: {type: 'string'},
         proxyMode: {type: 'string',
           description: 'assigned, direct or free_proxy. assigned requires the profile ' +
-            'to already have a proxy (use monti_assign_proxy to set one); direct and ' +
+            'to already have a proxy (use scout_assign_proxy to set one); direct and ' +
             'free_proxy clear it.'},
         startUrl: {type: 'string',
           description: 'URL the profile opens on launch. "" to clear.'},
@@ -167,16 +167,16 @@ const TOOLS = [
             'it as {{profile.login_url}}. "" to clear. Distinct from startUrl, which is ' +
             'where a launch lands.'},
         automationId: {type: 'string',
-          description: 'Automation to run on every launch (monti_list_automations). ' +
+          description: 'Automation to run on every launch (scout_list_automations). ' +
             '"" to detach.'},
         automationVars: {type: 'object',
           description: 'This profile\'s answers to automations\' declared parameters, ' +
             'keyed by automation id: {"<automationId>": {"city_name": "Dortmund"}}. ' +
             'This is how one automation runs a different city per profile. Replaces ' +
-            'the whole map, so read it back with monti_get_profile and merge rather ' +
+            'the whole map, so read it back with scout_get_profile and merge rather ' +
             'than sending one automation on its own. Values for a parameter the ' +
             'automation no longer declares are ignored at run time. See ' +
-            'monti_automation_schema for the parameter vocabulary.'},
+            'scout_automation_schema for the parameter vocabulary.'},
       },
       required: ['profileId'],
     },
@@ -201,11 +201,11 @@ const TOOLS = [
     },
   },
   {
-    name: 'monti_update_fingerprint',
+    name: 'scout_update_fingerprint',
     description:
       'Change parts of a profile\'s fingerprint. The fields you send are merged into ' +
       'the stored fingerprint; anything you omit keeps its value. Read the current ' +
-      'one with monti_get_profile first. Changing the device identity of a profile ' +
+      'one with scout_get_profile first. Changing the device identity of a profile ' +
       'that is holding a logged-in session looks exactly like a stolen cookie and ' +
       'can get the session challenged -- prefer a new profile for a new identity.',
     inputSchema: {
@@ -247,7 +247,7 @@ const TOOLS = [
     },
     // The renderer merges whatever keys arrive into the stored JSON, so the
     // enumerated whitelist here is the layer that stops a guessed key landing in
-    // the fingerprint. Kept in step with MontiProfile['fingerprint'] in types.ts.
+    // the fingerprint. Kept in step with ScoutProfile['fingerprint'] in types.ts.
     run: async ({api, args}) => {
       const FP_KEYS = ['os', 'browser_version', 'user_agent', 'language', 'timezone',
         'geolocation', 'webrtc', 'canvas', 'webgl', 'webgpu', 'client_rects', 'audio',
@@ -267,7 +267,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'monti_delete_profile',
+    name: 'scout_delete_profile',
     description:
       'Move a profile to Trash, where the app can restore it. This does not remove ' +
       'the profile\'s on-disk browser data. Permanent deletion is only available in ' +
@@ -285,13 +285,13 @@ const TOOLS = [
     })),
   },
   {
-    name: 'monti_list_proxies',
+    name: 'scout_list_proxies',
     description: 'List the proxies in this account\'s library.',
     inputSchema: {type: 'object', properties: {}},
     run: async ({api}) => text(await api.get('/v1/proxies')),
   },
   {
-    name: 'monti_assign_proxy',
+    name: 'scout_assign_proxy',
     description:
       'Put a profile on a proxy from the library. A profile whose proxy mode is ' +
       '"assigned" needs a working proxy before it will launch.',
@@ -306,7 +306,7 @@ const TOOLS = [
     })),
   },
   {
-    name: 'monti_check_proxy',
+    name: 'scout_check_proxy',
     description: 'Check a proxy\'s reachability and egress IP.',
     inputSchema: {
       type: 'object',
@@ -319,7 +319,7 @@ const TOOLS = [
       },
       required: ['host', 'port'],
     },
-    // Declared fields only, for the same reason as monti_update_profile.
+    // Declared fields only, for the same reason as scout_update_profile.
     run: async ({api, args}) => text(await api.post('/v1/proxies/check', {
       host: args.host,
       port: args.port,
@@ -329,7 +329,7 @@ const TOOLS = [
     })),
   },
   {
-    name: 'monti_list_tabs',
+    name: 'scout_list_tabs',
     description: 'List the open pages in a running profile.',
     inputSchema: {
       type: 'object',
@@ -339,7 +339,7 @@ const TOOLS = [
     run: async ({api, args}) => text(await cdp.tabs(await requireCdpUrl(api, args.profileId))),
   },
   {
-    name: 'monti_navigate',
+    name: 'scout_navigate',
     description: 'Point a running profile\'s active page at a URL and wait for it to settle.',
     inputSchema: {
       type: 'object',
@@ -350,7 +350,7 @@ const TOOLS = [
         await cdp.navigate(await requireCdpUrl(api, args.profileId), args.url)),
   },
   {
-    name: 'monti_read_page',
+    name: 'scout_read_page',
     description:
       'Read the visible text of a running profile\'s active page, with its title ' +
       'and URL. Use a CSS selector to read one region instead of the whole page.',
@@ -369,7 +369,7 @@ const TOOLS = [
         Number(args.maxChars) > 0 ? Math.floor(args.maxChars) : DEFAULT_READ_CHARS)),
   },
   {
-    name: 'monti_screenshot',
+    name: 'scout_screenshot',
     description:
       'Screenshot a running profile\'s active page. Returns JPEG by default; ' +
       'pass png=true for a lossless capture.',
@@ -398,7 +398,7 @@ const TOOLS = [
     },
   },
   {
-    name: 'monti_eval',
+    name: 'scout_eval',
     description:
       'Evaluate a JavaScript expression in a running profile\'s active page and ' +
       'return its value. Awaits promises.',
@@ -468,8 +468,8 @@ const PARAMETER_VOCABULARY = {
   },
   resolution: 'Weakest first: the callee defaults of any callAutomation target, ' +
     "then this automation's `default`, then the profile's own value " +
-    '(monti_update_profile automationVars), then the `vars` passed to ' +
-    'monti_run_automation. A blank never overrides -- it falls through.',
+    '(scout_update_profile automationVars), then the `vars` passed to ' +
+    'scout_run_automation. A blank never overrides -- it falls through.',
   required: 'A run with no value and no default is refused before the browser ' +
     'opens, naming the profile and the parameter.',
   limits: 'At most 20 per automation.',
@@ -498,7 +498,7 @@ function compactSchema(steps) {
       // both left an agent knowing the field exists and nothing about what
       // goes in it, which is how five invented ids got tried in a row.
       if (field.kind === 'connector') {
-        parts.push(`${field.category || 'any'} connector id from monti_list_connectors`);
+        parts.push(`${field.category || 'any'} connector id from scout_list_connectors`);
         parts.push('blank uses the workspace default for that category');
       }
       return parts.join(', ');
@@ -510,7 +510,7 @@ function compactSchema(steps) {
 // name -- they are the hand-written tools, cross-referenced there so the agent
 // brief can list every tool from one file -- and filtering on `mcp` alone
 // generated a second, field-less copy of each of them. tools/list answered with
-// thirty tools and BY_NAME resolved monti_update_profile to the generated one,
+// thirty tools and BY_NAME resolved scout_update_profile to the generated one,
 // which forwards no fields at all.
 const AUTOMATION_TOOLS = apiRoutes
     .filter((route) => route.mcp && (route.channel || route.local))
@@ -526,8 +526,8 @@ const AUTOMATION_TOOLS = apiRoutes
         note: 'Every step also takes id (required, unique), label, enabled, ' +
           'timeoutMs, onError (stop|continue|retry) and retries. Full field ' +
           'specs: GET /v1/automations/schema. The notify, aiPrompt and aiCheck ' +
-          'steps name a connector by id -- call monti_list_connectors for the ' +
-          'ids this workspace has, and monti_create_connector if it has none.',
+          'steps name a connector by id -- call scout_list_connectors for the ' +
+          'ids this workspace has, and scout_create_connector if it has none.',
         // Declared here rather than left to the create tool's field
         // description, because an agent calls this BEFORE authoring anything --
         // which is the whole reason this tool exists. Without it, parameters
@@ -538,7 +538,7 @@ const AUTOMATION_TOOLS = apiRoutes
     if (route.method === 'GET') {
       return text(await api.get(route.path));
     }
-    // Only declared fields travel, for the reason monti_update_profile spells
+    // Only declared fields travel, for the reason scout_update_profile spells
     // out above: a route may accept more than its tool advertises, and an
     // agent that guesses a name should not be able to reach it.
     const body = {};

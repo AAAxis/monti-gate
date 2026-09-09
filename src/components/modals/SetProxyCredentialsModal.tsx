@@ -18,10 +18,10 @@ import {Field} from '../ui/Field';
 import {Modal} from '../ui/Modal';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
-import type {MontiProxy} from '../../types';
+import type {ScoutProxy} from '../../types';
 
 export function SetProxyCredentialsModal({targets, onClose, onDone}: {
-  targets: MontiProxy[];
+  targets: ScoutProxy[];
   onClose: () => void;
   // Called only after at least one proxy was written, so the caller can clear
   // its selection without doing it on a failed save.

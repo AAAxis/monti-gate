@@ -1,4 +1,4 @@
-// Registering the Monti MCP server in each agent tool's own config file.
+// Registering the Scout MCP server in each agent tool's own config file.
 //
 // Split out of main.cjs, which was 3,855 lines and where this block was already
 // self-contained. It handles four things that used to be tangled together:
@@ -27,7 +27,7 @@ const path = require('node:path');
 // The name our server is registered under in every tool. Also the thing this
 // module is allowed to touch: a config file may hold a dozen other servers and
 // this app must leave every one of them exactly as it found it.
-const SERVER_KEY = 'monti';
+const SERVER_KEY = 'scout';
 
 // ── Config locations ─────────────────────────────────────────────────────────
 // Each tool keeps a single global registry. Split by platform only where the
@@ -135,10 +135,10 @@ function findExecutable(names, home, platform) {
 // One row per tool. `container` is the property path our entry sits under, and
 // it is the only part that genuinely differs between JSON tools:
 //
-//   mcpServers.monti       Claude Code, Cursor, Gemini CLI, Windsurf
-//   mcp.servers.monti      OpenClaw
-//   servers.monti          VS Code
-//   context_servers.monti  Zed
+//   mcpServers.scout       Claude Code, Cursor, Gemini CLI, Windsurf
+//   mcp.servers.scout      OpenClaw
+//   servers.scout          VS Code
+//   context_servers.scout  Zed
 //
 // `entryShape` covers the second difference: VS Code and Claude Code want an
 // explicit "type": "stdio"; the rest infer stdio from the presence of `command`.
@@ -333,7 +333,7 @@ function readJsonConfig(configPath) {
 // to restart the tool after connecting.
 function writeFileAtomic(configPath, contents) {
   fs.mkdirSync(path.dirname(configPath), {recursive: true});
-  const temp = `${configPath}.monti-tmp`;
+  const temp = `${configPath}.scout-tmp`;
   try {
     fs.writeFileSync(temp, contents);
     fs.renameSync(temp, configPath);
@@ -419,7 +419,7 @@ function tomlArray(body, key) {
   return [...match[1].matchAll(/"((?:[^"\\]|\\.)*)"/g)].map((item) => unescapeToml(item[1]));
 }
 
-// The [mcp_servers.monti.env] subtable runs from its header to the end of the
+// The [mcp_servers.scout.env] subtable runs from its header to the end of the
 // section codexSection already bounded, so a plain key = "value" sweep of the
 // tail is enough.
 function tomlEnvTable(body) {
@@ -631,7 +631,7 @@ function detectToolDetail(integrationId, home, platform) {
     const {dir, ours} = detect.ownDir(home, platform);
     try {
       const extra = fs.readdirSync(dir)
-          .find((entry) => !ours.includes(entry) && !entry.endsWith('.monti-tmp'));
+          .find((entry) => !ours.includes(entry) && !entry.endsWith('.scout-tmp'));
       if (extra) {
         return {found: true, evidence: path.join(dir, extra)};
       }

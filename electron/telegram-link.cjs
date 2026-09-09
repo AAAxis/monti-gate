@@ -54,7 +54,7 @@ async function pollForStart({token, code, welcome, timeoutMs = POLL_TIMEOUT_MS})
       await postJson(`https://api.telegram.org/bot${token}/sendMessage`, {}, {
         chat_id: chatId,
         text: welcome ||
-          'Telegram is linked to Monti. Automation runs you subscribe to ' +
+          'Telegram is linked to Scout. Automation runs you subscribe to ' +
           'will message you here.',
       });
     } catch {

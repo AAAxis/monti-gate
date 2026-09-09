@@ -2,7 +2,7 @@
 // gate in front of both. Everything with real logic behind it lives in
 // workspace/ (data and mutations), hooks/ (effects) or components/.
 import {useEffect, useRef, useState} from 'react';
-import type {MontiAutomation, MontiConnector} from './types';
+import type {ScoutAutomation, ScoutConnector} from './types';
 import {BookOpen, CircleAlert, CircleCheck, Plus, Upload, UserPlus} from 'lucide-react';
 import {CopyButton} from './components/ui/CopyButton';
 import {SignIn} from './components/SignIn';
@@ -140,13 +140,13 @@ export function App() {
   // replace are separate writes on purpose (see src/db/automations.ts), so the
   // dialog has to carry which one this is rather than infer it.
   const [automationDraft, setAutomationDraft] =
-    useState<{automation: MontiAutomation; exists: boolean} | null>(null);
+    useState<{automation: ScoutAutomation; exists: boolean} | null>(null);
   // The connector being added or edited, on the automationDraft pattern and
   // for the same reason: create and replace are separate writes. A new one
   // starts with kind '' -- the modal's picker fills it in.
   const [connectorDraft, setConnectorDraft] =
-    useState<{connector: MontiConnector; exists: boolean} | null>(null);
-  const [historyFor, setHistoryFor] = useState<MontiAutomation | null>(null);
+    useState<{connector: ScoutConnector; exists: boolean} | null>(null);
+  const [historyFor, setHistoryFor] = useState<ScoutAutomation | null>(null);
   // The automation whose delete confirmation is open. Beside automationDraft
   // rather than in useEditors because only the editor raises it -- the card in
   // the grid has no Delete any more.
@@ -155,7 +155,7 @@ export function App() {
   // The automation whose profile picker is open. Held here rather than in the
   // Automations tab because the editor's own Run button raises the same dialog,
   // and that dialog must not be a second copy living inside the editor.
-  const [runningAutomation, setRunningAutomation] = useState<MontiAutomation | null>(null);
+  const [runningAutomation, setRunningAutomation] = useState<ScoutAutomation | null>(null);
   // What is about to be shared out of the workspace. Held here rather than in
   // each tab because four tabs raise it and the dialog is one -- the same reason
   // the delete confirmations live in useEditors.
@@ -561,7 +561,7 @@ export function App() {
           // "before" column, but what the workspace is being welcomed onto has
           // to be what it actually got -- see the header of PlanWelcomeModal.
           //
-          // `?? null` on seat_limit: MontiOrg types it as a plain number, but a
+          // `?? null` on seat_limit: ScoutOrg types it as a plain number, but a
           // row read back from a database where it is null means unlimited, and
           // the modal renders that word.
           limits={{

@@ -6,10 +6,10 @@
 // same millisecond (a paste, an agent batch-creating over MCP) would otherwise
 // compare equal and swap places between renders as Array.prototype.sort is not
 // obliged to be stable across different inputs.
-import type {MontiAutomation} from '../types';
+import type {ScoutAutomation} from '../types';
 
 export function compareAutomations(
-    a: MontiAutomation, b: MontiAutomation, starred: ReadonlySet<string>): number {
+    a: ScoutAutomation, b: ScoutAutomation, starred: ReadonlySet<string>): number {
   const aStarred = starred.has(a.id);
   const bStarred = starred.has(b.id);
   if (aStarred !== bStarred) {
@@ -25,7 +25,7 @@ export function compareAutomations(
 }
 
 export function sortAutomations(
-    list: MontiAutomation[], starredIds: string[]): MontiAutomation[] {
+    list: ScoutAutomation[], starredIds: string[]): ScoutAutomation[] {
   const starred = new Set(starredIds);
   return [...list].sort((a, b) => compareAutomations(a, b, starred));
 }

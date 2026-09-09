@@ -13,7 +13,7 @@ export function newRowId(suffix?: string | number) {
     (suffix === undefined ? `${Date.now()}` : `${Date.now()}-${suffix}`);
 }
 
-// Deterministic per-profile uint32: canvas/audio noise (monti_fingerprint_
+// Deterministic per-profile uint32: canvas/audio noise (scout_fingerprint_
 // injector.cc's noiseAt()) is seeded by this, so a profile's noise is stable
 // across relaunches unless the user opted into rotate_on_launch.
 export function stableSeedFor(profileId: string): number {

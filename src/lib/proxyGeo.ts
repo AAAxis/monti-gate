@@ -7,7 +7,7 @@
 // launched. Both read country-defaults.json, so there is one table, not two.
 import countryDefaults from '../../electron/country-defaults.json';
 import {AUTO_FROM_PROXY} from './fingerprintPresets';
-import type {MontiProxy} from '../types';
+import type {ScoutProxy} from '../types';
 
 type CountryDefault = {timezone: string; language: string; latitude: number; longitude: number};
 const DEFAULTS = countryDefaults as Record<string, CountryDefault>;
@@ -18,7 +18,7 @@ const DEFAULTS = countryDefaults as Record<string, CountryDefault>;
 // Returning null is a real answer -- an unchecked proxy, or one in a country the
 // table does not cover, genuinely does not imply a timezone, and claiming one
 // would be worse than saying so.
-export function expectedTimezoneFor(proxy: MontiProxy | null | undefined): string | null {
+export function expectedTimezoneFor(proxy: ScoutProxy | null | undefined): string | null {
   if (!proxy) {
     return null;
   }
@@ -30,7 +30,7 @@ export function expectedTimezoneFor(proxy: MontiProxy | null | undefined): strin
 }
 
 // The proxy's location as a person would say it: "New York, United States".
-export function proxyLocationLabel(proxy: MontiProxy | null | undefined): string {
+export function proxyLocationLabel(proxy: ScoutProxy | null | undefined): string {
   if (!proxy) {
     return '';
   }
@@ -72,7 +72,7 @@ export type TimezoneMismatch = {chosen: string; expected: string; proxyLabel: st
 // proxy, the proxy has no known location, or either zone is unparseable.
 export function timezoneMismatch(
     chosen: string | null | undefined,
-    proxy: MontiProxy | null | undefined): TimezoneMismatch | null {
+    proxy: ScoutProxy | null | undefined): TimezoneMismatch | null {
   if (!chosen || chosen === AUTO_FROM_PROXY || !proxy) {
     return null;
   }

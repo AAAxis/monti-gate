@@ -125,7 +125,7 @@
   background-color: var(--ink);
   display: block;
   height: 28px;
-  mask-image: var(--monti-mark);
+  mask-image: var(--scout-mark);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;

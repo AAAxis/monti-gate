@@ -3,7 +3,7 @@
 // Raised by App when the org's plan differs from the last one this machine
 // acknowledged (src/lib/planWelcome.ts). That single trigger covers all three
 // ways a paid plan arrives, which is why there is one dialog and not three:
-// somebody bought it and came back through monti://open, somebody was granted
+// somebody bought it and came back through scout://open, somebody was granted
 // it by support, or somebody was invited into a workspace that already had it.
 //
 // The numbers are the point. A list of ticks would say what the plan includes;

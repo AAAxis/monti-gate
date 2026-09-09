@@ -29,14 +29,14 @@ export type AgentTool = {
 // every agent brief without a second edit. Six of them used to be listed by
 // hand here and the list had already stopped being complete.
 function preferMcp(where: string) {
-  return `If an "monti" MCP server is registered in ${where}, prefer its tools ` +
+  return `If an "scout" MCP server is registered in ${where}, prefer its tools ` +
     `(${mcpToolNames().join(', ')}) over raw HTTP; otherwise call the HTTP ` +
     'API below directly.';
 }
 
 export const AGENT_TOOLS: AgentTool[] = [
   {id: 'claude-code', name: 'Claude Code', wiring: preferMcp('~/.claude.json')},
-  {id: 'codex', name: 'Codex', wiring: preferMcp('~/.codex/config.toml as [mcp_servers.monti]')},
+  {id: 'codex', name: 'Codex', wiring: preferMcp('~/.codex/config.toml as [mcp_servers.scout]')},
   {id: 'cursor', name: 'Cursor', wiring: preferMcp('~/.cursor/mcp.json')},
   {id: 'gemini-cli', name: 'Gemini CLI', wiring: preferMcp('~/.gemini/settings.json')},
   {id: 'vscode', name: 'VS Code', wiring: preferMcp('the user mcp.json')},
@@ -81,7 +81,7 @@ const BASE_URL = ${JSON.stringify(API_BASE_URL)};
 // once, at creation -- Anty never stores or displays the raw value again.
 const TOKEN = '<YOUR_API_KEY>';
 
-async function monti(method, path, body) {
+async function scout(method, path, body) {
   const response = await fetch(\`\${BASE_URL}\${path}\`, {
     method,
     headers: {
@@ -99,12 +99,12 @@ async function monti(method, path, body) {
 }
 
 async function main() {
-  console.log('Health:', await monti('GET', '/health'));
+  console.log('Health:', await scout('GET', '/health'));
 
   // Profiles are created in the app, not over the API -- each one is an
   // identity with a fingerprint and a proxy, and minting those from a script
   // is how you end up with fifty profiles that look alike.
-  const {profiles} = await monti('GET', '/v1/profiles');
+  const {profiles} = await scout('GET', '/v1/profiles');
   console.log('Profiles:', profiles);
   const profile = profiles[0];
   if (!profile) {
@@ -112,10 +112,10 @@ async function main() {
   }
 
   // The step vocabulary, so nothing below is guesswork.
-  const {steps} = await monti('GET', '/v1/automations/schema');
+  const {steps} = await scout('GET', '/v1/automations/schema');
   console.log('Step types:', Object.keys(steps).join(', '));
 
-  const {automation} = await monti('POST', '/v1/automations/create', {
+  const {automation} = await scout('POST', '/v1/automations/create', {
     name: 'Example: read a heading',
     steps: [
       {id: 's1', type: 'goto', url: 'https://example.com'},
@@ -127,7 +127,7 @@ async function main() {
 
   // Launches the profile if it is not already open, and returns as soon as the
   // run is registered -- it continues in the background.
-  const run = await monti('POST', '/v1/automations/run', {
+  const run = await scout('POST', '/v1/automations/run', {
     automationId: automation.id,
     profileId: profile.id,
   });
@@ -166,7 +166,7 @@ export function agentPrompt(tool: AgentTool) {
     '## Scout Web local automation API',
     '',
     `Base URL: ${API_BASE_URL} (loopback only — it is not reachable off this machine)`,
-    'Auth: every /v1/* request needs `Authorization: Bearer <MONTI_API_TOKEN>`.',
+    'Auth: every /v1/* request needs `Authorization: Bearer <SCOUT_API_TOKEN>`.',
     'Content-Type: application/json for requests with a body.',
     '',
     'Scout Web manages anti-detect browser profiles. Each profile is an isolated',
@@ -176,7 +176,7 @@ export function agentPrompt(tool: AgentTool) {
     '',
     'An automation is a tree of steps -- goto, click, type, extract, if, loop --',
     'run against one profile. Call GET /v1/automations/schema (or',
-    'monti_automation_schema) for the step vocabulary before writing one; the',
+    'scout_automation_schema) for the step vocabulary before writing one; the',
     'field names are not guessable and the server rejects a tree that does not',
     'validate, naming the exact path that failed.',
     '',
@@ -194,7 +194,7 @@ export function agentPrompt(tool: AgentTool) {
     '- Every step needs a unique `id` you supply. The run log addresses steps by',
     '  it, so do not reuse one across steps.',
     '- Never hardcode the token in committed files. Read it from the',
-    '  MONTI_API_TOKEN environment variable.',
+    '  SCOUT_API_TOKEN environment variable.',
     '- Launching a profile starts a separate anonymous browser process. Never',
     '  pass it credentials, tokens, or anything identifying.',
     '- Profile ids are also on-disk directory names. Treat them as immutable.',
@@ -202,7 +202,7 @@ export function agentPrompt(tool: AgentTool) {
     'Confirm you can reach the API before writing code against it:',
     '',
     '```bash',
-    `curl -s -H "Authorization: Bearer $MONTI_API_TOKEN" ${API_BASE_URL}/v1/profiles`,
+    `curl -s -H "Authorization: Bearer $SCOUT_API_TOKEN" ${API_BASE_URL}/v1/profiles`,
     '```',
   ].join('\n');
 }

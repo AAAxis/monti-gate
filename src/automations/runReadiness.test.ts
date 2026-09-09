@@ -2,11 +2,11 @@ import {describe, expect, it} from 'vitest';
 import {
   STALE_AFTER_MS, describeRunBlock, isRunnable, needsCheck, proxiesToCheck, runReadiness,
 } from './runReadiness';
-import type {MontiProfile, MontiProxy} from '../types';
+import type {ScoutProfile, ScoutProxy} from '../types';
 
 const NOW = Date.parse('2026-08-05T12:00:00.000Z');
 
-function proxy(overrides: Partial<MontiProxy> = {}): MontiProxy {
+function proxy(overrides: Partial<ScoutProxy> = {}): ScoutProxy {
   return {
     id: 'proxy-1',
     name: 'Gateway',
@@ -16,13 +16,13 @@ function proxy(overrides: Partial<MontiProxy> = {}): MontiProxy {
   };
 }
 
-function profile(overrides: Partial<MontiProfile> = {}): MontiProfile {
+function profile(overrides: Partial<ScoutProfile> = {}): ScoutProfile {
   return {
     id: 'profile-1',
     name: 'Main US',
     proxy_id: 'proxy-1',
     ...overrides,
-  } as MontiProfile;
+  } as ScoutProfile;
 }
 
 describe('runReadiness', () => {

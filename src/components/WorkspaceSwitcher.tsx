@@ -17,7 +17,7 @@ import {Popover} from './ui/Popover';
 import {initials, workspaceName} from '../lib/text';
 import {planLabel} from '../plans';
 import {useOrg} from '../org';
-import type {MontiOrg} from '../types';
+import type {ScoutOrg} from '../types';
 
 // Wide enough for "Simnetiq LTD" plus "Owner · Team" without wrapping, and
 // narrow enough that the panel still left-aligns to a 236px rail: Popover
@@ -159,7 +159,7 @@ export function WorkspaceSwitcher({onSettings, onSignOut, onCreate, onLeave, col
 // company mark, and a logo cropped to a circle loses its corners. object-fit is
 // `contain` for the same reason -- a wordmark cropped to fill is unreadable,
 // where a person's photo is not.
-function WorkspaceMark({org, name}: {org: MontiOrg | null; name: string}) {
+function WorkspaceMark({org, name}: {org: ScoutOrg | null; name: string}) {
   if (org?.logo_url) {
     return (
       <img alt="" className="workspace-mark" referrerPolicy="no-referrer" src={org.logo_url} />

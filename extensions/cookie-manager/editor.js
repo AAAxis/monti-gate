@@ -2,7 +2,7 @@
 // directly -- no background round trip needed, unlike the popup which is
 // too small to host this UI.
 const $ = (selector) => document.querySelector(selector);
-const format = MontiCookieFormat;
+const format = ScoutCookieFormat;
 
 let all = [];          // chrome.cookies.Cookie[]
 let filtered = [];
@@ -336,7 +336,7 @@ $('#export-menu').addEventListener('click', async (event) => {
   const blob = new Blob([text], {type: isJson ? 'application/json' : 'text/plain'});
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = `monti-cookies.${isJson ? 'json' : 'txt'}`;
+  link.download = `scout-cookies.${isJson ? 'json' : 'txt'}`;
   link.click();
   URL.revokeObjectURL(link.href);
   setStatus(`Exported ${entries.length} cookies`);

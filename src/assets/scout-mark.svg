@@ -1,5 +1,5 @@
 <svg viewBox="96 330 832 532" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-  <!-- The embeddable single-colour cut of the Monti mountain: currentColor so
+  <!-- The embeddable single-colour cut of the Scout mountain: currentColor so
        the generated home page stays visible in both themes, no width/height so
        the embedding page sizes it, and no ids at all. See README.md here before
        swapping. Geometry matches the canonical badge mark, minus the circle. -->

@@ -1,4 +1,4 @@
-// What `MontiProfile.avatar` means, in the one place that decides.
+// What `ScoutProfile.avatar` means, in the one place that decides.
 //
 // The column is a single text field carrying a tagged union -- `brand:<slug>`,
 // an https URL, or nothing -- for the same reason folders.icon carries

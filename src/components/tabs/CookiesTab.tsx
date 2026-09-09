@@ -35,7 +35,7 @@ import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {CookieColumnContext} from '../../tables/cookieColumns';
 import type {PurgeRequest} from '../modals/ConfirmModals';
 import type {ShareRequest} from '../modals/ShareModal';
-import type {MontiCookie, MontiFolder} from '../../types';
+import type {ScoutCookie, ScoutFolder} from '../../types';
 
 // Whether a set is attached to anything. Its own filter rather than a column
 // sort because "which of these is nobody using" is the question that decides
@@ -47,11 +47,11 @@ export type CookiesTabProps = {
   // dialog selects it here.
   folderId: string;
   onFolderId: (folderId: string) => void;
-  onOpenCookieSet: (cookie: MontiCookie) => void;
-  onAssignCookieSet: (cookie: MontiCookie) => void;
+  onOpenCookieSet: (cookie: ScoutCookie) => void;
+  onAssignCookieSet: (cookie: ScoutCookie) => void;
   onNewCookieSet: () => void;
   onNewFolder: () => void;
-  onEditFolder: (folder: MontiFolder) => void;
+  onEditFolder: (folder: ScoutFolder) => void;
   // Raises the share sheet, hosted by App alongside the other cross-tab dialogs.
   onShare: (request: ShareRequest) => void;
   onShowAbout: () => void;
@@ -76,7 +76,7 @@ export function CookiesTab({
   const org = useOrg();
   const state = data.state;
   const {run, isPending} = useAsyncAction();
-  const selection = useSelection<MontiCookie>();
+  const selection = useSelection<ScoutCookie>();
 
   const [search, setSearch] = useState('');
   // Held as a tagKey, so "Instagram" and "instagram" are one dropdown entry.
@@ -121,7 +121,7 @@ export function CookiesTab({
 
   // What each column sorts by lives in tables/cookieColumns.tsx, and the whole
   // registry is registered rather than the visible slice -- see the note there.
-  const sorting = useTableSort<MontiCookie>(
+  const sorting = useTableSort<ScoutCookie>(
       sortColumnsFrom(COOKIE_COLUMNS, columnContext),
       {onSortChange: () => setPage(0)});
 
@@ -210,14 +210,14 @@ export function CookiesTab({
     setPurge({ids: [], count: trashCount, label: 'everything in Trash'});
   }
 
-  async function duplicateOne(cookie: MontiCookie) {
+  async function duplicateOne(cookie: ScoutCookie) {
     const copy = await cookies.duplicate(cookie);
     if (copy) {
       toast.setMessage(`Duplicated as "${copy.name}"`);
     }
   }
 
-  async function deleteFolder(folder: MontiFolder) {
+  async function deleteFolder(folder: ScoutFolder) {
     if (!window.confirm(
         `Delete folder ${folder.name}? Cookie-sets will move to All cookie-sets.`)) {
       return;
@@ -684,7 +684,7 @@ function selectionLabel(size: number): string {
 // and the rest narrow whatever it left. Same shape as visibleProfiles, and
 // deliberately so.
 function visibleCookieSets(
-    allCookies: MontiCookie[],
+    allCookies: ScoutCookie[],
     {folderId, tagFilter, statusFilter, usageFilter, search}: {
       folderId: string;
       tagFilter: string;

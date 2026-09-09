@@ -630,7 +630,7 @@ function SourceStep(
             </button>
             <button
               className="ghost"
-              onClick={() => void saveExampleFile('monti-profiles-example.csv',
+              onClick={() => void saveExampleFile('scout-profiles-example.csv',
                   profileImportExampleCsv(), toast.setMessage, native?.saveTextFile)}
             >
               <Download size={18} /> Download example

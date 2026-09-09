@@ -11,7 +11,7 @@
 // last night's run work" has no answer whenever the app was not running.
 //
 // Screenshots stay here and never go to Supabase.
-// monti_monitoring_results.screenshot_base64 already inlines images into a
+// scout_monitoring_results.screenshot_base64 already inlines images into a
 // table and it will not scale; a full-page PNG runs to megabytes.
 
 const fs = require('node:fs');

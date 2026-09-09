@@ -7,7 +7,7 @@
 // and had nothing at all for the browser. "No changelog loaded yet" was the
 // only thing most people ever saw.
 //
-// AAAxis/monti-launcher is public, so the release list needs no token. Both
+// AAAxis/scout web is public, so the release list needs no token. Both
 // programs publish there: launcher releases are tagged `v*`, browser builds
 // `browser-v*` (see browser/publish-browser.mjs).
 //
@@ -18,7 +18,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const RELEASES_URL = 'https://api.github.com/repos/AAAxis/monti-launcher/releases?per_page=30';
+const RELEASES_URL = 'https://api.github.com/repos/AAAxis/scout web/releases?per_page=30';
 const CACHE_FILE = 'release-notes.json';
 // Long enough that opening the changelog repeatedly costs one request, short
 // enough that a release published today shows up today.

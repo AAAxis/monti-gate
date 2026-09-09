@@ -20,7 +20,7 @@ import * as db from '../db';
 import {describeMissingParams, resolveRunVars} from '../automations/parameters';
 import {nextDueAt} from '../automations/schedule';
 import type {AutomationActions} from '../workspace/useAutomationActions';
-import type {MontiAutomation, MontiProfile, CloudState} from '../types';
+import type {ScoutAutomation, ScoutProfile, CloudState} from '../types';
 
 const TICK_MS = 30_000;
 // How late a slot may fire. Longer than one tick so a busy renderer cannot
@@ -28,7 +28,7 @@ const TICK_MS = 30_000;
 const GRACE_MS = 90_000;
 
 function watermarkKey(orgId: string, automationId: string): string {
-  return `monti:sched:${orgId}:${automationId}`;
+  return `scout:sched:${orgId}:${automationId}`;
 }
 
 export function useAutomationScheduler(
@@ -93,7 +93,7 @@ export function useAutomationScheduler(
 
     async function fire(
         org: string,
-        automation: MontiAutomation,
+        automation: ScoutAutomation,
         due: Date,
         cloud: CloudState,
         actions: AutomationActions,
@@ -121,7 +121,7 @@ export function useAutomationScheduler(
       const targets = (automation.schedule?.profileIds || [])
           .map((id) => cloud.profiles.find(
               (profile) => profile.id === id && !profile.deleted_at))
-          .filter((profile): profile is MontiProfile => Boolean(profile));
+          .filter((profile): profile is ScoutProfile => Boolean(profile));
       if (targets.length === 0) {
         return;
       }

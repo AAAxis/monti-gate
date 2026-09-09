@@ -29,7 +29,7 @@ import {formatDateShort} from '../lib/text';
 import type {CellOption} from '../components/ui/CellControls';
 import type {TableColumn} from './columns';
 import type {TagUsage} from '../lib/tags';
-import type {MontiCookie, MontiFolder, MontiProfile, MontiProxy, CloudState} from '../types';
+import type {ScoutCookie, ScoutFolder, ScoutProfile, ScoutProxy, CloudState} from '../types';
 
 // What the cells need that a profile does not carry.
 //
@@ -43,8 +43,8 @@ export type ProfileColumnContext = {
   // The two lookups the tab already had: a proxy is matched by host, a folder
   // by id.
   state: CloudState;
-  proxyFor: (profile: MontiProfile) => MontiProxy | null | undefined;
-  folderFor: (profile: MontiProfile) => MontiFolder | null | undefined;
+  proxyFor: (profile: ScoutProfile) => ScoutProxy | null | undefined;
+  folderFor: (profile: ScoutProfile) => ScoutFolder | null | undefined;
   checkingProxyIds: ReadonlySet<string>;
   // Every tag in use across the workspace, for the Tags cell's suggestion row.
   // A read rather than an option list: TagInput takes TagUsage (tag + count),
@@ -81,24 +81,24 @@ export type ProfileCellOptions = {
 //  - setFingerprint spreads the existing fingerprint. The mapper replaces the
 //    whole object, so a patch of one field would blank the other twenty.
 export type ProfileCellActions = {
-  setName: (profile: MontiProfile, name: string) => void;
-  setStatus: (profile: MontiProfile, status: string) => void;
-  setTags: (profile: MontiProfile, tags: string[]) => void;
-  setPlatform: (profile: MontiProfile, os: string) => void;
-  setAssignee: (profile: MontiProfile, userId: string) => void;
-  setProxy: (profile: MontiProfile, proxyId: string) => void;
-  setAutomation: (profile: MontiProfile, automationId: string) => void;
-  setCookieSet: (profile: MontiProfile, cookieId: string) => void;
-  setStartUrl: (profile: MontiProfile, url: string) => void;
+  setName: (profile: ScoutProfile, name: string) => void;
+  setStatus: (profile: ScoutProfile, status: string) => void;
+  setTags: (profile: ScoutProfile, tags: string[]) => void;
+  setPlatform: (profile: ScoutProfile, os: string) => void;
+  setAssignee: (profile: ScoutProfile, userId: string) => void;
+  setProxy: (profile: ScoutProfile, proxyId: string) => void;
+  setAutomation: (profile: ScoutProfile, automationId: string) => void;
+  setCookieSet: (profile: ScoutProfile, cookieId: string) => void;
+  setStartUrl: (profile: ScoutProfile, url: string) => void;
   setFingerprint: (
-    profile: MontiProfile, patch: NonNullable<MontiProfile['fingerprint']>) => void;
-  recheckProxy: (proxy: MontiProxy) => void;
+    profile: ScoutProfile, patch: NonNullable<ScoutProfile['fingerprint']>) => void;
+  recheckProxy: (proxy: ScoutProxy) => void;
   filterFolder: (folderId: string) => void;
-  openFingerprint: (profile: MontiProfile) => void;
-  openCookieSet: (cookie: MontiCookie) => void;
+  openFingerprint: (profile: ScoutProfile) => void;
+  openCookieSet: (cookie: ScoutCookie) => void;
 };
 
-export type ProfileColumn = TableColumn<MontiProfile, ProfileColumnContext>;
+export type ProfileColumn = TableColumn<ScoutProfile, ProfileColumnContext>;
 
 // An em dash, not an empty cell. A blank in a table of fourteen columns reads
 // as a rendering fault; a dash reads as "this profile has none".
@@ -611,7 +611,7 @@ export const PROFILE_COLUMNS: ProfileColumn[] = [
 // Browser and Screen are shown here and set in the editor. The value is the
 // link, so the cell still reads as the fact it carries rather than as a button.
 function fingerprintLink(
-    profile: MontiProfile, context: ProfileColumnContext, value: string | undefined) {
+    profile: ScoutProfile, context: ProfileColumnContext, value: string | undefined) {
   return (
     <CellLink
       label={`Edit the fingerprint for ${profile.name}`}
@@ -649,7 +649,7 @@ function nameProblem(value: string) {
   return value.trim() ? null : 'A profile needs a name';
 }
 
-function automationName(profile: MontiProfile, {state}: ProfileColumnContext) {
+function automationName(profile: ScoutProfile, {state}: ProfileColumnContext) {
   return profile.automation_id ?
     state.automations.find((item) => item.id === profile.automation_id)?.name :
     undefined;
@@ -658,7 +658,7 @@ function automationName(profile: MontiProfile, {state}: ProfileColumnContext) {
 // Two ways a profile can carry cookies: a set from the shared library, or a
 // file pasted into the profile itself. The column answers "what is this
 // launched with", so it reports either.
-function cookieSetName(profile: MontiProfile, {state}: ProfileColumnContext) {
+function cookieSetName(profile: ScoutProfile, {state}: ProfileColumnContext) {
   if (profile.cookie_mode === 'saved') {
     return state.cookies.find((item) => item.id === profile.cookie_id)?.name;
   }

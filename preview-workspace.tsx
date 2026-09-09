@@ -7,7 +7,7 @@ import type {ReactNode} from 'react';
 import {defaultCloudState} from './src/data/statuses';
 import {previewCsvImport} from './src/workspace/csvImport';
 import type {
-  MontiAutomation, MontiFolder, MontiNotification, MontiProfile, CloudState, OrgMember,
+  ScoutAutomation, ScoutFolder, ScoutNotification, ScoutProfile, CloudState, OrgMember,
 } from './src/types';
 
 const now = Date.now();
@@ -24,7 +24,7 @@ const MEMBERS: OrgMember[] = [
 // colour fallback (set colour, else its folder's) is visible both ways.
 const COOKIE_FOLDERS = [
   {id: 'cf-1', name: 'Rental portals', kind: 'cookie', color: 'violet', icon: 'folder'},
-] as unknown as MontiFolder[];
+] as unknown as ScoutFolder[];
 
 const COOKIES = [
   {id: 'c1', name: 'is24-session.json', url: '', count: 42, color: 'green', folder_id: 'cf-1'},
@@ -37,7 +37,7 @@ const COOKIES = [
 // has a folder to offer.
 const PROXY_FOLDERS = [
   {id: 'pf-1', name: 'Residential EU', kind: 'proxy', color: 'blue', icon: 'globe'},
-] as unknown as MontiFolder[];
+] as unknown as ScoutFolder[];
 
 const PROXIES = [
   {id: 'x1', name: '198.51.100.10:1080', type: 'socks5', host: '198.51.100.10', port: 1080,
@@ -49,7 +49,7 @@ const PROXIES = [
 
 const PROFILE_FOLDERS = [
   {id: 'f-social', name: 'Social', kind: 'profile', icon: 'users', color: 'violet'},
-] as unknown as MontiFolder[];
+] as unknown as ScoutFolder[];
 
 const PROFILES = [
   {id: 'p1', name: 'Renter DE-1', deleted_at: null, automation_id: 'a2',
@@ -62,13 +62,13 @@ const PROFILES = [
   // answered, which is what the Run dialog's block has to look like.
   {id: 'p3', name: 'Renter DE-3', deleted_at: null, automation_id: null,
     proxy_mode: 'direct'},
-] as unknown as MontiProfile[];
+] as unknown as ScoutProfile[];
 
-const AUTOMATIONS: MontiAutomation[] = [
+const AUTOMATIONS: ScoutAutomation[] = [
   {
     id: 'a1', name: 'FB group lead capture',
     description: 'Reads new posts in the target groups, extracts author and intent.',
-    steps: [{id: 's1', type: 'goto', url: 'https://facebook.com'}] as MontiAutomation['steps'],
+    steps: [{id: 's1', type: 'goto', url: 'https://facebook.com'}] as ScoutAutomation['steps'],
     tags: ['facebook'], pinned: true,
     parameters: [
       {name: 'city_name', label: 'City', kind: 'text', required: true,
@@ -79,7 +79,7 @@ const AUTOMATIONS: MontiAutomation[] = [
       {name: 'portal_token', label: 'Portal token', kind: 'secret'},
       {name: 'districts', label: 'Districts', kind: 'list',
         hint: 'One per line. A Loop step runs over them.'},
-    ] as MontiAutomation['parameters'],
+    ] as ScoutAutomation['parameters'],
     icon: 'brand:facebook', color: 'blue', folder_id: 'f-social',
     last_run_at: iso(42), last_run_status: 'ok',
     created_by: 'u', created_via: 'user', created_at: iso(60 * 24 * 6),
@@ -91,7 +91,7 @@ const AUTOMATIONS: MontiAutomation[] = [
     steps: [
       {id: 's1', type: 'goto', url: 'https://web.whatsapp.com'},
       {id: 's2', type: 'callAutomation', automationId: 'a1'},
-    ] as MontiAutomation['steps'],
+    ] as ScoutAutomation['steps'],
     tags: ['whatsapp'],
     icon: 'brand:whatsapp', color: 'green', folder_id: 'f-social',
     last_run_at: iso(60 * 26), last_run_status: 'failed',
@@ -101,7 +101,7 @@ const AUTOMATIONS: MontiAutomation[] = [
   {
     id: 'a3', name: 'Engage with commenters',
     description: 'Built by the agent during the lead-gen session.',
-    steps: [{id: 's1', type: 'goto', url: 'https://facebook.com'}] as MontiAutomation['steps'],
+    steps: [{id: 's1', type: 'goto', url: 'https://facebook.com'}] as ScoutAutomation['steps'],
     icon: 'brand:instagram', color: 'violet',
     last_run_at: iso(60 * 5), last_run_status: 'partial',
     created_by: 'u', created_via: 'mcp', created_by_label: 'Claude',
@@ -110,7 +110,7 @@ const AUTOMATIONS: MontiAutomation[] = [
   {
     id: 'a4', name: 'Proxy sanity sweep',
     description: '',
-    steps: [{id: 's1', type: 'goto', url: 'https://example.com'}] as MontiAutomation['steps'],
+    steps: [{id: 's1', type: 'goto', url: 'https://example.com'}] as ScoutAutomation['steps'],
     created_by: 'v', created_via: 'user', created_at: iso(60 * 24 * 40),
   },
   // In Trash, so the rail's Trash card has a count and its view has a card to
@@ -120,7 +120,7 @@ const AUTOMATIONS: MontiAutomation[] = [
     id: 'a5', name: 'Old signup flow',
     description: 'Superseded by the warm-up. Kept until the quarter closes.',
     steps: [{id: 's1', type: 'goto', url: 'https://example.com/signup'}] as
-      MontiAutomation['steps'],
+      ScoutAutomation['steps'],
     icon: 'brand:x', color: 'red', folder_id: 'f-social',
     created_by: 'v', created_via: 'user', created_at: iso(60 * 24 * 90),
     deleted_at: iso(60 * 24 * 4),
@@ -130,7 +130,7 @@ const AUTOMATIONS: MontiAutomation[] = [
 // Two folders and one empty one: the empty one is the only way to see the
 // "Move automations here" dialog, which is this grid's substitute for the
 // selection model the table tabs have.
-const AUTOMATION_FOLDERS: MontiFolder[] = [
+const AUTOMATION_FOLDERS: ScoutFolder[] = [
   {id: 'f-social', name: 'Social', icon: 'users', color: 'violet'},
   {id: 'f-scraping', name: 'Scraping', icon: 'folder', color: 'amber'},
 ];
@@ -139,7 +139,7 @@ const AUTOMATION_FOLDERS: MontiFolder[] = [
 // state the card has: unread, read, each status tone, a title long enough to
 // wrap and squeeze the clear button, and one with no automation_id -- the row
 // that must NOT become a clickable card because it has nowhere to go.
-const NOTIFICATIONS: (MontiNotification & {read: boolean})[] = [
+const NOTIFICATIONS: (ScoutNotification & {read: boolean})[] = [
   {
     id: 'n1', kind: 'automation_run', title: 'FB group lead capture finished',
     body: '12 of 12 profiles done, 41 leads captured.', status: 'ok',
@@ -203,7 +203,7 @@ type Ctx = {
   // creates and renames folders is mounted from App, which this harness is not.
   library: {
     removeFolder: (folderId: string) => Promise<boolean>;
-    createFolder: (fields: {name: string; kind: string}) => Promise<MontiFolder | null>;
+    createFolder: (fields: {name: string; kind: string}) => Promise<ScoutFolder | null>;
   };
   // Enough of the two action bundles for RunAutomationModal, which reads
   // profiles.update (the "save these values" checkbox) and proxies.checkMany
@@ -324,7 +324,7 @@ export function WorkspaceProvider({children}: {children: ReactNode}) {
       },
     },
     library: {
-      createFolder: async (fields) => ({id: 'f-new', name: fields.name} as MontiFolder),
+      createFolder: async (fields) => ({id: 'f-new', name: fields.name} as ScoutFolder),
       removeFolder: async (folderId) => {
         setAutomationFolders((list) => list.filter((item) => item.id !== folderId));
         // Mirrors the FK's ON DELETE SET NULL, which is what the real

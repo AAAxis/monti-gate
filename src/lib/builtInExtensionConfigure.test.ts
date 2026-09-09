@@ -4,10 +4,10 @@ import path from 'node:path';
 import {describe, expect, it} from 'vitest';
 // CJS interop: the same table main.cjs materializes extensions from.
 // @ts-expect-error CJS module without types
-import {montiPanelExtensionId, builtInExtension, seedPinnedExtensions, unpackedExtensionId, unpinRetiredExtensions, placementName, sourceDigest} from '../../electron/built-in-extensions.cjs';
+import {scoutPanelExtensionId, builtInExtension, seedPinnedExtensions, unpackedExtensionId, unpinRetiredExtensions, placementName, sourceDigest} from '../../electron/built-in-extensions.cjs';
 
 const deps = {parseCookieUrl: async () => [], parseCookieFile: () => []};
-const tempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'monti-ext-'));
+const tempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'scout-ext-'));
 
 // A new build of the helper has to reach the browser, and for an unpacked MV3
 // extension the only lever that reliably does it is a new DIRECTORY.
@@ -30,8 +30,8 @@ describe('extension identity follows its source', () => {
   const panel = builtInExtension('cookie_manager')!;
 
   it('lands the panel under a content-hashed directory', () => {
-    expect(panel.placement).toEqual({kind: 'hashed', prefix: 'MontiPanel-'});
-    expect(placementName(panel)).toMatch(/^MontiPanel-[0-9a-f]{12}$/);
+    expect(panel.placement).toEqual({kind: 'hashed', prefix: 'ScoutPanel-'});
+    expect(placementName(panel)).toMatch(/^ScoutPanel-[0-9a-f]{12}$/);
   });
 
   it('retires both previous directory names', () => {
@@ -92,19 +92,19 @@ describe('extension identity follows its source', () => {
 });
 
 describe('cookie_manager configure', () => {
-  it('writes monti-launch.json when the launch carries a run token', async () => {
+  it('writes scout-launch.json when the launch carries a run token', async () => {
     const dir = tempDir();
     await builtInExtension('cookie_manager')!.configure!(
         {id: 'p1', name: 'Profile One', startPage: {port: 39219, token: 'tok-abc'}}, dir, deps);
-    const written = JSON.parse(fs.readFileSync(path.join(dir, 'monti-launch.json'), 'utf8'));
+    const written = JSON.parse(fs.readFileSync(path.join(dir, 'scout-launch.json'), 'utf8'));
     expect(written).toEqual({token: 'tok-abc', apiPort: 39219});
   });
 
-  it('writes no monti-launch.json when the launch has no token', async () => {
+  it('writes no scout-launch.json when the launch has no token', async () => {
     const dir = tempDir();
     await builtInExtension('cookie_manager')!.configure!(
         {id: 'p1', name: 'Profile One', startPage: null}, dir, deps);
-    expect(fs.existsSync(path.join(dir, 'monti-launch.json'))).toBe(false);
+    expect(fs.existsSync(path.join(dir, 'scout-launch.json'))).toBe(false);
   });
 
   it('still writes profile-meta.json either way', async () => {
@@ -118,7 +118,7 @@ describe('cookie_manager configure', () => {
   // The side panel's first paint. Written verbatim, not reshaped: the panel
   // renders homeProxyStatus() output as the renderer composed it, so anything
   // this hop rewrote would be a second opinion about the same session.
-  it('writes monti-session.json verbatim when the launch carries panel data', async () => {
+  it('writes scout-session.json verbatim when the launch carries panel data', async () => {
     const dir = tempDir();
     const sessionPanel = {
       profile: {id: 'p1', name: 'Profile One'},
@@ -138,19 +138,19 @@ describe('cookie_manager configure', () => {
     };
     await builtInExtension('cookie_manager')!.configure!(
         {id: 'p1', name: 'Profile One', sessionPanel}, dir, deps);
-    const written = JSON.parse(fs.readFileSync(path.join(dir, 'monti-session.json'), 'utf8'));
+    const written = JSON.parse(fs.readFileSync(path.join(dir, 'scout-session.json'), 'utf8'));
     expect(written).toEqual(sessionPanel);
   });
 
   // Its absence is the panel's only signal that this window was not launched
-  // from the launcher -- the same contract monti-launch.json has for sync. A
+  // from the launcher -- the same contract scout-launch.json has for sync. A
   // stub file with empty fields would make the panel paint a session that does
   // not exist.
-  it('writes no monti-session.json when the launch carries none', async () => {
+  it('writes no scout-session.json when the launch carries none', async () => {
     const dir = tempDir();
     await builtInExtension('cookie_manager')!.configure!(
         {id: 'p1', name: 'Profile One', sessionPanel: null}, dir, deps);
-    expect(fs.existsSync(path.join(dir, 'monti-session.json'))).toBe(false);
+    expect(fs.existsSync(path.join(dir, 'scout-session.json'))).toBe(false);
   });
 });
 
@@ -277,13 +277,13 @@ describe('pinning the panel to the toolbar', () => {
   it('derives the panel extension id once its directory exists', () => {
     const userDataDir = tempDir();
     const dir = materialize(userDataDir);
-    expect(montiPanelExtensionId({userDataDir})).toBe(unpackedExtensionId(dir));
+    expect(scoutPanelExtensionId({userDataDir})).toBe(unpackedExtensionId(dir));
   });
 
   it('derives no panel extension id when the panel is switched off', () => {
     const userDataDir = tempDir();
     materialize(userDataDir);
-    expect(montiPanelExtensionId(
+    expect(scoutPanelExtensionId(
         {userDataDir, builtInExtensions: {cookie_manager: false}})).toBe('');
   });
 });

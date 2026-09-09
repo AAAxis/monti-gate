@@ -26,7 +26,7 @@ import {ago} from '../lib/relativeTime';
 import {Popover} from './ui/Popover';
 import {useOrg} from '../org';
 import {useWorkspace} from '../workspace/WorkspaceProvider';
-import type {MontiNotification, HandoffKind} from '../types';
+import type {ScoutNotification, HandoffKind} from '../types';
 
 const KIND_ICON: Record<HandoffKind, typeof Monitor> = {
   profile: Monitor,
@@ -117,7 +117,7 @@ export function InboxBell({onViewAll, onOpenAutomationHistory}: {
     return member.display_name || member.email.split('@')[0] || member.email;
   }
 
-  function clear(notification: MontiNotification) {
+  function clear(notification: ScoutNotification) {
     // Any member may clear one -- the row is the workspace's, not anyone's.
     patch.notifications((list) => list.filter((item) => item.id !== notification.id));
     if (org.orgId) {

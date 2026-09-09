@@ -1,5 +1,5 @@
 import type {
-  MontiOrg, BuiltInExtensionToggles, OrgMembership, OrgRole, OrgType,
+  ScoutOrg, BuiltInExtensionToggles, OrgMembership, OrgRole, OrgType,
 } from '../types';
 import {optionalClient, raise, requireClient} from './client';
 import {rowToOrg} from './mappers';
@@ -75,7 +75,7 @@ export async function countMembers(orgId: string): Promise<number> {
   return count || 0;
 }
 
-export async function getOrg(orgId: string): Promise<MontiOrg | null> {
+export async function getOrg(orgId: string): Promise<ScoutOrg | null> {
   const client = optionalClient();
   if (!client) {
     return null;

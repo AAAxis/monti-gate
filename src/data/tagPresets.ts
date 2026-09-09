@@ -119,7 +119,7 @@ const CATALOG: TagPreset[] = [
 ];
 
 // The folder colour a suggestion starts with. 'ink' is a chip tone, not one of
-// the six a folder can store -- MontiFolder.color goes through the same
+// the six a folder can store -- ScoutFolder.color goes through the same
 // ColorPicker a profile uses, and a value with no swatch would leave that
 // picker showing nothing selected.
 export function tagFolderColor(preset: TagPreset): ProfileColorKey {

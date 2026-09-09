@@ -187,7 +187,7 @@ alter table public.automations
 -- public.notifications: the topbar bell's second kind
 -- ---------------------------------------------------------------------------
 --
--- "Straight to Monti" as a delivery target. A run that finishes writes one row
+-- "Straight to Scout" as a delivery target. A run that finishes writes one row
 -- here and the main process raises an OS notification alongside it; the bell
 -- reads this table next to the handoffs it already shows.
 --

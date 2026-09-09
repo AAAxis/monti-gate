@@ -54,13 +54,13 @@
     if (!sync.available) {
       return {
         tone: 'off', icon: 'circle', title: 'Sync unavailable',
-        detail: 'This window was not launched from Monti Gate, so cookies are not being synced.',
+        detail: 'This window was not launched from Scout Web, so cookies are not being synced.',
       };
     }
     if (!sync.reachable || sync.lastErrorKind === 'network') {
       return {
         tone: 'bad', icon: 'alertTriangle', title: 'Launcher not reachable',
-        detail: sync.lastError || 'Monti Gate did not answer. Cookies stay local until it is back.',
+        detail: sync.lastError || 'Scout Web did not answer. Cookies stay local until it is back.',
       };
     }
     // This window loaded a cookie set the profile is not assigned to, so the
@@ -95,7 +95,7 @@
         tone: 'bad', icon: 'xCircle', title: 'Launcher rejected the request',
         detail: 'This window’s session key is no longer valid — the Launcher was ' +
             'restarted, or this profile has been open more than 12 hours. ' +
-            'Relaunch the profile from Monti Gate to renew it.',
+            'Relaunch the profile from Scout Web to renew it.',
       };
     }
     if (sync.lastErrorKind === 'other-workspace') {
@@ -107,14 +107,14 @@
       return {
         tone: 'warn', icon: 'pause', title: 'Paused — another workspace',
         detail: sync.lastError ||
-            'Monti Gate is showing a different workspace. Switch back to this ' +
+            'Scout Web is showing a different workspace. Switch back to this ' +
             'profile’s workspace to resume syncing.',
       };
     }
     if (sync.lastErrorKind === 'rate-limited') {
       return {
         tone: 'warn', icon: 'clock', title: 'Rate limited',
-        detail: 'Monti Gate is throttling requests right now. Sync will retry automatically.',
+        detail: 'Scout Web is throttling requests right now. Sync will retry automatically.',
       };
     }
     if (sync.lastErrorKind === 'internal') {
@@ -126,25 +126,25 @@
     if (sync.lastErrorKind === 'saved-none') {
       return {
         tone: 'bad', icon: 'alertTriangle', title: 'Nothing was saved',
-        detail: sync.lastError || 'Monti Gate did not recognize any of the pushed cookies.',
+        detail: sync.lastError || 'Scout Web did not recognize any of the pushed cookies.',
       };
     }
     if (sync.lastErrorKind === 'import-failed') {
       return {
         tone: 'bad', icon: 'alertTriangle', title: 'Pull failed',
-        detail: sync.lastError || 'None of the cookies from Monti Gate could be applied here.',
+        detail: sync.lastError || 'None of the cookies from Scout Web could be applied here.',
       };
     }
     if (sync.lastErrorKind === 'server-error') {
       return {
         tone: 'bad', icon: 'alertTriangle', title: 'Launcher error',
-        detail: sync.lastError || 'Monti Gate answered with an error.',
+        detail: sync.lastError || 'Scout Web answered with an error.',
       };
     }
     if (sync.pushPending) {
       return {
         tone: 'warn', icon: 'loader', spin: true, title: 'Push pending',
-        detail: 'Waiting to push recent cookie changes to Monti Gate…',
+        detail: 'Waiting to push recent cookie changes to Scout Web…',
       };
     }
     if (sync.inSync) {
@@ -156,7 +156,7 @@
     }
     return {
       tone: 'off', icon: 'circle', title: 'Not yet synced',
-      detail: 'Cookies have not been sent to Monti Gate yet.',
+      detail: 'Cookies have not been sent to Scout Web yet.',
     };
   }
 
@@ -164,6 +164,6 @@
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
   } else {
-    root.MontiSyncStatus = api;
+    root.ScoutSyncStatus = api;
   }
 })(globalThis);

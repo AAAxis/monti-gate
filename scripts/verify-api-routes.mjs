@@ -188,7 +188,7 @@ check(
     'preload.cjs builds its channel allow-list from the table');
 for (const route of routes.filter((item) => item.channel)) {
   check(
-      /^monti:[a-z-]+$/.test(route.channel),
+      /^scout:[a-z-]+$/.test(route.channel),
       `${route.path} declares a malformed channel: ${route.channel}`);
 }
 pass('table-driven routes declare well-formed channels');
@@ -248,7 +248,7 @@ pass('generated tools carry descriptions');
 // the hand-written tools also carry an `mcp` name so the agent brief can list
 // every tool from one file. Filtering on `mcp` alone silently generated a
 // second, field-less copy of each of those nine: tools/list answered with
-// thirty tools, and BY_NAME resolved monti_update_profile to the generated
+// thirty tools, and BY_NAME resolved scout_update_profile to the generated
 // copy, which forwards no fields at all. Nothing else would have caught it.
 const {listed} = await import(`file://${join(root, 'electron/mcp/tools.cjs')}`)
     .then((module) => module.default || module);

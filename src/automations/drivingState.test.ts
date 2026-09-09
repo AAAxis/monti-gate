@@ -15,9 +15,9 @@ import {
   AI_IDLE_MS, FILE_NAME, HEARTBEAT_MS, MAX_LABEL, TTL_MS, createDrivingState,
 } from '../../electron/automation/driving-state.cjs';
 
-const tempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'monti-driving-'));
+const tempDir = () => fs.mkdtempSync(path.join(os.tmpdir(), 'scout-driving-'));
 
-// One directory per profile id, as the real resolver does (MontiProfiles/<id>).
+// One directory per profile id, as the real resolver does (ScoutProfiles/<id>).
 function harness() {
   const root = tempDir();
   let clock = 1_700_000_000_000;
@@ -294,7 +294,7 @@ describe('when the profile directory is not there', () => {
 
   it('throws nothing when the directory cannot be written', () => {
     const state = createDrivingState({
-      resolveUserDataDir: () => path.join(os.tmpdir(), 'monti-does-not-exist', 'nope'),
+      resolveUserDataDir: () => path.join(os.tmpdir(), 'scout-does-not-exist', 'nope'),
     });
     expect(() => state.runActive('p1', 'Daily login')).not.toThrow();
     expect(() => state.idle('p1')).not.toThrow();

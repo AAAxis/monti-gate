@@ -32,7 +32,7 @@ import {useTableSort} from '../../hooks/useTableSort';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {ProxyColumnContext} from '../../tables/proxyColumns';
 import type {ShareRequest} from '../modals/ShareModal';
-import type {MontiFolder, MontiProfile, MontiProxy} from '../../types';
+import type {ScoutFolder, ScoutProfile, ScoutProxy} from '../../types';
 
 export type ProxiesTabProps = {
   // Controlled by the shell, exactly like the Profiles tab's: creating a folder
@@ -41,9 +41,9 @@ export type ProxiesTabProps = {
   onFolderId: (folderId: string) => void;
   onAddProxy: () => void;
   onImportProxies: () => void;
-  onEditProxy: (proxy: MontiProxy) => void;
+  onEditProxy: (proxy: ScoutProxy) => void;
   onNewFolder: () => void;
-  onEditFolder: (folder: MontiFolder) => void;
+  onEditFolder: (folder: ScoutFolder) => void;
   // Set for one render after a folder is created from a country suggestion: the
   // move dialog opens on that folder with the country's proxies already ticked.
   // Cleared through onFillCountryDone when it closes.
@@ -75,7 +75,7 @@ export function ProxiesTab({
   const {data, toast, library, proxies, checkingProxyIds, proxyStatusOptions} = useWorkspace();
   const org = useOrg();
   const state = data.state;
-  const selection = useSelection<MontiProxy>();
+  const selection = useSelection<ScoutProxy>();
 
   // "Only what I'm on the hook for". A toggle rather than a third entry in the
   // assigned dropdown beside it: that one filters by whether a PROFILE holds
@@ -98,7 +98,7 @@ export function ProxiesTab({
   const [moveOpen, setMoveOpen] = useState(false);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
 
-  const assigned = (proxy: MontiProxy) => isProxyAssigned(proxy, state.profiles);
+  const assigned = (proxy: ScoutProxy) => isProxyAssigned(proxy, state.profiles);
 
   // Rebuilt every render on purpose -- see tables/proxyCellActions.tsx: the
   // actions close over state, and memoising them is how a cell writes through
@@ -117,7 +117,7 @@ export function ProxiesTab({
 
   // What each column sorts by lives in tables/proxyColumns.tsx, and the whole
   // registry is registered rather than the visible slice -- see the note there.
-  const sorting = useTableSort<MontiProxy>(
+  const sorting = useTableSort<ScoutProxy>(
       sortColumnsFrom(PROXY_COLUMNS, columnContext),
       {onSortChange: () => setPage(0)});
 
@@ -163,7 +163,7 @@ export function ProxiesTab({
   // reappear under All proxies rather than vanishing with the folder. The
   // confirmation says so, because "delete folder" reads like it should take
   // them with it -- and here it would read like cancelling the subscription.
-  async function deleteFolder(folder: MontiFolder) {
+  async function deleteFolder(folder: ScoutFolder) {
     const count = state.proxies.filter((proxy) => proxy.folder_id === folder.id).length;
     const consequence = count ?
       `Its ${count} ${count === 1 ? 'proxy' : 'proxies'} will move to All proxies.` :
@@ -522,7 +522,7 @@ export function ProxiesTab({
 // localStorage the same way the theme choice does -- read once on mount, written
 // on change. A user who has their own provider should not have to re-close this
 // on every visit.
-const PROVIDERS_DISMISSED_KEY = 'monti.proxy-providers-dismissed';
+const PROVIDERS_DISMISSED_KEY = 'scout.proxy-providers-dismissed';
 
 function readProvidersDismissed() {
   try {
@@ -641,13 +641,13 @@ function ProviderStrip({onDismiss}: {onDismiss: () => void}) {
 // Folder first, then the assignment filter, then the search narrows whatever
 // those left -- the same order the Profiles tab filters in.
 function visibleProxies(
-    allProxies: MontiProxy[],
+    allProxies: ScoutProxy[],
     {folderId, search, statusFilter, assignedFilter, assigned}: {
       folderId: string;
       search: string;
       statusFilter: string;
       assignedFilter: '' | 'assigned' | 'unassigned';
-      assigned: (proxy: MontiProxy) => boolean;
+      assigned: (proxy: ScoutProxy) => boolean;
     }) {
   const inFolder = folderId ?
     allProxies.filter((proxy) => proxy.folder_id === folderId) :

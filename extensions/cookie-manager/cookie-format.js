@@ -120,7 +120,7 @@
   // unless something downstream demands this one.
   function toNetscapeCookies(cookies) {
     const header = '# Netscape HTTP Cookie File\n' +
-      '# Exported by Monti. Tab-separated; do not edit by hand.\n';
+      '# Exported by Scout Web. Tab-separated; do not edit by hand.\n';
     const lines = cookies.map((cookie) => {
       const domain = cookie.domain || hostnameOf(cookie.url);
       return [
@@ -196,6 +196,6 @@
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;
   } else {
-    root.MontiCookieFormat = api;
+    root.ScoutCookieFormat = api;
   }
 })(globalThis);

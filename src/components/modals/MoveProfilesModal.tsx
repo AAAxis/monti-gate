@@ -14,10 +14,10 @@ import {StatusChip} from '../ui/StatusChip';
 import {tagKey, tagLabel} from '../../lib/tags';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
-import type {MontiFolder} from '../../types';
+import type {ScoutFolder} from '../../types';
 
 export function MoveProfilesModal({folder, seedTag, onClose}: {
-  folder: MontiFolder;
+  folder: ScoutFolder;
   // Set when the folder was just created from a tag suggestion: its profiles
   // arrive ticked and the search is pointed at them, so the whole flow is one
   // more click. Still only a proposal -- nothing moves until Move is pressed.

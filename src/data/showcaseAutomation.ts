@@ -19,9 +19,9 @@
 // to satisfy automations_id_fs_safe. A constant baked in here would also mean
 // every org shared one id, and loading the example twice would collide on the
 // primary key instead of producing two independent rows.
-import type {MontiAutomation} from '../types';
+import type {ScoutAutomation} from '../types';
 
-export const SHOWCASE_AUTOMATION: Omit<MontiAutomation, 'id'> = {
+export const SHOWCASE_AUTOMATION: Omit<ScoutAutomation, 'id'> = {
   name: 'Search Google for Scout Web',
   description: 'Opens Google, searches for us, and ends on montigate.com with a ' +
     'screenshot. Edit it, rename it or delete it — it is a normal automation.',

@@ -21,15 +21,15 @@ import {formatDateShort} from '../lib/text';
 import type {CellOption} from '../components/ui/CellControls';
 import type {TableColumn} from './columns';
 import type {TagUsage} from '../lib/tags';
-import type {MontiCookie, MontiFolder, MontiProfile, CloudState} from '../types';
+import type {ScoutCookie, ScoutFolder, ScoutProfile, CloudState} from '../types';
 
 export type CookieColumnContext = {
   state: CloudState;
-  folderFor: (cookie: MontiCookie) => MontiFolder | null | undefined;
+  folderFor: (cookie: ScoutCookie) => ScoutFolder | null | undefined;
   // How many profiles each set seeds, counted once for the whole table rather
   // than per row -- the same map the sort and the filter read.
   usage: Map<string, number>;
-  profilesUsing: (cookieId: string) => MontiProfile[];
+  profilesUsing: (cookieId: string) => ScoutProfile[];
   // Every tag in use across the workspace's cookie sets, for the Tags cell's
   // suggestion row -- deliberately the cookie list, not the profiles' one:
   // the two vocabularies are kept separate on purpose.
@@ -46,13 +46,13 @@ export type CookieCellOptions = {
 // Every write lands in cookies.save, a partial patch -- the rules live in
 // tables/cookieCellActions.tsx.
 export type CookieCellActions = {
-  setTags: (cookie: MontiCookie, tags: string[]) => void;
-  setFolder: (cookie: MontiCookie, folderId: string) => void;
-  setStatus: (cookie: MontiCookie, status: string) => void;
-  setColor: (cookie: MontiCookie, color: string) => void;
+  setTags: (cookie: ScoutCookie, tags: string[]) => void;
+  setFolder: (cookie: ScoutCookie, folderId: string) => void;
+  setStatus: (cookie: ScoutCookie, status: string) => void;
+  setColor: (cookie: ScoutCookie, color: string) => void;
 };
 
-export type CookieColumn = TableColumn<MontiCookie, CookieColumnContext>;
+export type CookieColumn = TableColumn<ScoutCookie, CookieColumnContext>;
 
 export const COOKIE_COLUMNS: CookieColumn[] = [
   {

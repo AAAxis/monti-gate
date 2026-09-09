@@ -27,7 +27,7 @@ import {useOrg} from '../org';
 import {useWorkspace} from '../workspace/WorkspaceProvider';
 import type {CellOption} from '../components/ui/CellControls';
 import type {ProfileCellActions, ProfileCellOptions} from './profileColumns';
-import type {MontiCookie, MontiProfile, CloudState} from '../types';
+import type {ScoutCookie, ScoutProfile, CloudState} from '../types';
 
 // Static: neither list depends on the workspace, so neither is rebuilt.
 const TIMEZONE_OPTIONS: CellOption[] = timezoneGroups.flatMap((group) =>
@@ -140,7 +140,7 @@ const PLATFORM_NUMBERS = [
   ['fingerprint_memory_gb', 'memory_gb'],
 ] as const;
 
-type Fingerprint = NonNullable<MontiProfile['fingerprint']>;
+type Fingerprint = NonNullable<ScoutProfile['fingerprint']>;
 
 // Everything a platform change should write, and nothing else.
 export function platformFingerprintPatch(os: string): Fingerprint {
@@ -166,8 +166,8 @@ export function platformFingerprintPatch(os: string): Fingerprint {
 // filtered to).
 export type ProfileCellJumps = {
   filterFolder: (folderId: string) => void;
-  openFingerprint: (profile: MontiProfile) => void;
-  openCookieSet: (cookie: MontiCookie) => void;
+  openFingerprint: (profile: ScoutProfile) => void;
+  openCookieSet: (cookie: ScoutCookie) => void;
 };
 
 export function useProfileCellActions(jumps: ProfileCellJumps): ProfileCellActions {

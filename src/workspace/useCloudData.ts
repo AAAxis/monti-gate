@@ -16,8 +16,8 @@ import {repairProxyAssignments} from '../lib/proxies';
 import {trashCutoffIso} from '../lib/trash';
 import type {Toast} from '../hooks/useToast';
 import type {
-  MontiAutomation, MontiConnector, MontiCookie, MontiFolder, MontiNotification, MontiProfile,
-  MontiProxy,
+  ScoutAutomation, ScoutConnector, ScoutCookie, ScoutFolder, ScoutNotification, ScoutProfile,
+  ScoutProxy,
   CloudState, OrgMember, ProfileNoteSummary,
   SharedBookmark, SharedExtension,
 } from '../types';
@@ -37,7 +37,7 @@ export function useCloudData(orgId: string | null, toast: Toast) {
   // flight and its unconditional setState at the end wins whenever A's reads
   // finish second. That is not a cosmetic mislabel. selectedProfileId is seeded
   // from this state, and a profile id is also a real directory name under
-  // E:\MontiProfiles -- so the next launch would open one workspace's profile
+  // E:\ScoutProfiles -- so the next launch would open one workspace's profile
   // directory while the UI says you are in another.
   //
   // This was survivable while switching meant a <select> in the topbar that only
@@ -81,30 +81,30 @@ export function useCloudData(orgId: string | null, toast: Toast) {
   // loop, and reading the closure-captured state between iterations would lose
   // the earlier ones.
   const patch = {
-    profiles: (fn: (list: MontiProfile[]) => MontiProfile[]) =>
+    profiles: (fn: (list: ScoutProfile[]) => ScoutProfile[]) =>
       setState((current) => ({...current, profiles: fn(current.profiles)})),
-    proxies: (fn: (list: MontiProxy[]) => MontiProxy[]) =>
+    proxies: (fn: (list: ScoutProxy[]) => ScoutProxy[]) =>
       setState((current) => ({...current, proxies: fn(current.proxies)})),
-    folders: (fn: (list: MontiFolder[]) => MontiFolder[]) =>
+    folders: (fn: (list: ScoutFolder[]) => ScoutFolder[]) =>
       setState((current) => ({...current, folders: fn(current.folders)})),
-    proxyFolders: (fn: (list: MontiFolder[]) => MontiFolder[]) =>
+    proxyFolders: (fn: (list: ScoutFolder[]) => ScoutFolder[]) =>
       setState((current) => ({...current, proxy_folders: fn(current.proxy_folders)})),
-    cookieFolders: (fn: (list: MontiFolder[]) => MontiFolder[]) =>
+    cookieFolders: (fn: (list: ScoutFolder[]) => ScoutFolder[]) =>
       setState((current) => ({...current, cookie_folders: fn(current.cookie_folders)})),
-    automationFolders: (fn: (list: MontiFolder[]) => MontiFolder[]) =>
+    automationFolders: (fn: (list: ScoutFolder[]) => ScoutFolder[]) =>
       setState((current) => ({...current, automation_folders: fn(current.automation_folders)})),
-    cookies: (fn: (list: MontiCookie[]) => MontiCookie[]) =>
+    cookies: (fn: (list: ScoutCookie[]) => ScoutCookie[]) =>
       setState((current) => ({...current, cookies: fn(current.cookies)})),
     extensions: (fn: (list: SharedExtension[]) => SharedExtension[]) =>
       setState((current) => ({...current, shared_extensions: fn(current.shared_extensions)})),
     bookmarks: (fn: (list: SharedBookmark[]) => SharedBookmark[]) =>
       setState((current) => ({...current, shared_bookmarks: fn(current.shared_bookmarks)})),
-    automations: (fn: (list: MontiAutomation[]) => MontiAutomation[]) =>
+    automations: (fn: (list: ScoutAutomation[]) => ScoutAutomation[]) =>
       setState((current) => ({...current, automations: fn(current.automations)})),
-    connectors: (fn: (list: MontiConnector[]) => MontiConnector[]) =>
+    connectors: (fn: (list: ScoutConnector[]) => ScoutConnector[]) =>
       setState((current) => ({...current, connectors: fn(current.connectors)})),
-    notifications: (fn: (list: (MontiNotification & {read: boolean})[]) =>
-      (MontiNotification & {read: boolean})[]) =>
+    notifications: (fn: (list: (ScoutNotification & {read: boolean})[]) =>
+      (ScoutNotification & {read: boolean})[]) =>
       setState((current) => ({...current, notifications: fn(current.notifications)})),
     members: (fn: (list: OrgMember[]) => OrgMember[]) =>
       setState((current) => ({...current, members: fn(current.members)})),

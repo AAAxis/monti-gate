@@ -29,24 +29,24 @@ import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {ProfileColumnContext} from '../../tables/profileColumns';
 import type {PurgeRequest} from '../modals/ConfirmModals';
 import type {ShareRequest} from '../modals/ShareModal';
-import type {MontiCookie, MontiFolder, MontiProfile, MontiProxy} from '../../types';
+import type {ScoutCookie, ScoutFolder, ScoutProfile, ScoutProxy} from '../../types';
 
 export type ProfilesTabProps = {
   // Controlled by the shell: creating a folder from the dialog selects it here.
   folderId: string;
   onFolderId: (folderId: string) => void;
-  onEditProfile: (profile: MontiProfile) => void;
+  onEditProfile: (profile: ScoutProfile) => void;
   // The Browser and Screen cells are read-only -- a screen set on its own would
   // contradict the platform preset that re-rolls it -- so they open the editor
   // at the section they belong to instead of editing in place.
-  onEditFingerprint: (profile: MontiProfile) => void;
+  onEditFingerprint: (profile: ScoutProfile) => void;
   // Which tab is showing and which cookie inspector is open are both App's,
   // so the Cookie set cell hands its jump upwards.
-  onOpenCookieSet: (cookie: MontiCookie) => void;
+  onOpenCookieSet: (cookie: ScoutCookie) => void;
   onNewProfile: () => void;
   onNewFolder: () => void;
   // Was onRenameFolder. The dialog edits the icon and colour as well now.
-  onEditFolder: (folder: MontiFolder) => void;
+  onEditFolder: (folder: ScoutFolder) => void;
   // Set for one render after a folder is created from a tag suggestion: the
   // move dialog opens on the folder with that tag's profiles already ticked,
   // so filling it is one click. Cleared through onFillTagDone when it closes.
@@ -88,7 +88,7 @@ export function ProfilesTab({
   } = useWorkspace();
   const state = data.state;
   const {run, isPending} = useAsyncAction();
-  const selection = useSelection<MontiProfile>();
+  const selection = useSelection<ScoutProfile>();
 
   const org = useOrg();
   const [search, setSearch] = useState('');
@@ -145,7 +145,7 @@ export function ProfilesTab({
   // Every column in the registry, not just the visible ones: the sort key is
   // held in the hook's own state, so hiding the column a table is sorted by
   // would otherwise leave a key nothing answers to.
-  const sorting = useTableSort<MontiProfile>(
+  const sorting = useTableSort<ScoutProfile>(
       sortColumnsFrom(PROFILE_COLUMNS, columnContext),
       {onSortChange: () => setPage(0)});
 
@@ -258,7 +258,7 @@ export function ProfilesTab({
   // The proxies behind the selected profiles, deduplicated -- several profiles
   // sharing one proxy should check it once, not once each.
   function checkSelectionProxies() {
-    const targets = new Map<string, MontiProxy>();
+    const targets = new Map<string, ScoutProxy>();
     for (const profile of selection.selectedFrom(state.profiles)) {
       const proxy = profiles.proxyFor(profile);
       if (proxy) {
@@ -272,7 +272,7 @@ export function ProfilesTab({
     void proxies.checkMany([...targets.values()]);
   }
 
-  async function restoreOne(profile: MontiProfile) {
+  async function restoreOne(profile: ScoutProfile) {
     if (await profiles.restore([profile.id])) {
       toast.setMessage(`${profile.name} restored`);
     }
@@ -283,7 +283,7 @@ export function ProfilesTab({
   // reappear under All profiles rather than vanishing with the folder. The
   // confirmation says so, because "delete folder" reads like it should take
   // them with it.
-  async function deleteFolder(folder: MontiFolder) {
+  async function deleteFolder(folder: ScoutFolder) {
     const count = state.profiles.filter((profile) =>
       !profile.deleted_at && profile.folder_id === folder.id).length;
     const consequence = count ?
@@ -302,7 +302,7 @@ export function ProfilesTab({
     toast.setMessage(`${folder.name} folder deleted`);
   }
 
-  function purgeOne(profile: MontiProfile) {
+  function purgeOne(profile: ScoutProfile) {
     setPurge({ids: [profile.id], count: 1, label: profile.name});
   }
 
@@ -746,7 +746,7 @@ export function ProfilesTab({
 // Trash is a folder in the picker but a flag on the row, so it filters first
 // and the rest narrow whatever it left.
 function visibleProfiles(
-    allProfiles: MontiProfile[],
+    allProfiles: ScoutProfile[],
     {folderId, statusFilter, tagFilter, search}: {
       folderId: string;
       statusFilter: string;

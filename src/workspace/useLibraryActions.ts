@@ -11,7 +11,7 @@ import {supabase} from '../supabase';
 import {newId} from './core';
 import type {WorkspaceCore} from './core';
 import type {
-  MontiFolder, BuiltInExtensionToggles, SharedBookmark, SharedExtension,
+  ScoutFolder, BuiltInExtensionToggles, SharedBookmark, SharedExtension,
 } from '../types';
 
 export type LibraryActions = ReturnType<typeof useLibraryActions>;
@@ -72,8 +72,8 @@ export function useLibraryActions({data, toast}: WorkspaceCore) {
   }
 
   async function createFolder(
-      fields: FolderFields): Promise<MontiFolder | null> {
-    const folder: MontiFolder = {id: newId(), ...fields, created_at: new Date().toISOString()};
+      fields: FolderFields): Promise<ScoutFolder | null> {
+    const folder: ScoutFolder = {id: newId(), ...fields, created_at: new Date().toISOString()};
     if (!await withDb((activeOrgId) => db.folders.create(activeOrgId, folder))) {
       return null;
     }

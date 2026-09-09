@@ -25,7 +25,7 @@ import type {BookmarkDraft, FolderDraft, ProxyDraft, StatusDraft} from '../../dr
 import type {TagUsage} from '../../lib/tags';
 import type {ProxyCheckResult} from '../../native';
 import type {FolderKind} from '../../workspace/useLibraryActions';
-import type {MontiFolder, MontiProxy, CloudState, SharedBookmark} from '../../types';
+import type {ScoutFolder, ScoutProxy, CloudState, SharedBookmark} from '../../types';
 
 export function ProxyModal({draft, source, onChange, onClose, onSaved, onRequestDelete}: {
   draft: ProxyDraft;
@@ -476,7 +476,7 @@ const FOLDER_COPY: Record<FolderKind, {
 };
 
 // The state list a folder of this kind lives in.
-function foldersOfKind(state: CloudState, kind: FolderKind): MontiFolder[] {
+function foldersOfKind(state: CloudState, kind: FolderKind): ScoutFolder[] {
   switch (kind) {
     case 'proxy':
       return state.proxy_folders;
@@ -720,7 +720,7 @@ function seedFor(draft: FolderDraft, name: string): string | undefined {
 const SUGGESTION_MIN_PROFILES = 2;
 const SUGGESTION_LIMIT = 6;
 
-function folderSuggestions(tagOptions: TagUsage[], folders: MontiFolder[]): TagUsage[] {
+function folderSuggestions(tagOptions: TagUsage[], folders: ScoutFolder[]): TagUsage[] {
   const taken = new Set(folders.map((folder) => tagKey(folder.name)));
   return tagOptions
       .filter((option) => option.count >= SUGGESTION_MIN_PROFILES &&
@@ -732,7 +732,7 @@ function folderSuggestions(tagOptions: TagUsage[], folders: MontiFolder[]): TagU
 // The countries this workspace's proxies checked into, most-used first. Only
 // checked proxies have one -- an unchecked or failing proxy has no country to
 // file it by, and the background sweep will give it one soon enough.
-function countriesInUse(proxies: MontiProxy[]) {
+function countriesInUse(proxies: ScoutProxy[]) {
   const counts = new Map<string, number>();
   for (const proxy of proxies) {
     const code = proxy.country_code?.trim().toUpperCase();
@@ -749,7 +749,7 @@ function countriesInUse(proxies: MontiProxy[]) {
 // two thresholds. A country is skipped when a folder already carries its flag
 // or its name -- otherwise "United States" gets offered forever, next to the
 // United States folder the user made from it last week.
-function countrySuggestions(proxies: MontiProxy[], folders: MontiFolder[]) {
+function countrySuggestions(proxies: ScoutProxy[], folders: ScoutFolder[]) {
   const takenNames = new Set(folders.map((folder) => tagKey(folder.name)));
   const takenFlags = new Set(folders
       .map((folder) => flagCodeFromIcon(folder.icon))

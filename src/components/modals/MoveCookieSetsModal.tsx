@@ -11,10 +11,10 @@ import {FolderGlyph} from '../ui/FolderGlyph';
 import {TagCell} from '../ui/TagChip';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
-import type {MontiFolder} from '../../types';
+import type {ScoutFolder} from '../../types';
 
 export function MoveCookieSetsModal({folder, onClose}: {
-  folder: MontiFolder;
+  folder: ScoutFolder;
   onClose: () => void;
 }) {
   const {data, toast, cookies} = useWorkspace();

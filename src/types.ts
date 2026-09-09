@@ -73,7 +73,7 @@ export type RuntimeFingerprint = {
 // for backward compatibility with profiles saved before this field existed.
 export type ProxyMode = 'assigned' | 'direct' | 'free_proxy';
 
-export type MontiProfile = {
+export type ScoutProfile = {
   id: string;
   name: string;
   status?: string;
@@ -94,7 +94,7 @@ export type MontiProfile = {
   avatar?: string;
   tags?: string[];
   // Login credentials for whatever account this profile is logged into.
-  // Stored in plaintext the same way MontiProxy.password already is -- no
+  // Stored in plaintext the same way ScoutProxy.password already is -- no
   // separate encrypted store, consistent with the rest of this app's model.
   email?: string;
   password?: string;
@@ -117,7 +117,7 @@ export type MontiProfile = {
   cookie_import_name?: string | null;
   cookie_import_count?: number | null;
   // 'saved' resolves cookie_id against CloudState.cookies at launch time
-  // (see MontiCookie); undefined/'paste' uses the cookie_import_* fields
+  // (see ScoutCookie); undefined/'paste' uses the cookie_import_* fields
   // above instead.
   cookie_mode?: 'paste' | 'saved';
   cookie_id?: string | null;
@@ -188,7 +188,7 @@ export type MontiProfile = {
   deleted_at?: string | null;
 };
 
-export type MontiFolder = {
+export type ScoutFolder = {
   id: string;
   name: string;
   // Which library this folder belongs to. Profile, proxy, cookie-set and
@@ -207,17 +207,17 @@ export type MontiFolder = {
   // ever downgrade to the plain folder glyph.
   icon?: string;
   // A PROFILE_COLORS key or a custom #rrggbb, read through profileColorStyle()
-  // exactly like MontiProfile.color. Tints the folder's glyph in the rail and
+  // exactly like ScoutProfile.color. Tints the folder's glyph in the rail and
   // in the profiles table; the card itself stays neutral.
   color?: string;
   created_at?: string;
 };
 
-export type MontiProxy = {
+export type ScoutProxy = {
   id: string;
   name: string;
   // A label the user marks this proxy with, free text exactly as
-  // MontiProfile.status is. Undefined means the first of baseProxyStatuses --
+  // ScoutProfile.status is. Undefined means the first of baseProxyStatuses --
   // there is no stored default, the same way an unset profile status reads as
   // 'Ready'. The built-in labels differ from the profile ones (a proxy has no
   // Warmup); custom labels are shared across both. See src/data/statuses.ts.
@@ -228,7 +228,7 @@ export type MontiProxy = {
   username?: string;
   password?: string;
   // The proxy-kind folder this proxy is filed under, or null for "All proxies".
-  // Same shape and same ON DELETE SET NULL as MontiProfile.folder_id.
+  // Same shape and same ON DELETE SET NULL as ScoutProfile.folder_id.
   folder_id?: string | null;
   country?: string;
   country_code?: string;
@@ -244,7 +244,7 @@ export type MontiProxy = {
   ping_ms?: number;
   checked_at?: string;
   check_error?: string;
-  // Who is on the hook for this proxy. See MontiProfile.assigned_to.
+  // Who is on the hook for this proxy. See ScoutProfile.assigned_to.
   assigned_to?: string | null;
   // When it arrived, and who put it there. Read-only in both cases: the row
   // carries created_at from the moment of insert and created_by from the
@@ -258,7 +258,7 @@ export type MontiProxy = {
 };
 
 // A shared, reusable cookie-set in the Cookies tab library. A set is attached
-// to a profile through MontiProfile.cookie_id (profiles.cookie_set_id): a
+// to a profile through ScoutProfile.cookie_id (profiles.cookie_set_id): a
 // profile carries at most one set, a set may be used by any number of
 // profiles. The FK is the whole model -- there is no join table and there must
 // not be one, or "which cookies does this profile launch with" stops having a
@@ -274,23 +274,23 @@ export type MontiProxy = {
 // cookie_sets.cookies jsonb column and are loaded on demand by the inspector --
 // a workspace with 200 sets would otherwise pull every payload on every load,
 // and useCloudData reloads on window focus.
-export type MontiCookie = {
+export type ScoutCookie = {
   id: string;
   name: string;
   url: string;
   count?: number | null;
-  // A label the user marks this set with. Same contract as MontiProxy.status
+  // A label the user marks this set with. Same contract as ScoutProxy.status
   // above; undefined reads as the first of baseCookieStatuses.
   status?: string;
   // A PROFILE_COLORS key or a custom #rrggbb, read through profileColorStyle()
-  // exactly like MontiProfile.color -- and set from the same ColorPicker.
+  // exactly like ScoutProfile.color -- and set from the same ColorPicker.
   // Tints the set's icon in the Name cell. Undefined keeps the behaviour that
   // preceded this field: the icon takes the colour of its folder, which left
   // two sets in one folder looking identical.
   color?: string;
   // The cookie-kind folder this set is filed under, or null for
   // "All cookie-sets". Same shape and same ON DELETE SET NULL as
-  // MontiProfile.folder_id.
+  // ScoutProfile.folder_id.
   folder_id?: string | null;
   // Free text, capped at MAX_PROFILE_TAGS and read through the same tag catalog
   // profiles use -- a set tagged "instagram" and a profile tagged "Instagram"
@@ -298,16 +298,16 @@ export type MontiCookie = {
   tags?: string[];
   created_at?: string;
   updated_at?: string;
-  // Who is on the hook for this set. See MontiProfile.assigned_to. Distinct
+  // Who is on the hook for this set. See ScoutProfile.assigned_to. Distinct
   // from "assigned to profiles", which is what cookie_set_id does -- that says
   // which profiles USE it, this says which person looks after it.
   assigned_to?: string | null;
-  // Soft-delete timestamp, the same 30-day contract as MontiProfile.deleted_at.
+  // Soft-delete timestamp, the same 30-day contract as ScoutProfile.deleted_at.
   // Trashing a set also unassigns every profile using it, because a trashed set
   // that could still seed a launch would be a lie.
   deleted_at?: string | null;
   // Who added it. Same shape, same nullability and same reasoning as
-  // MontiProxy.created_by.
+  // ScoutProxy.created_by.
   created_by?: string | null;
 };
 
@@ -374,7 +374,7 @@ export type BuiltInExtensionToggles = {
 // one, so there is no deleted_at and no Trash. Deleting one detaches the
 // profiles pointing at it (ON DELETE SET NULL) and leaves its runs readable,
 // which is what automation_name on AutomationRun is for.
-export type MontiAutomation = {
+export type ScoutAutomation = {
   id: string;
   name: string;
   description?: string | null;
@@ -387,7 +387,7 @@ export type MontiAutomation = {
   // What this automation asks for before it runs: ordered, typed, and the
   // reason one workflow can serve many profiles. Each is addressable from any
   // interpolated step field as {{vars.<name>}}, and every profile can hold its
-  // own values (MontiProfile.automation_vars). Shape in
+  // own values (ScoutProfile.automation_vars). Shape in
   // src/automations/parameters.ts.
   parameters?: AutomationParam[];
   // Free text, at most 5, normalized through normalizeTags on every write --
@@ -395,7 +395,7 @@ export type MontiAutomation = {
   // suggestions, so "facebook" means the same thing on both.
   tags?: string[];
   // Shows as a tile on every profile's generated start page. Org-wide: the
-  // per-profile slot is MontiProfile.automation_id, and pins are the
+  // per-profile slot is ScoutProfile.automation_id, and pins are the
   // many-to-many case that would otherwise need a join table.
   pinned?: boolean;
   // Whole-run ceiling. The runner also caps every individual step.
@@ -430,7 +430,7 @@ export type MontiAutomation = {
   color?: string | null;
   // Which automation folder this is filed in, or null for "All automations".
   // The folders table is shared with profiles, proxies and cookie sets and
-  // separated by `kind` -- see MontiFolder.
+  // separated by `kind` -- see ScoutFolder.
   folder_id?: string | null;
   // Set when the automation is in Trash, cleared when it is restored. The grid
   // filters on it exactly as the profiles table does, so Trash is a view of
@@ -456,7 +456,7 @@ export type MontiAutomation = {
   schedule?: AutomationSchedule | null;
   created_at?: string;
   updated_at?: string;
-  // Who is on the hook for this automation. See MontiProfile.assigned_to.
+  // Who is on the hook for this automation. See ScoutProfile.assigned_to.
   assigned_to?: string | null;
 };
 
@@ -471,7 +471,7 @@ export type MontiAutomation = {
 // is readable by every member. See the migration for the full reasoning,
 // including why plaintext columns are the consistent choice in an app whose
 // proxy and profile passwords are already stored the same way.
-export type MontiConnector = {
+export type ScoutConnector = {
   id: string;
   // What the workspace calls it. This is what a step's dropdown lists, so
   // renaming one changes how every workflow using it reads.
@@ -497,7 +497,7 @@ export type MontiConnector = {
 // teammate handoffs, and what the OS notification mirrored. Composed by the
 // main process off the run record and written by the renderer (the only side
 // with Supabase); `status` is reported from that record, never recomputed.
-export type MontiNotification = {
+export type ScoutNotification = {
   id: string;
   // What produced this. 'automation_run' today; a column rather than an
   // assumption so a third bell kind is a row here, not another table.
@@ -541,7 +541,7 @@ export type AutomationRun = {
 // The tenant. One client firm is one org; its workers are org_members. Every
 // row in every table below hangs off organizations.id, and RLS keys on it --
 // see docs/data-model.md. profile_limit null means unlimited (Enterprise).
-export type MontiOrg = {
+export type ScoutOrg = {
   id: string;
   name: string;
   plan: string;
@@ -600,7 +600,7 @@ export type OrgRole = 'owner' | 'member';
 // organizations is is_org_member, and the entitlement columns are held back by
 // column grants rather than by any role. It decides who manages people.
 export type OrgMembership = {
-  org: MontiOrg;
+  org: ScoutOrg;
   role: OrgRole;
 };
 
@@ -737,22 +737,22 @@ export type Handoff = {
 };
 
 export type CloudState = {
-  profiles: MontiProfile[];
+  profiles: ScoutProfile[];
   // Profile folders only. The proxy ones are held apart rather than mixed in
   // behind a `kind` check because half a dozen call sites read this list and
   // every one of them means profile folders -- the folder row, the assign
   // dropdown, the move dialog, the tag suggestions, the API-key folder scope.
   // Splitting once, on load, is what makes a proxy folder unable to leak into
   // any of them.
-  folders: MontiFolder[];
-  proxy_folders: MontiFolder[];
-  cookie_folders: MontiFolder[];
-  automation_folders: MontiFolder[];
-  proxies: MontiProxy[];
+  folders: ScoutFolder[];
+  proxy_folders: ScoutFolder[];
+  cookie_folders: ScoutFolder[];
+  automation_folders: ScoutFolder[];
+  proxies: ScoutProxy[];
   // Every set in the library, trashed ones included -- the Cookies tab filters
   // on deleted_at the same way the Profiles tab does, so Trash is a view rather
   // than a second read.
-  cookies: MontiCookie[];
+  cookies: ScoutCookie[];
   shared_extensions: SharedExtension[];
   shared_bookmarks: SharedBookmark[];
   custom_statuses: string[];
@@ -761,17 +761,17 @@ export type CloudState = {
   // NOT here: they are unbounded and only the history view wants them, so they
   // are read on demand -- the same reason cookie_sets.list() leaves the
   // `cookies` column out.
-  automations: MontiAutomation[];
+  automations: ScoutAutomation[];
   // The workspace's connectors -- AI endpoints and messaging targets. Loaded
   // with everything else rather than on demand because the automation editor
   // needs the names to render a step's connector dropdown, and the main
   // process needs the whole list -- credentials included -- before any run can
   // make a call.
-  connectors: MontiConnector[];
+  connectors: ScoutConnector[];
   // Run-finished notifications, newest first, each carrying whether THIS user
   // has read it (joined from notification_reads at load). The bell renders
   // these next to handoffs.
-  notifications: (MontiNotification & {read: boolean})[];
+  notifications: (ScoutNotification & {read: boolean})[];
   // Everyone in this org. Here rather than local to the Team tab because the
   // Profiles table needs it too -- it is what turns profiles.created_by from a
   // uuid into a name -- and reading it twice for two surfaces would be two

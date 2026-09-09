@@ -28,14 +28,14 @@ import {
 import {randomProfileColor} from '../lib/profileColors';
 import {newId} from './core';
 import type {ParsedCsvRow} from '../lib/csv';
-import type {MontiFolder, MontiProfile, MontiProxy, ProxyMode} from '../types';
+import type {ScoutFolder, ScoutProfile, ScoutProxy, ProxyMode} from '../types';
 
 // The library a row is being read against. Passed in rather than reached for so
 // the whole module stays pure and testable without a workspace.
 export type ImportLibrary = {
-  profiles: MontiProfile[];
-  proxies: MontiProxy[];
-  folders: MontiFolder[];
+  profiles: ScoutProfile[];
+  proxies: ScoutProxy[];
+  folders: ScoutFolder[];
 };
 
 // Which input a problem belongs to, so the dialog can highlight that field
@@ -93,7 +93,7 @@ export type ImportRow = {
   proxyMode: ProxyMode;
   // The proxy this row wants, parsed. Null when the row names none, which is
   // only a problem when proxyMode is 'assigned'.
-  proxy: Omit<MontiProxy, 'id' | 'name'> | null;
+  proxy: Omit<ScoutProxy, 'id' | 'name'> | null;
   // The existing proxy this row's proxy is the same as, if any -- so the
   // preview can say "reused" without having decided to write anything.
   matchedProxyId: string | null;
@@ -101,7 +101,7 @@ export type ImportRow = {
   // file. Committing updates the stored proxy rather than discarding the new
   // password, which is what used to happen.
   updatesProxyPassword: boolean;
-  fingerprint: NonNullable<MontiProfile['fingerprint']>;
+  fingerprint: NonNullable<ScoutProfile['fingerprint']>;
   // The existing profile this row would update, matched by profile_id.
   updatesProfileId: string | null;
   tagsTrimmed: boolean;
@@ -167,12 +167,12 @@ export type ImportResult = {
 };
 
 export type ImportPlan = {
-  profiles: MontiProfile[];
-  proxies: MontiProxy[];
-  folders: MontiFolder[];
-  upsertProxies: MontiProxy[];
-  newFolders: MontiFolder[];
-  touchedProfiles: Array<{profile: MontiProfile; exists: boolean}>;
+  profiles: ScoutProfile[];
+  proxies: ScoutProxy[];
+  folders: ScoutFolder[];
+  upsertProxies: ScoutProxy[];
+  newFolders: ScoutFolder[];
+  touchedProfiles: Array<{profile: ScoutProfile; exists: boolean}>;
   result: ImportResult;
 };
 
@@ -182,9 +182,9 @@ export type ImportPlan = {
 // wrote `proxy` and `status` while the reader looked for `proxy_name` and
 // `status_name`, and a file this app produced could not be fed back into it.
 export function profileExportRow(
-    profile: MontiProfile,
-    proxy: MontiProxy | null,
-    folder: MontiFolder | null): Record<string, string> {
+    profile: ScoutProfile,
+    proxy: ScoutProxy | null,
+    folder: ScoutFolder | null): Record<string, string> {
   return {
     name: profile.name || '',
     // Without an id the file cannot update what it came from: re-importing
@@ -517,9 +517,9 @@ export function planCsvImport(
   const folders = [...library.folders];
   // What this run actually has to write. Rows the CSV never mentioned are left
   // alone.
-  const upsertProxies: MontiProxy[] = [];
-  const newFolders: MontiFolder[] = [];
-  const touchedProfiles: Array<{profile: MontiProfile; exists: boolean}> = [];
+  const upsertProxies: ScoutProxy[] = [];
+  const newFolders: ScoutFolder[] = [];
+  const touchedProfiles: Array<{profile: ScoutProfile; exists: boolean}> = [];
 
   const result: ImportResult = {
     created: 0,
@@ -558,7 +558,7 @@ export function planCsvImport(
     // The name is used exactly as given. The version this replaces wrote
     // `Imported ${value}` and matched it back with /^Imported (.+)$/, so a
     // second round-trip produced "Imported Imported 5 July".
-    const folder: MontiFolder = {
+    const folder: ScoutFolder = {
       id: newId(folders.length),
       name: trimmed,
       kind: 'profile',
@@ -597,7 +597,7 @@ export function planCsvImport(
           result.proxiesUpdated++;
         }
       } else {
-        const proxy: MontiProxy = {
+        const proxy: ScoutProxy = {
           id: newId(proxies.length),
           name: defaultProxyName(row.proxy.host, row.proxy.port),
           type: row.proxy.type,
@@ -629,7 +629,7 @@ export function planCsvImport(
     if (row.tagsTrimmed) {
       result.tagsTrimmed++;
     }
-    const profile: MontiProfile = {
+    const profile: ScoutProfile = {
       id: importId,
       name: row.name,
       status: row.status,

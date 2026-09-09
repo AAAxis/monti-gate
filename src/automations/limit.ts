@@ -17,7 +17,7 @@
 // same sentence. Letting a click through while the org is unknown costs at
 // worst one refused save with an accurate message; disabling the button costs a
 // user who cannot tell a slow load from a locked feature.
-import type {MontiOrg} from '../types';
+import type {ScoutOrg} from '../types';
 
 // How many runs a batch keeps in flight.
 //
@@ -45,7 +45,7 @@ export type AutomationCap = {
 };
 
 export function automationCap(
-    org: MontiOrg | null | undefined, count: number): AutomationCap {
+    org: ScoutOrg | null | undefined, count: number): AutomationCap {
   if (!org) {
     return {loading: true, atCap: false, limit: null};
   }

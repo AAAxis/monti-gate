@@ -57,11 +57,11 @@ function request(base, token, method, routePath, body) {
       });
     });
     req.on('timeout', () => req.destroy(new Error(`${method} ${routePath} timed out`)));
-    // The overwhelmingly common cause: Monti Launcher is not running. Say that,
+    // The overwhelmingly common cause: Scout Web is not running. Say that,
     // rather than surfacing a bare ECONNREFUSED.
     req.on('error', (error) => {
       reject(error.code === 'ECONNREFUSED' ?
-        new Error('Monti Gate is not running, or its local API is not ready yet') :
+        new Error('Scout Web is not running, or its local API is not ready yet') :
         error);
     });
     if (payload) {

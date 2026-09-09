@@ -5,7 +5,7 @@
 // account. Someone who collapses it on a 13" laptop has said nothing about the
 // 27" display they sign in from next, and carrying the choice across would be
 // answering a question they did not ask.
-const KEY = 'monti.sidebar';
+const KEY = 'scout.sidebar';
 
 export function isSidebarCollapsed(): boolean {
   try {

@@ -5,7 +5,7 @@
 // import a .cjs directly (typed by the hand-written .d.cts next door) while it
 // cannot import the runner, which pulls in a CDP socket and the disk store.
 //
-// The consumer is the Monti Panel's Automations tab, which polls this roughly
+// The consumer is the Scout Panel's Automations tab, which polls this roughly
 // once a second while something is in flight. That is the whole reason it is a
 // reduction rather than the record: the record carries the full step log, and
 // shipping that down a poll would put a run's every selector and typed value

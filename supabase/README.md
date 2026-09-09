@@ -74,7 +74,7 @@ PostgREST.
 
 **Browser session state is local-only, by design.** Each profile's Chromium
 `--user-data-dir` — its cookie jar, logins, LocalStorage, IndexedDB — lives
-under `MontiProfiles/<profileId>/` in Electron's userData and is never uploaded.
+under `ScoutProfiles/<profileId>/` in Electron's userData and is never uploaded.
 `cookie_sets` is a seed/import mechanism, not a sync: cookies are written to
 `seed-cookies.json` at launch and an extension imports them once. A profile
 signed into a site on one machine is not signed in on another.

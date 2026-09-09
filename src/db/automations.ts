@@ -1,4 +1,4 @@
-import type {MontiAutomation} from '../types';
+import type {ScoutAutomation} from '../types';
 import {optionalClient, raise, requireClient} from './client';
 import {automationPatchToRow, automationToRow, rowToAutomation} from './mappers';
 import type {AutomationRow} from './rows';
@@ -13,7 +13,7 @@ const COLUMNS =
   'created_by,created_via,created_by_label,updated_by,schedule,' +
   'created_at,updated_at,assigned_to';
 
-export async function list(orgId: string): Promise<MontiAutomation[]> {
+export async function list(orgId: string): Promise<ScoutAutomation[]> {
   const client = optionalClient();
   if (!client) {
     return [];
@@ -41,7 +41,7 @@ export async function list(orgId: string): Promise<MontiAutomation[]> {
 // The id is never regenerated either: it is the directory name for that
 // automation's run artifacts under <userData>/AutomationRuns/, and a new id
 // orphans the history.
-export async function create(orgId: string, automation: MontiAutomation): Promise<void> {
+export async function create(orgId: string, automation: ScoutAutomation): Promise<void> {
   const client = requireClient();
   const {error} = await client.from('automations').insert(automationToRow(orgId, automation));
   raise(error, 'automations.create');
@@ -49,7 +49,7 @@ export async function create(orgId: string, automation: MontiAutomation): Promis
 
 // Writes every editable column of an existing row. `id` and `org_id` are
 // stripped: they are the lookup keys, not fields to rewrite.
-export async function replace(orgId: string, automation: MontiAutomation): Promise<void> {
+export async function replace(orgId: string, automation: ScoutAutomation): Promise<void> {
   const client = requireClient();
   const {id: _id, org_id: _orgId, ...row} = automationToRow(orgId, automation);
   const {error} = await client
@@ -61,14 +61,14 @@ export async function replace(orgId: string, automation: MontiAutomation): Promi
 }
 
 export async function save(
-    orgId: string, automation: MontiAutomation, exists: boolean): Promise<void> {
+    orgId: string, automation: ScoutAutomation, exists: boolean): Promise<void> {
   return exists ? replace(orgId, automation) : create(orgId, automation);
 }
 
 // Only the keys present in `patch` are written, so toggling `pinned` from the
 // list view cannot clobber a step edit someone else is saving.
 export async function update(
-    orgId: string, id: string, patch: Partial<MontiAutomation>): Promise<void> {
+    orgId: string, id: string, patch: Partial<ScoutAutomation>): Promise<void> {
   const client = requireClient();
   const {error} = await client
       .from('automations')

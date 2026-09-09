@@ -14,7 +14,7 @@
 // asset directory beside it and no network it is allowed to need, so an
 // <img src="assets/…"> resolves to nothing.
 //
-// src/assets/monti-mark.svg is the *embeddable* cut -- currentColor rather than
+// src/assets/scout-mark.svg is the *embeddable* cut -- currentColor rather than
 // the canonical file's fill="black", and a namespaced clipPath id. Both matter
 // here and nowhere else: black line art is invisible on the dark theme, and
 // this is the only place the artwork lands inside a document that has ids of
@@ -26,7 +26,7 @@
 // two scripts. It used to be inlined a second time beside the Automations
 // label, for double the cost; that label now carries a workflow glyph, which is
 // what the heading is actually about.
-import montiMark from '../assets/monti-mark.svg?raw';
+import scoutMark from '../assets/scout-mark.svg?raw';
 import {bookmarkInitial, faviconCache, normalizeBookmarkUrl} from './bookmarks';
 import {AUTO_FROM_PROXY} from './fingerprintPresets';
 import {FONT_STACK, MONO_STACK, paletteCss} from './palette';
@@ -35,12 +35,12 @@ import {escapeHtml} from './text';
 import {defaultProfileStatus, statusToneClass} from '../data/statuses';
 import type {SearchEngine} from './searchEngines';
 import type {ThemePreference} from '../theme';
-import type {MontiProfile, MontiProxy, SharedBookmark} from '../types';
+import type {ScoutProfile, ScoutProxy, SharedBookmark} from '../types';
 
 // Where profile data lives, as the renderer states it: a bare relative path
 // that the main process resolves against the app's userData directory (see
 // resolveProfileUserDataDir in electron/main.cjs), which is the same default
-// the monti:resolve-profile-root handler already falls back to.
+// the scout:resolve-profile-root handler already falls back to.
 //
 // Deliberately relative on every platform. This used to return an absolute
 // macOS path with a developer's own home directory baked into it, so every
@@ -52,7 +52,7 @@ import type {MontiProfile, MontiProxy, SharedBookmark} from '../types';
 // Split from profileDataDir so the General section of Settings can show exactly
 // the root that launches use, rather than a second guess at it.
 export function profilesRoot() {
-  return 'MontiProfiles';
+  return 'ScoutProfiles';
 }
 
 export function profileDataDir(profileId: string) {
@@ -62,14 +62,14 @@ export function profileDataDir(profileId: string) {
 // Never send the browser back to the launcher's own UI, a loopback address or
 // a blank tab -- the session has to start on the injected home page or a real
 // site, or it is not recognisably an anonymous profile.
-export function browserStartUrl(profile: MontiProfile) {
+export function browserStartUrl(profile: ScoutProfile) {
   const startUrl = profile.start_url?.trim();
   if (!startUrl ||
       startUrl === 'about:blank' ||
       startUrl.startsWith('chrome://') ||
       startUrl.includes('127.0.0.1') ||
       startUrl.includes('localhost') ||
-      startUrl.includes('monti-launcher') ||
+      startUrl.includes('scout web') ||
       startUrl.includes('/dist/index.html')) {
     return '';
   }
@@ -100,7 +100,7 @@ function checkAgeNote(checkedAt?: string | null): string {
 //
 // `icon` names an entry in the side panel's own icon table
 // (extensions/cookie-manager/icons.js), not a path -- this object is serialized
-// into monti-session.json and handed to a document with no bundler, so the
+// into scout-session.json and handed to a document with no bundler, so the
 // glyph has to be looked up on the other side. Optional because a panel loading
 // a session snapshot written by an older launcher must still draw its rows.
 export type SessionField = {
@@ -128,7 +128,7 @@ export type HomeProxyStatus = {
 // A failing state returns `detail` and no fields: there is one sentence to say
 // and nothing to tabulate. A working one returns `fields`, because then there
 // are four facts whose *agreement* is the whole point.
-export function homeProxyStatus(profile: MontiProfile, proxy: MontiProxy | null): HomeProxyStatus {
+export function homeProxyStatus(profile: ScoutProfile, proxy: ScoutProxy | null): HomeProxyStatus {
   const mode = profile.proxy_mode || 'assigned';
   if (mode !== 'assigned') {
     return {
@@ -244,7 +244,7 @@ export function homeProxyStatus(profile: MontiProfile, proxy: MontiProxy | null)
 // Whether this profile can be re-checked at all. Direct and free-proxy modes
 // have no assigned proxy to re-test, so the button would be a control with
 // nothing behind it -- see House Rule 6, no phantom data.
-export function canRecheckProxy(profile: MontiProfile, proxy: MontiProxy | null) {
+export function canRecheckProxy(profile: ScoutProfile, proxy: ScoutProxy | null) {
   return (profile.proxy_mode || 'assigned') === 'assigned' &&
     Boolean(proxy?.host) && Boolean(proxy?.port);
 }
@@ -328,7 +328,7 @@ function rowIcon(name: keyof typeof ROW_ICONS | string) {
 }
 
 // One automation as the start page needs it: enough to fill a card, and
-// nothing more. Deliberately NOT the MontiAutomation row -- `steps` carries
+// nothing more. Deliberately NOT the ScoutAutomation row -- `steps` carries
 // selectors, urls and typed values, and this object is serialized into a
 // file:// document that goes on to visit arbitrary sites. The count is the one
 // thing about the steps the page is allowed to know.
@@ -367,7 +367,7 @@ export type HomeLaunch = {
 
 
 export function anonymousHomeHtml(
-    profile: MontiProfile, bookmarks: SharedBookmark[],
+    profile: ScoutProfile, bookmarks: SharedBookmark[],
     // Already composed by the caller, not derived here: the browser's side panel
     // paints the same object, and computing it twice is how the two surfaces
     // would end up describing one session in two different ways.
@@ -716,7 +716,7 @@ h1{font-size:20px;letter-spacing:-0.01em;margin:0;font-weight:700;overflow:hidde
 </head>
 <body>
 <main>
-<div class="brand">${montiMark}</div>
+<div class="brand">${scoutMark}</div>
 <h1>${safeName}</h1>
 <p class="sub">Anonymous Scout Web Browser session</p>
 <div class="search-wrap">
@@ -968,7 +968,7 @@ ${run ? `(function () {
 
   function request(query) {
     var id = ++seq;
-    var name = '__montiSuggest' + id;
+    var name = '__scoutSuggest' + id;
     var script = document.createElement('script');
     window[name] = function (data) {
       /* A slower earlier request can land after a faster later one; only the

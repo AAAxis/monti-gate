@@ -180,13 +180,13 @@
   width: 34px;
 }
 
-/* The Monti mark, drawn as a mask in the current ink colour. It is black line
+/* The Scout mark, drawn as a mask in the current ink colour. It is black line
  * art, so as an <img> it would vanish against the dark theme's raised
  * surface -- same reason the sidebar's .brand-mark is a mask. */
-.extension-mark.is-monti {
+.extension-mark.is-scout {
   background-color: var(--ink);
   display: block;
-  mask-image: var(--monti-mark);
+  mask-image: var(--scout-mark);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;

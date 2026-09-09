@@ -124,7 +124,7 @@ async function pollUntil(cdp, expression, deadline, describe) {
 
 // Maps a CDP Storage.getCookies() cookie to the shape src/lib/cookieFile.ts
 // normalizeCookie() expects -- the same shape the extension pushes through
-// monti:cookie-sync-push-request. THE CONTRACT THAT MUST NOT DRIFT: see that
+// scout:cookie-sync-push-request. THE CONTRACT THAT MUST NOT DRIFT: see that
 // file's header.
 //
 // `expires` is CDP's seconds-since-epoch, with -1 (or anything <= 0) meaning a

@@ -27,7 +27,7 @@ import {native} from '../native';
 import {newId} from './core';
 import type {WorkspaceCore} from './core';
 import type {CookieFileSelection} from '../native';
-import type {MontiCookie, MontiFolder, MontiProfile} from '../types';
+import type {ScoutCookie, ScoutFolder, ScoutProfile} from '../types';
 
 export type CookieActions = ReturnType<typeof useCookieActions>;
 
@@ -73,12 +73,12 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
 
   // ---- reads -----------------------------------------------------------
 
-  function folderFor(cookie: MontiCookie): MontiFolder | null {
+  function folderFor(cookie: ScoutCookie): ScoutFolder | null {
     return state.cookie_folders.find((folder) => folder.id === cookie.folder_id) || null;
   }
 
   // Trashed profiles do not count as users of a set -- they cannot launch.
-  function profilesUsing(cookieId: string): MontiProfile[] {
+  function profilesUsing(cookieId: string): ScoutProfile[] {
     return state.profiles.filter(
         (profile) => profile.cookie_id === cookieId && !profile.deleted_at);
   }
@@ -107,7 +107,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   async function addCookieSet(
       selection: CookieFileSelection,
       options?: {folderId?: string | null; tags?: string[]},
-  ): Promise<MontiCookie | null> {
+  ): Promise<ScoutCookie | null> {
     const id = newId();
     const uploaded = await cloudCookieFromSelection(id, selection);
     if (!uploaded.cookie_import_url) {
@@ -118,7 +118,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
     const parsed = selection.base64 ?
       parseCookieContent(decodeCookieBase64(selection.base64)) :
       [];
-    const entry: MontiCookie = {
+    const entry: ScoutCookie = {
       id,
       name: uploaded.cookie_import_name || 'cookies.txt',
       url: uploaded.cookie_import_url,
@@ -136,7 +136,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   }
 
   async function save(id: string, fields: CookieFields): Promise<boolean> {
-    const next: Partial<MontiCookie> = {};
+    const next: Partial<ScoutCookie> = {};
     if ('name' in fields) {
       next.name = fields.name?.trim() || 'cookies.txt';
     }
@@ -181,11 +181,11 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   // the file is immutable once written (every save uploads a new one keyed by
   // Date.now()), so two rows pointing at it cannot drift. The first edit to
   // either copy gives that copy its own object.
-  async function duplicate(cookie: MontiCookie): Promise<MontiCookie | null> {
+  async function duplicate(cookie: ScoutCookie): Promise<ScoutCookie | null> {
     // An unreadable payload does not block the copy: it points at the same
     // source_url, so the copy's cache just stays empty and fills on first open.
     const payload = await loadPayloadSafe(cookie);
-    const copy: MontiCookie = {
+    const copy: ScoutCookie = {
       ...cookie,
       id: newId(),
       name: `${cookie.name} copy`,
@@ -327,11 +327,11 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   // The backfill is fire-and-forget and touches only `cookies` and `count`,
   // never source_url: a member whose RLS forbids the write still gets to read
   // the cookies, and a failure costs one more download rather than a launch.
-  async function loadEntries(cookie: MontiCookie): Promise<CookieRow[]> {
+  async function loadEntries(cookie: ScoutCookie): Promise<CookieRow[]> {
     return withRowIds(await loadPayloadFor(cookie));
   }
 
-  async function loadPayloadFor(cookie: MontiCookie): Promise<CookieEntry[]> {
+  async function loadPayloadFor(cookie: ScoutCookie): Promise<CookieEntry[]> {
     const orgId = data.orgId;
     if (!orgId) {
       return [];
@@ -358,7 +358,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   // alongside the cache, because source_url is what the browser will actually
   // read at launch -- updating only the jsonb would look right in every screen
   // of this app and still seed the pre-edit cookies.
-  async function saveEntries(cookie: MontiCookie, entries: CookieEntry[]): Promise<boolean> {
+  async function saveEntries(cookie: ScoutCookie, entries: CookieEntry[]): Promise<boolean> {
     const fileName = cookie.name.toLowerCase().endsWith('.json') ?
       cookie.name :
       `${cookie.name || 'cookies'}.json`;
@@ -396,7 +396,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   // Several sets export as one merged file, which is what makes "select three
   // and export" useful: cookies from different sets rarely collide, and the
   // formats are both flat lists anyway.
-  async function exportSets(list: MontiCookie[], format: 'json' | 'netscape'): Promise<void> {
+  async function exportSets(list: ScoutCookie[], format: 'json' | 'netscape'): Promise<void> {
     if (!list.length) {
       return;
     }
@@ -404,7 +404,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
     for (const cookie of list) {
       merged.push(...await loadPayloadSafe(cookie));
     }
-    const single = list.length === 1 ? list[0].name : 'monti-cookies';
+    const single = list.length === 1 ? list[0].name : 'scout-cookies';
     await exportEntries(single, merged, format);
   }
 
@@ -422,7 +422,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
       toast.setMessage('Nothing to export: there are no cookies in that selection.');
       return;
     }
-    const stem = label.replace(/\.[^.]+$/, '') || 'monti-cookies';
+    const stem = label.replace(/\.[^.]+$/, '') || 'scout-cookies';
     const fileName = `${stem}-${Date.now()}.${format === 'json' ? 'json' : 'txt'}`;
     // The only step here that can throw: writeTextFile has no guard of its own
     // in the main process, so an unwritable destination rejects the IPC call --
@@ -447,7 +447,7 @@ export function useCookieActions({data, toast}: WorkspaceCore) {
   // loadPayloadFor throws so the inspector can show *why* a file would not open.
   // Every other caller only wants the cookies if they are there, and none of
   // them run inside anything that catches -- useAsyncAction.run rethrows.
-  async function loadPayloadSafe(cookie: MontiCookie): Promise<CookieEntry[]> {
+  async function loadPayloadSafe(cookie: ScoutCookie): Promise<CookieEntry[]> {
     try {
       return await loadPayloadFor(cookie);
     } catch (error) {

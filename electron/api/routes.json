@@ -45,27 +45,27 @@
   ],
   "sessionTools": [
     {
-      "mcp": "monti_list_tabs",
+      "mcp": "scout_list_tabs",
       "group": "Driving a page",
       "label": "List the open pages in a running profile"
     },
     {
-      "mcp": "monti_navigate",
+      "mcp": "scout_navigate",
       "group": "Driving a page",
       "label": "Point a page at a URL and wait for it to settle"
     },
     {
-      "mcp": "monti_read_page",
+      "mcp": "scout_read_page",
       "group": "Driving a page",
       "label": "Read a page's visible text, whole or by CSS selector"
     },
     {
-      "mcp": "monti_screenshot",
+      "mcp": "scout_screenshot",
       "group": "Driving a page",
       "label": "Screenshot a page — JPEG by default, PNG on request"
     },
     {
-      "mcp": "monti_eval",
+      "mcp": "scout_eval",
       "group": "Driving a page",
       "label": "Evaluate a JavaScript expression in a page and return its value"
     }
@@ -74,7 +74,7 @@
     {
       "method": "GET",
       "path": "/v1/profiles",
-      "mcp": "monti_list_profiles",
+      "mcp": "scout_list_profiles",
       "group": "Profiles",
       "label": "List profiles (optional ?folder=<id>)",
       "scope": "any"
@@ -82,7 +82,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/get",
-      "mcp": "monti_get_profile",
+      "mcp": "scout_get_profile",
       "group": "Profiles",
       "label": "Read one profile",
       "scope": "any",
@@ -94,17 +94,17 @@
       "group": "Profiles",
       "label": "Create a profile",
       "scope": "any",
-      "channel": "monti:create-profile-request",
-      "mcp": "monti_create_profile",
-      "mcpDescription": "Create a browser profile. Only name is required; everything else gets the same defaults the app's own New Profile dialog uses -- status Ready, a random colour, a stable Windows 11 fingerprint, no proxy. proxyMode 'assigned' needs proxyId to name a proxy from the library (monti_list_proxies); omit both to create a direct-connection profile. Returns the created profile. Its id is permanent: it doubles as the on-disk browser-data directory name.",
+      "channel": "scout:create-profile-request",
+      "mcp": "scout_create_profile",
+      "mcpDescription": "Create a browser profile. Only name is required; everything else gets the same defaults the app's own New Profile dialog uses -- status Ready, a random colour, a stable Windows 11 fingerprint, no proxy. proxyMode 'assigned' needs proxyId to name a proxy from the library (scout_list_proxies); omit both to create a direct-connection profile. Returns the created profile. Its id is permanent: it doubles as the on-disk browser-data directory name.",
       "body": "{ \"name\": \"warmup-01\", \"proxyId\": \"<id>\", \"tags\": [\"warmup\"] }",
       "fields": [
         {"key": "name", "type": "string", "required": true,
          "description": "The profile's display name."},
         {"key": "folderId", "type": "string",
-         "description": "Folder to file it in. Omit for the root. Folder ids come from monti_list_folders."},
+         "description": "Folder to file it in. Omit for the root. Folder ids come from scout_list_folders."},
         {"key": "status", "type": "string",
-         "description": "Workflow status label. Defaults to Ready. monti_list_statuses has the ones this workspace uses."},
+         "description": "Workflow status label. Defaults to Ready. scout_list_statuses has the ones this workspace uses."},
         {"key": "tags", "type": "tags",
          "description": "Free-text labels, at most 5. Extras are dropped."},
         {"key": "color", "type": "string",
@@ -114,7 +114,7 @@
         {"key": "proxyMode", "type": "string",
          "description": "assigned, direct or free_proxy. Defaults to assigned when proxyId is given, direct otherwise."},
         {"key": "proxyId", "type": "string",
-         "description": "A proxy from the library (monti_list_proxies). Implies proxyMode assigned."},
+         "description": "A proxy from the library (scout_list_proxies). Implies proxyMode assigned."},
         {"key": "startUrl", "type": "string",
          "description": "URL the profile opens on launch."},
         {"key": "fingerprintOs", "type": "string",
@@ -126,7 +126,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/update",
-      "mcp": "monti_update_profile",
+      "mcp": "scout_update_profile",
       "group": "Profiles",
       "label": "Update name, status, tags, colour, avatar, folder, proxy mode, start URL or launch automation",
       "scope": "any",
@@ -138,8 +138,8 @@
       "group": "Profiles",
       "label": "Read a profile's notes, newest first",
       "scope": "any",
-      "channel": "monti:list-profile-notes-request",
-      "mcp": "monti_profile_notes",
+      "channel": "scout:list-profile-notes-request",
+      "mcp": "scout_profile_notes",
       "mcpDescription": "The notes on a profile, newest first -- what it is for, who it belongs to, what has been tried on it. Each note carries its author and when it was written. Read this before acting on an unfamiliar profile: it is where the humans running this workspace write down the things the profile's name and tags cannot say.",
       "body": "{ \"profileId\": \"<id>\", \"limit\": 50 }",
       "fields": [
@@ -155,8 +155,8 @@
       "group": "Profiles",
       "label": "Append a note to a profile",
       "scope": "any",
-      "channel": "monti:add-profile-note-request",
-      "mcp": "monti_add_profile_note",
+      "channel": "scout:add-profile-note-request",
+      "mcp": "scout_add_profile_note",
       "mcpDescription": "Append a note to a profile's thread -- what you did to it, what you found, why it is set up the way it is. The note is filed under this API key's own name and marked as written by an agent, so it is distinguishable from what a person wrote. Notes are append-only over the API: there is no tool to edit or delete one, including your own.",
       "body": "{ \"profileId\": \"<id>\", \"body\": \"Warmed up for 20 minutes; no checkpoint.\" }",
       "fields": [
@@ -169,7 +169,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/assign-proxy",
-      "mcp": "monti_assign_proxy",
+      "mcp": "scout_assign_proxy",
       "group": "Profiles",
       "label": "Put a profile on a proxy from the library",
       "scope": "any",
@@ -178,7 +178,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/launch-automation",
-      "mcp": "monti_launch_profile",
+      "mcp": "scout_launch_profile",
       "group": "Profiles",
       "label": "Open a profile for automation; returns its CDP url. Reuses a running session unless relaunch is set",
       "scope": "any",
@@ -187,7 +187,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/cdp",
-      "mcp": "monti_profile_session",
+      "mcp": "scout_profile_session",
       "group": "Profiles",
       "label": "Where a running profile's CDP endpoint is, without launching it",
       "scope": "any",
@@ -196,7 +196,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/close-automation",
-      "mcp": "monti_close_profile",
+      "mcp": "scout_close_profile",
       "group": "Profiles",
       "label": "Close a session this key opened",
       "scope": "any",
@@ -205,7 +205,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/delete",
-      "mcp": "monti_delete_profile",
+      "mcp": "scout_delete_profile",
       "group": "Profiles",
       "label": "Move a profile to Trash (permanent: true to purge; the tool only soft-deletes)",
       "scope": "any",
@@ -214,7 +214,7 @@
     {
       "method": "POST",
       "path": "/v1/profiles/update-fingerprint",
-      "mcp": "monti_update_fingerprint",
+      "mcp": "scout_update_fingerprint",
       "group": "Profiles",
       "label": "Re-roll or override a profile's fingerprint",
       "scope": "any",
@@ -223,7 +223,7 @@
     {
       "method": "GET",
       "path": "/v1/proxies",
-      "mcp": "monti_list_proxies",
+      "mcp": "scout_list_proxies",
       "group": "Proxies",
       "label": "List proxies",
       "scope": "any"
@@ -247,7 +247,7 @@
     {
       "method": "POST",
       "path": "/v1/proxies/check",
-      "mcp": "monti_check_proxy",
+      "mcp": "scout_check_proxy",
       "group": "Proxies",
       "label": "Check reachability and egress IP",
       "scope": "any",
@@ -300,8 +300,8 @@
       "group": "Automations",
       "label": "List the org's automations, with step counts",
       "scope": "any",
-      "channel": "monti:list-automations-request",
-      "mcp": "monti_list_automations",
+      "channel": "scout:list-automations-request",
+      "mcp": "scout_list_automations",
       "mcpDescription": "List the automations in this workspace. Returns id, name, description, step count and where each is wired in.",
       "fields": []
     },
@@ -312,8 +312,8 @@
       "label": "The step catalogue: every step type, its fields and how they validate",
       "scope": "any",
       "local": true,
-      "mcp": "monti_automation_schema",
-      "mcpDescription": "The step vocabulary an automation is written in. Call this before monti_create_automation rather than guessing field names.",
+      "mcp": "scout_automation_schema",
+      "mcpDescription": "The step vocabulary an automation is written in. Call this before scout_create_automation rather than guessing field names.",
       "fields": []
     },
     {
@@ -322,9 +322,9 @@
       "group": "Automations",
       "label": "Read one automation, including its full step tree",
       "scope": "any",
-      "channel": "monti:get-automation-request",
-      "mcp": "monti_get_automation",
-      "mcpDescription": "Read one automation's full step tree, in the same shape monti_create_automation accepts.",
+      "channel": "scout:get-automation-request",
+      "mcp": "scout_get_automation",
+      "mcpDescription": "Read one automation's full step tree, in the same shape scout_create_automation accepts.",
       "body": "{ \"automationId\": \"<id>\" }",
       "fields": [
         {"key": "automationId", "type": "string", "required": true}
@@ -336,9 +336,9 @@
       "group": "Automations",
       "label": "Create an automation. Steps are validated before anything is stored",
       "scope": "unscoped",
-      "channel": "monti:create-automation-request",
-      "mcp": "monti_create_automation",
-      "mcpDescription": "Create an automation from a list of steps. Call monti_automation_schema first for the step vocabulary. Steps are validated before anything is stored, and the error names the exact path that failed.",
+      "channel": "scout:create-automation-request",
+      "mcp": "scout_create_automation",
+      "mcpDescription": "Create an automation from a list of steps. Call scout_automation_schema first for the step vocabulary. Steps are validated before anything is stored, and the error names the exact path that failed.",
       "body": "{ \"name\": \"Sign in\", \"steps\": [{ \"id\": \"s1\", \"type\": \"goto\", \"url\": \"https://example.com\" }] }",
       "fields": [
         {"key": "name", "type": "string", "required": true},
@@ -347,7 +347,7 @@
           "key": "steps",
           "type": "steps",
           "required": true,
-          "description": "The step tree. See monti_automation_schema for the field list of each type."
+          "description": "The step tree. See scout_automation_schema for the field list of each type."
         },
         {
           "key": "tags",
@@ -382,12 +382,12 @@
         {
           "key": "folderId",
           "type": "string",
-          "description": "File it in an automation folder. Use the id from the automations list in monti_list_folders. Empty leaves it in All automations. Filing only: it changes nothing about how or when the automation runs."
+          "description": "File it in an automation folder. Use the id from the automations list in scout_list_folders. Empty leaves it in All automations. Filing only: it changes nothing about how or when the automation runs."
         },
         {
           "key": "notifyOn",
           "type": "string",
-          "description": "Notify when a run finishes: always or failure. Empty clears it. Delivery is the Monti bell and a desktop notification, plus notifyConnectorId when set."
+          "description": "Notify when a run finishes: always or failure. Empty clears it. Delivery is the Scout bell and a desktop notification, plus notifyConnectorId when set."
         },
         {
           "key": "notifyConnectorId",
@@ -402,7 +402,7 @@
         {
           "key": "parameters",
           "type": "objects",
-          "description": "What this automation asks for before it runs: an ordered list of {name, kind, label?, required?, default?, options?, hint?}. `name` matches ^[A-Za-z_][A-Za-z0-9_]*$ and is read from any interpolated step field as {{vars.<name>}}. `kind` is one of text, textarea, number, boolean, select, secret, list; `options` is required on select, and a boolean may not be required. Each profile can hold its own value (monti_update_profile automationVars), and a run can override them (monti_run_automation vars)."
+          "description": "What this automation asks for before it runs: an ordered list of {name, kind, label?, required?, default?, options?, hint?}. `name` matches ^[A-Za-z_][A-Za-z0-9_]*$ and is read from any interpolated step field as {{vars.<name>}}. `kind` is one of text, textarea, number, boolean, select, secret, list; `options` is required on select, and a boolean may not be required. Each profile can hold its own value (scout_update_profile automationVars), and a run can override them (scout_run_automation vars)."
         },
         {
           "key": "schedule",
@@ -417,8 +417,8 @@
       "group": "Automations",
       "label": "Change an automation's name, description, steps or wiring",
       "scope": "unscoped",
-      "channel": "monti:update-automation-request",
-      "mcp": "monti_update_automation",
+      "channel": "scout:update-automation-request",
+      "mcp": "scout_update_automation",
       "mcpDescription": "Change an existing automation. Only the fields you send are written; omitting steps leaves the step tree alone.",
       "body": "{ \"automationId\": \"<id>\", \"name\": \"Sign in\" }",
       "fields": [
@@ -447,7 +447,7 @@
         {
           "key": "folderId",
           "type": "string",
-          "description": "Move it to an automation folder. Use the id from the automations list in monti_list_folders. Empty moves it back to All automations. Filing only: it changes nothing about how or when the automation runs."
+          "description": "Move it to an automation folder. Use the id from the automations list in scout_list_folders. Empty moves it back to All automations. Filing only: it changes nothing about how or when the automation runs."
         },
         {
           "key": "notifyOn",
@@ -467,7 +467,7 @@
         {
           "key": "parameters",
           "type": "objects",
-          "description": "Replaces the whole list of what this automation asks for before it runs: an ordered list of {name, kind, label?, required?, default?, options?, hint?}. `name` matches ^[A-Za-z_][A-Za-z0-9_]*$ and is read from any interpolated step field as {{vars.<name>}}. `kind` is one of text, textarea, number, boolean, select, secret, list; `options` is required on select, and a boolean may not be required. Each profile can hold its own value (monti_update_profile automationVars), and a run can override them (monti_run_automation vars)."
+          "description": "Replaces the whole list of what this automation asks for before it runs: an ordered list of {name, kind, label?, required?, default?, options?, hint?}. `name` matches ^[A-Za-z_][A-Za-z0-9_]*$ and is read from any interpolated step field as {{vars.<name>}}. `kind` is one of text, textarea, number, boolean, select, secret, list; `options` is required on select, and a boolean may not be required. Each profile can hold its own value (scout_update_profile automationVars), and a run can override them (scout_run_automation vars)."
         },
         {
           "key": "schedule",
@@ -482,9 +482,9 @@
       "group": "Automations",
       "label": "Move an automation to Trash. It stops running on launch and on its schedule",
       "scope": "unscoped",
-      "channel": "monti:delete-automation-request",
-      "mcp": "monti_delete_automation",
-      "mcpDescription": "Move an automation to Trash, where it stays for 30 days and can be restored from the app. It immediately stops running on launch and on any schedule, and disappears from monti_list_automations. Profiles keep it attached so that a restore puts them back as they were. Past runs stay readable. There is no API to restore or to delete permanently: both are done in the app.",
+      "channel": "scout:delete-automation-request",
+      "mcp": "scout_delete_automation",
+      "mcpDescription": "Move an automation to Trash, where it stays for 30 days and can be restored from the app. It immediately stops running on launch and on any schedule, and disappears from scout_list_automations. Profiles keep it attached so that a restore puts them back as they were. Past runs stay readable. There is no API to restore or to delete permanently: both are done in the app.",
       "body": "{ \"automationId\": \"<id>\" }",
       "fields": [
         {"key": "automationId", "type": "string", "required": true}
@@ -496,8 +496,8 @@
       "group": "Automations",
       "label": "Run an automation against a profile, launching it if needed",
       "scope": "any",
-      "channel": "monti:run-automation-request",
-      "mcp": "monti_run_automation",
+      "channel": "scout:run-automation-request",
+      "mcp": "scout_run_automation",
       "mcpDescription": "Run an automation against a profile, launching the profile if it is not already open. Returns a run id immediately; the run continues in the background. One call is one profile: to run the same automation with different values on several profiles, call it once per profile with that profile's vars, which also gives you a run id per profile to poll.",
       "body": "{ \"automationId\": \"<id>\", \"profileId\": \"<id>\" }",
       "fields": [
@@ -516,9 +516,9 @@
       "group": "Automations",
       "label": "Recent runs of one automation, with status and errors",
       "scope": "any",
-      "channel": "monti:list-automation-runs-request",
-      "mcp": "monti_automation_runs",
-      "mcpDescription": "Recent runs of an automation, newest first: status (running, ok, partial, failed, cancelled), timing, the failed step and the error. This is how to learn how a run started with monti_run_automation ended.",
+      "channel": "scout:list-automation-runs-request",
+      "mcp": "scout_automation_runs",
+      "mcpDescription": "Recent runs of an automation, newest first: status (running, ok, partial, failed, cancelled), timing, the failed step and the error. This is how to learn how a run started with scout_run_automation ended.",
       "body": "{ \"automationId\": \"<id>\" }",
       "fields": [
         {"key": "automationId", "type": "string", "required": true},
@@ -535,8 +535,8 @@
       "group": "Connectors",
       "label": "The workspace's connectors, and the field list of every kind",
       "scope": "any",
-      "channel": "monti:list-connectors-request",
-      "mcp": "monti_list_connectors",
+      "channel": "scout:list-connectors-request",
+      "mcp": "scout_list_connectors",
       "mcpDescription": "The message and AI connectors this workspace has, and the catalogue of kinds one can be created from. Call this before writing a notify, aiPrompt or aiCheck step, or setting notifyConnectorId -- those fields take an id from here and there is no other way to learn one. Stored credentials are never returned: a connector's config is write-only over this API.",
       "fields": []
     },
@@ -546,15 +546,15 @@
       "group": "Connectors",
       "label": "Add a connector. Owner-only, like the Connectors view",
       "scope": "unscoped",
-      "channel": "monti:create-connector-request",
-      "mcp": "monti_create_connector",
-      "mcpDescription": "Add a connector -- a Telegram bot, a Slack or Discord webhook, WhatsApp, SMTP, or an AI provider. Call monti_list_connectors first for the kind's field list. `config` carries the credentials; anything you send here is in this conversation's transcript, and it cannot be read back out afterwards. Returns the connector without its config.",
+      "channel": "scout:create-connector-request",
+      "mcp": "scout_create_connector",
+      "mcpDescription": "Add a connector -- a Telegram bot, a Slack or Discord webhook, WhatsApp, SMTP, or an AI provider. Call scout_list_connectors first for the kind's field list. `config` carries the credentials; anything you send here is in this conversation's transcript, and it cannot be read back out afterwards. Returns the connector without its config.",
       "body": "{ \"name\": \"Ops Telegram\", \"kind\": \"telegram\", \"config\": { \"botToken\": \"...\", \"chatId\": \"-1004281234567\" } }",
       "fields": [
         {"key": "name", "type": "string", "required": true,
          "description": "What the connector is called in the app."},
         {"key": "kind", "type": "string", "required": true,
-         "description": "telegram, slack, discord, whatsapp, smtp, or an AI kind. See the `kinds` block of monti_list_connectors. The category follows from the kind and cannot be set."},
+         "description": "telegram, slack, discord, whatsapp, smtp, or an AI kind. See the `kinds` block of scout_list_connectors. The category follows from the kind and cannot be set."},
         {"key": "config", "type": "object",
          "description": "The kind's fields, as a flat object of strings. Missing required fields are a 400 naming each one."},
         {"key": "isDefault", "type": "boolean",
@@ -567,8 +567,8 @@
       "group": "Connectors",
       "label": "Rename a connector, change its config or make it the default",
       "scope": "unscoped",
-      "channel": "monti:update-connector-request",
-      "mcp": "monti_update_connector",
+      "channel": "scout:update-connector-request",
+      "mcp": "scout_update_connector",
       "mcpDescription": "Change a connector. `config` merges key by key, so a chat id can be changed without re-sending the bot token, and omitting config entirely leaves every stored credential alone. The kind cannot be changed -- delete and recreate instead.",
       "body": "{ \"connectorId\": \"<id>\", \"config\": { \"chatId\": \"-1004281234567\" } }",
       "fields": [
@@ -586,9 +586,9 @@
       "group": "Connectors",
       "label": "Delete a connector",
       "scope": "unscoped",
-      "channel": "monti:delete-connector-request",
-      "mcp": "monti_delete_connector",
-      "mcpDescription": "Delete a connector. Steps that still name it start failing with a sentence saying it is gone -- they do not fall back to another connector. Check monti_list_automations first if you are not sure what uses it.",
+      "channel": "scout:delete-connector-request",
+      "mcp": "scout_delete_connector",
+      "mcpDescription": "Delete a connector. Steps that still name it start failing with a sentence saying it is gone -- they do not fall back to another connector. Check scout_list_automations first if you are not sure what uses it.",
       "body": "{ \"connectorId\": \"<id>\" }",
       "fields": [
         {"key": "connectorId", "type": "string", "required": true}
@@ -600,8 +600,8 @@
       "group": "Connectors",
       "label": "Send a real test message, or a one-word AI completion",
       "scope": "unscoped",
-      "channel": "monti:test-connector-request",
-      "mcp": "monti_test_connector",
+      "channel": "scout:test-connector-request",
+      "mcp": "scout_test_connector",
       "mcpDescription": "Prove a connector works: a message connector sends a real test message, an AI connector asks for a one-word completion. Reports the service's own error text when it fails, which is usually the whole diagnosis. Do this after creating one rather than waiting for a run to fail.",
       "body": "{ \"connectorId\": \"<id>\" }",
       "fields": [
@@ -614,8 +614,8 @@
       "group": "Workspace",
       "label": "The folders profiles, proxies, cookie sets and automations are filed in",
       "scope": "any",
-      "channel": "monti:list-folders-request",
-      "mcp": "monti_list_folders",
+      "channel": "scout:list-folders-request",
+      "mcp": "scout_list_folders",
       "mcpDescription": "The workspace's folders, grouped by what they file: profiles, proxies, cookies, automations. Each carries the id its folderId argument takes; the four groups are separate namespaces, so an automation's folderId must come from the automations group. A folder-scoped key sees only the profile folders it is scoped to. Read-only: folders are created and renamed in the app.",
       "fields": []
     },
@@ -625,9 +625,9 @@
       "group": "Workspace",
       "label": "Every status label a profile, proxy or cookie set can carry",
       "scope": "any",
-      "channel": "monti:list-statuses-request",
-      "mcp": "monti_list_statuses",
-      "mcpDescription": "The status labels this workspace uses, built-in and custom. monti_update_profile.status takes a free string, so without this an agent can write a status the app never offers and the row lands looking broken. Read-only: custom statuses are created in the app.",
+      "channel": "scout:list-statuses-request",
+      "mcp": "scout_list_statuses",
+      "mcpDescription": "The status labels this workspace uses, built-in and custom. scout_update_profile.status takes a free string, so without this an agent can write a status the app never offers and the row lands looking broken. Read-only: custom statuses are created in the app.",
       "fields": []
     },
     {
@@ -636,8 +636,8 @@
       "group": "Notifications",
       "label": "Whether the notification bot is set up, and who is subscribed",
       "scope": "any",
-      "channel": "monti:telegram-status-request",
-      "mcp": "monti_telegram_status",
+      "channel": "scout:telegram-status-request",
+      "mcp": "scout_telegram_status",
       "mcpDescription": "The state of personal Telegram notifications: whether the workspace has a notification bot, whether the signed-in user has linked their Telegram, and which automations they get messages about. This is separate from telegram connectors -- it is per person, and it is what answers 'why did that run not message me'. Neither the bot token nor the chat id is returned.",
       "fields": []
     },
@@ -647,9 +647,9 @@
       "group": "Notifications",
       "label": "Subscribe the signed-in user to one automation's outcomes",
       "scope": "any",
-      "channel": "monti:set-telegram-pref-request",
-      "mcp": "monti_set_telegram_pref",
-      "mcpDescription": "Turn personal Telegram messages on or off for one automation, for the signed-in user. This is that person's own setting and is independent of the automation's notifyOn, which is the workspace-wide one. Requires a linked Telegram -- check monti_telegram_status first.",
+      "channel": "scout:set-telegram-pref-request",
+      "mcp": "scout_set_telegram_pref",
+      "mcpDescription": "Turn personal Telegram messages on or off for one automation, for the signed-in user. This is that person's own setting and is independent of the automation's notifyOn, which is the workspace-wide one. Requires a linked Telegram -- check scout_telegram_status first.",
       "body": "{ \"automationId\": \"<id>\", \"notifyOn\": \"failure\" }",
       "fields": [
         {"key": "automationId", "type": "string", "required": true},
@@ -663,8 +663,8 @@
       "group": "Notifications",
       "label": "Set the workspace's notification bot. Owner-only",
       "scope": "unscoped",
-      "channel": "monti:set-telegram-bot-request",
-      "mcp": "monti_set_telegram_bot",
+      "channel": "scout:set-telegram-bot-request",
+      "mcp": "scout_set_telegram_bot",
       "mcpDescription": "Point the workspace at a Telegram bot from BotFather, so members can link their own chats to it. Write-only: the token is never returned by any route. Members still have to press Start in Telegram themselves, which only the app can walk them through -- this call does not link anybody.",
       "body": "{ \"botName\": \"myworkspacebot\", \"botToken\": \"123456789:AA...\" }",
       "fields": [
@@ -680,7 +680,7 @@
       "group": "Tables",
       "label": "What each table shows, and every column it could show",
       "scope": "any",
-      "channel": "monti:table-columns-request",
+      "channel": "scout:table-columns-request",
       "mcp": "monti_table_columns",
       "mcpDescription": "The columns the Profiles, Proxies and Cookies tables are showing, and every column they could show. Call this before monti_set_table_columns rather than guessing ids: the reply gives each column's id, label, one-line description, whether it is on, and whether it can be turned off.",
       "fields": []
@@ -691,7 +691,7 @@
       "group": "Tables",
       "label": "Show or hide columns on a table",
       "scope": "any",
-      "channel": "monti:set-table-columns-request",
+      "channel": "scout:set-table-columns-request",
       "mcp": "monti_set_table_columns",
       "mcpDescription": "Show or hide columns on the Profiles, Proxies or Cookies table. Send `columns` for the exact set, or `show`/`hide` to change a few without restating the rest. Columns always render in the app's own order, so the order you send is ignored. The layout belongs to the signed-in user and follows them to every machine.",
       "body": "{ \"table\": \"profiles\", \"show\": [\"email\", \"fpTimezone\"], \"hide\": [\"tags\"] }",

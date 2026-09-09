@@ -33,7 +33,7 @@ describe('referenceGroups', () => {
   it('gives a session tool a label and no route, so the tab prints no curl', () => {
     const entry = referenceGroups()
         .flatMap((group) => group.entries)
-        .find((item) => item.id === 'monti_eval');
+        .find((item) => item.id === 'scout_eval');
     expect(entry?.route).toBeUndefined();
     expect(entry?.label).toBeTruthy();
   });
@@ -87,17 +87,17 @@ describe('entryMatches', () => {
   });
 
   it('matches on a tool name, including one with no route', () => {
-    expect(entryMatches(find('monti_screenshot'), 'monti_screen')).toBe(true);
-    expect(entryMatches(find('GET /v1/profiles'), 'monti_list_profiles')).toBe(true);
+    expect(entryMatches(find('scout_screenshot'), 'scout_screen')).toBe(true);
+    expect(entryMatches(find('GET /v1/profiles'), 'scout_list_profiles')).toBe(true);
   });
 
   it('matches on the label, which is what someone types when they know the verb', () => {
-    expect(entryMatches(find('monti_eval'), 'javascript')).toBe(true);
+    expect(entryMatches(find('scout_eval'), 'javascript')).toBe(true);
   });
 
   it('is case-insensitive, and trims, so a pasted needle still matches', () => {
-    expect(entryMatches(find('monti_navigate'), 'URL')).toBe(true);
-    expect(entryMatches(find('monti_screenshot'), '  MONTI_Screenshot ')).toBe(true);
+    expect(entryMatches(find('scout_navigate'), 'URL')).toBe(true);
+    expect(entryMatches(find('scout_screenshot'), '  SCOUT_Screenshot ')).toBe(true);
     expect(entryMatches(find('GET /v1/profiles'), '   ')).toBe(true);
   });
 

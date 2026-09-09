@@ -47,7 +47,7 @@ import {isCustomHex, resolveProfileColor} from '../lib/profileColors';
 import type {AutomationParam} from '../automations/parameters';
 import type {AutomationSchedule} from '../automations/schedule';
 import type {AutomationStep, AutomationVars} from '../automations/types';
-import type {MontiAutomation, MontiConnector, MontiProxy} from '../types';
+import type {ScoutAutomation, ScoutConnector, ScoutProxy} from '../types';
 
 // One subscribe/respond pair, with the try/catch every handler needs. Fifteen
 // copies of that boilerplate is where the two handlers that forgot to answer on
@@ -238,7 +238,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         }, null, 2);
         const selection: CookieFileSelection = {
           path: `local-profile:${profileId}`,
-          name: `monti-local-cookies-${safeName}.json`,
+          name: `scout-local-cookies-${safeName}.json`,
           count: cookies.length,
           base64: btoa(unescape(encodeURIComponent(raw))),
         };
@@ -714,7 +714,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         const proxies = [...state.proxies];
         // The rows this run actually created or changed, so untouched proxies
         // are not rewritten.
-        const touched: MontiProxy[] = [];
+        const touched: ScoutProxy[] = [];
         const keyFor = (type: string, host: string, port: number) =>
           `${type.toLowerCase()}|${host.toLowerCase()}|${port}`;
         const indexByKey = new Map<string, number>();
@@ -725,7 +725,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
           const host = String(row.ip || row.host || '').trim();
           const socksPort = Number(row.port_socks5 || row.socks_port || 0);
           const httpPort = Number(row.port_http || row.http_port || row.port || 0);
-          const type: MontiProxy['type'] = socksPort ? 'socks5' : 'http';
+          const type: ScoutProxy['type'] = socksPort ? 'socks5' : 'http';
           const port = type === 'socks5' ? socksPort : httpPort;
           if (!host || !Number.isInteger(port) || port <= 0 || port > 65535) {
             continue;
@@ -736,7 +736,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
           const key = keyFor(type, host, port);
           const existingIndex = indexByKey.get(key);
           const existing = existingIndex == null ? null : proxies[existingIndex];
-          const nextProxy: MontiProxy = {
+          const nextProxy: ScoutProxy = {
             ...(existing || {}),
             id: existing ? existing.id : String(row.id || newId(created)),
             name: existing ?
@@ -890,7 +890,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
               createdAt: summary.last_created_at,
             },
             more: summary.note_count > 1 ?
-              'Read the rest with monti_profile_notes.' :
+              'Read the rest with scout_profile_notes.' :
               undefined,
           } : {count: 0},
         };
@@ -909,7 +909,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
           // and for an MCP client that context is an LLM's transcript, which is
           // logged, and which the user cannot unsend. Nothing a caller does with
           // this list needs them: proxies are assigned to profiles by id, and
-          // monti_check_proxy takes credentials as explicit arguments for
+          // scout_check_proxy takes credentials as explicit arguments for
           // testing a proxy that has not been saved yet. `hasCredentials` keeps
           // the one fact that was actually useful.
           proxies: state.proxies.map(({username, password, ...proxy}) => ({
@@ -927,7 +927,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       native?.onCreateProxyRequest,
       native?.sendCreateProxyResult,
       async ({name, type, host, port, username, password}) => {
-        const proxy: MontiProxy = {
+        const proxy: ScoutProxy = {
           id: newId(),
           name: name || `${host}:${port}`,
           type,
@@ -1017,7 +1017,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // is minted by the draft (never taken from the caller: it is also the on-disk
   // directory name, with a filesystem-safety check on the column).
   useApiChannel(
-      'monti:create-profile-request',
+      'scout:create-profile-request',
       async (payload: {
         requestId: string;
         name: string;
@@ -1119,14 +1119,14 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         }
         // 'assigned' is only meaningful with a proxy behind it. An agent flipping
         // a proxyless profile to assigned would write the row ProfileModal
-        // refuses to save; point it at monti_assign_proxy, which sets both at
+        // refuses to save; point it at scout_assign_proxy, which sets both at
         // once. The proxy may be one this same patch is not touching, so check
         // the effective value: the incoming proxy_id, else the stored one.
         if (fields.proxy_mode === 'assigned') {
           const effectiveProxyId = 'proxy_id' in fields ? fields.proxy_id : existing.proxy_id;
           if (!effectiveProxyId || !state.proxies.some((proxy) => proxy.id === effectiveProxyId)) {
             throw new ApiError(
-                'This profile has no proxy assigned. Use monti_assign_proxy first, ' +
+                'This profile has no proxy assigned. Use scout_assign_proxy first, ' +
                 'or set proxyMode to direct or free_proxy.', 400);
           }
         }
@@ -1283,7 +1283,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         if (userError || !userId) {
           throw new Error('Not signed in');
         }
-        const {error} = await supabase.from('monti_monitoring_results').insert({
+        const {error} = await supabase.from('scout_monitoring_results').insert({
           user_id: userId,
           run_id: runId,
           profile_id: profileId,
@@ -1317,8 +1317,8 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
     variables?: Record<string, unknown>;
     parameters?: unknown;
     schedule?: unknown;
-  }): Partial<MontiAutomation> {
-    const extras: Partial<MontiAutomation> = {};
+  }): Partial<ScoutAutomation> {
+    const extras: Partial<ScoutAutomation> = {};
     if (payload.icon !== undefined) {
       const icon = payload.icon.trim();
       if (icon && (!icon.startsWith('brand:') || !tagPresetFor(icon.slice('brand:'.length)))) {
@@ -1345,7 +1345,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       if (folderId && !state.automation_folders.some((folder) => folder.id === folderId)) {
         throw new ApiError(
             `No automation folder with id ${folderId}. Use an id from the ` +
-            '"automations" group of monti_list_folders — profile, proxy and ' +
+            '"automations" group of scout_list_folders — profile, proxy and ' +
             'cookie folders are separate namespaces.', 400);
       }
       extras.folder_id = folderId || null;
@@ -1355,7 +1355,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       if (notifyOn && notifyOn !== 'always' && notifyOn !== 'failure') {
         throw new ApiError('notifyOn must be always, failure, or empty to clear it', 400);
       }
-      extras.notify_on = (notifyOn || null) as MontiAutomation['notify_on'];
+      extras.notify_on = (notifyOn || null) as ScoutAutomation['notify_on'];
       // Clearing notifyOn clears the target too -- the editor's rule: a
       // connector id behind a null notify_on is dead state.
       if (!notifyOn) {
@@ -1407,7 +1407,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // What resolveCallTree's problems become on this surface. Checked against
   // the workspace WITH the incoming edit applied, so a save that would create
   // a cycle is a 400 here rather than a failed run later.
-  function requireSoundCallTree(automation: MontiAutomation, all: MontiAutomation[]) {
+  function requireSoundCallTree(automation: ScoutAutomation, all: ScoutAutomation[]) {
     const {problems} = resolveCallTree(automation, all);
     if (problems.length > 0) {
       throw new ApiError(problems.join(' '), 400);
@@ -1421,7 +1421,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // an agent gets to read, edit, run and subscribe to workflows the app is
   // treating as deleted. 404 rather than a distinct code: an agent has no way
   // to restore one, so "gone" is the whole of the useful answer.
-  function requireAutomation(automationId: string): MontiAutomation {
+  function requireAutomation(automationId: string): ScoutAutomation {
     const found = state.automations.find(
         (item) => item.id === automationId && !item.deleted_at);
     if (!found) {
@@ -1432,9 +1432,9 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
 
   // Deliberately not the whole step tree: a workspace with thirty automations
   // would put every step of every one of them into an agent's context on a
-  // request that only asked what exists. monti_get_automation is one call away.
+  // request that only asked what exists. scout_get_automation is one call away.
   useApiChannel(
-      'monti:list-automations-request',
+      'scout:list-automations-request',
       () => ({
         // Trash is not listed. An agent cannot restore one, so offering it
         // would only produce calls that fail -- and the run and get channels
@@ -1446,7 +1446,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
           stepCount: automation.steps.length,
           // The declarations themselves, not a count: an agent that knows an
           // automation exists needs to know what to pass it, and making that a
-          // second monti_get_automation call (which returns the whole step
+          // second scout_get_automation call (which returns the whole step
           // tree) is a lot of context for a list of names and kinds.
           parameters: automation.parameters || [],
           pinned: Boolean(automation.pinned),
@@ -1474,14 +1474,14 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:get-automation-request',
+      'scout:get-automation-request',
       ({automationId}: {requestId: string; automationId: string}) => ({
         automation: requireAutomation(automationId),
       }),
       cloud);
 
   useApiChannel(
-      'monti:create-automation-request',
+      'scout:create-automation-request',
       async (payload: {
         requestId: string;
         name: string;
@@ -1507,7 +1507,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       }) => {
         requireSignedIn();
         const extras = automationExtras(payload);
-        const automation: MontiAutomation = {
+        const automation: ScoutAutomation = {
           // Minted here, never taken from the caller: the id doubles as a
           // directory name under <userData>/AutomationRuns and the column has
           // a filesystem-safety check constraint on it.
@@ -1554,7 +1554,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:update-automation-request',
+      'scout:update-automation-request',
       async (payload: {
         requestId: string;
         automationId: string;
@@ -1585,7 +1585,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         // the same contract: absent keys stay absent. created_via and
         // created_by_label are deliberately not editable -- attribution is
         // set once at create.
-        const next: MontiAutomation = {
+        const next: ScoutAutomation = {
           ...existing,
           ...(payload.name !== undefined ? {name: payload.name.trim()} : {}),
           ...(payload.description !== undefined ?
@@ -1619,13 +1619,13 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       },
       cloud);
 
-  // Run outcomes for an agent: how a run started with monti_run_automation
+  // Run outcomes for an agent: how a run started with scout_run_automation
   // ended. Without `log` and `vars` -- they are the bulk of a run row, and an
   // agent that wants the play-by-play can ask for a narrower tool when one
   // exists. Reads the runs table, not session state, so a run finished by a
   // teammate's launcher answers too.
   useApiChannel(
-      'monti:list-automation-runs-request',
+      'scout:list-automation-runs-request',
       async (payload: {requestId: string; automationId: string; limit?: number}) => {
         requireSignedIn();
         requireAutomation(payload.automationId);
@@ -1662,7 +1662,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // a write claiming to be the user is not. So agents append to the backlog and
   // never rewrite it, and the missing tools are the enforcement.
   useApiChannel(
-      'monti:list-profile-notes-request',
+      'scout:list-profile-notes-request',
       async (payload: {
         requestId: string;
         profileId: string;
@@ -1698,7 +1698,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       [state, data.orgId]);
 
   useApiChannel(
-      'monti:add-profile-note-request',
+      'scout:add-profile-note-request',
       async (payload: {
         requestId: string;
         profileId: string;
@@ -1734,7 +1734,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       [state, data.orgId]);
 
   useApiChannel(
-      'monti:delete-automation-request',
+      'scout:delete-automation-request',
       async ({automationId}: {requestId: string; automationId: string}) => {
         requireSignedIn();
         // Trashed rows stay in `state.automations`, so this has to say so
@@ -1754,7 +1754,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:run-automation-request',
+      'scout:run-automation-request',
       async (payload: {
         requestId: string;
         automationId: string;
@@ -1795,7 +1795,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // This is the same line useAutomationBridge already draws around proxy
   // passwords, drawn one step further because a connector's whole purpose is
   // to be named by id rather than carried by value.
-  function connectorSummary(connector: MontiConnector) {
+  function connectorSummary(connector: ScoutConnector) {
     return {
       id: connector.id,
       name: connector.name,
@@ -1822,7 +1822,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
     }
   }
 
-  function requireConnector(connectorId: string): MontiConnector {
+  function requireConnector(connectorId: string): ScoutConnector {
     const found = state.connectors.find((item) => item.id === connectorId);
     if (!found) {
       throw new ApiError(`No connector with id ${connectorId}`, 404);
@@ -1831,7 +1831,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   }
 
   useApiChannel(
-      'monti:list-connectors-request',
+      'scout:list-connectors-request',
       () => ({
         connectors: state.connectors.map(connectorSummary),
         // The catalogue travels with the list rather than living behind its own
@@ -1843,7 +1843,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:create-connector-request',
+      'scout:create-connector-request',
       async (payload: {
         requestId: string;
         name: string;
@@ -1867,7 +1867,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         // caller) and whether this is the first of its category and so the
         // default by definition. Overriding either here would be re-deriving
         // what the Connectors view already derives.
-        const connector: MontiConnector = {
+        const connector: ScoutConnector = {
           ...connectorActions.blank(preset.kind),
           name: payload.name.trim(),
           config,
@@ -1891,7 +1891,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:update-connector-request',
+      'scout:update-connector-request',
       async (payload: {
         requestId: string;
         connectorId: string;
@@ -1916,7 +1916,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
         if (problems.length > 0) {
           throw new ApiError(`This connector is not valid: ${problems.join('; ')}`, 400);
         }
-        const connector: MontiConnector = {
+        const connector: ScoutConnector = {
           ...existing,
           name: payload.name === undefined ? existing.name : payload.name.trim(),
           config,
@@ -1940,7 +1940,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:delete-connector-request',
+      'scout:delete-connector-request',
       async ({connectorId}: {requestId: string; connectorId: string}) => {
         requireConnectorOwner();
         const existing = requireConnector(connectorId);
@@ -1964,7 +1964,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:test-connector-request',
+      'scout:test-connector-request',
       async ({connectorId}: {requestId: string; connectorId: string}) => {
         requireConnectorOwner();
         const connector = requireConnector(connectorId);
@@ -1991,7 +1991,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // agent either guessed or left them alone. Read-only because creating a folder
   // or inventing a status is a workspace decision, not a side effect of a script.
   useApiChannel(
-      'monti:list-folders-request',
+      'scout:list-folders-request',
       (payload: {requestId: string; allowedFolders?: string[] | null}) => {
         const visible = (folders: typeof state.folders) => (payload.allowedFolders ?
           folders.filter((folder) => payload.allowedFolders!.includes(folder.id)) :
@@ -2011,7 +2011,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:list-statuses-request',
+      'scout:list-statuses-request',
       () => ({
         // Built-ins differ per table (a proxy is never in Warmup); custom
         // labels are org-wide and offered by all three pickers, which is why
@@ -2035,7 +2035,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // workspace credential and the chat id identifies a person's Telegram account;
   // an agent needs neither to answer "am I set up" or to change a subscription.
   useApiChannel(
-      'monti:telegram-status-request',
+      'scout:telegram-status-request',
       () => ({
         botConfigured: Boolean(org.org?.telegram_bot_token),
         botName: org.org?.telegram_bot_name || null,
@@ -2059,7 +2059,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       [state, org.org]);
 
   useApiChannel(
-      'monti:set-telegram-pref-request',
+      'scout:set-telegram-pref-request',
       async (payload: {requestId: string; automationId: string; notifyOn?: string}) => {
         requireSignedIn();
         requireAutomation(payload.automationId);
@@ -2082,7 +2082,7 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
       cloud);
 
   useApiChannel(
-      'monti:set-telegram-bot-request',
+      'scout:set-telegram-bot-request',
       async (payload: {requestId: string; botName: string; botToken: string}) => {
         requireSignedIn();
         const name = payload.botName.trim().replace(/^@/, '');
@@ -2116,12 +2116,12 @@ export function useAutomationBridge(workspace: WorkspaceValue) {
   // one failed call and no way to learn from it; this says what exists, what is
   // on, and what cannot be turned off.
   useApiChannel(
-      'monti:table-columns-request',
+      'scout:table-columns-request',
       () => ({tables: describeAllTables(columnLayouts.layouts, {isTeam})}),
       [columnLayouts.layouts, isTeam]);
 
   useApiChannel(
-      'monti:set-table-columns-request',
+      'scout:set-table-columns-request',
       (payload: {requestId: string; table?: string} & ColumnChange) => {
         requireSignedIn();
         if (!isTableId(payload.table)) {

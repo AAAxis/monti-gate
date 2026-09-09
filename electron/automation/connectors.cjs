@@ -178,7 +178,7 @@ function requireConfig(connector, key, label) {
 }
 
 // Telegram rejects a whole message when its markup does not parse -- 400,
-// "can't parse entities". Everything Monti composes is escaped, but a message
+// "can't parse entities". Everything Scout composes is escaped, but a message
 // a step assembled from scraped page text is not, and losing a notification to
 // a stray `<` in someone's product title would be the worst possible failure
 // for the one channel that exists to report failures. So the markup is treated
@@ -295,7 +295,7 @@ async function sendSmtp(connector, message, subject) {
     await transport.sendMail({
       from,
       to,
-      subject: String(subject || '').trim() || 'Monti automation',
+      subject: String(subject || '').trim() || 'Scout automation',
       text: message,
     });
   } finally {
@@ -329,7 +329,7 @@ async function send({connector, message, subject, parseMode}) {
       // A kind this build has no adapter for -- a row written by a newer
       // build. Honest refusal over a guess at somebody's wire format.
       throw new Error(
-          `This version of Monti cannot send through "${connector.kind}" connectors. ` +
+          `This version of Scout cannot send through "${connector.kind}" connectors. ` +
           'Update the app.');
   }
 }

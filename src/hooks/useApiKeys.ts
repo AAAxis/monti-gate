@@ -9,7 +9,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {native} from '../native';
 import type {ApiKey, ApiState, IntegrationStatus, IntegrationVerification} from '../native';
 import type {Integration, IntegrationId} from '../data/integrations';
-import type {MontiFolder} from '../types';
+import type {ScoutFolder} from '../types';
 
 export type ApiKeys = ReturnType<typeof useApiKeys>;
 
@@ -55,7 +55,7 @@ export function useApiKeys(userId: string | null, orgId: string | null) {
     return keys.filter((key) => key.integrationId === integrationId);
   }
 
-  function describeScope(key: ApiKey, folders: MontiFolder[]) {
+  function describeScope(key: ApiKey, folders: ScoutFolder[]) {
     if (!key.folderScope) {
       return 'All folders';
     }
@@ -185,7 +185,7 @@ export function useIntegrations(apiKeys: ApiKeys, apiState: ApiState | null) {
       return 'Checking…';
     }
     if (!config.hasEntry) {
-      return `${config.configPath || integration.configLabel} no longer has the monti entry`;
+      return `${config.configPath || integration.configLabel} no longer has the scout entry`;
     }
     if (config.stale || !config.commandExists) {
       return 'Points at a server that is not installed — repair it';
@@ -237,7 +237,7 @@ export function useIntegrations(apiKeys: ApiKeys, apiState: ApiState | null) {
           ...prev,
           [integration.id]: {
             ok: true,
-            message: 'Copy this into your client as MONTI_API_TOKEN — it is shown once.',
+            message: 'Copy this into your client as SCOUT_API_TOKEN — it is shown once.',
           },
         }));
         await refreshStatus(integration.id);

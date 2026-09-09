@@ -1,6 +1,6 @@
 import {cookieRawFromDataUrl} from '../lib/cookieFile';
 import type {CookieEntry} from '../lib/cookieFile';
-import type {MontiCookie} from '../types';
+import type {ScoutCookie} from '../types';
 import {optionalClient, raise, requireClient, STORAGE_BUCKET} from './client';
 import {cookiePatchToRow, cookieToRow, rowToCookie} from './mappers';
 import type {CookieSetRow} from './rows';
@@ -16,7 +16,7 @@ const COLUMNS =
 
 // Trashed sets come back too, exactly as profiles.list returns soft-deleted
 // profiles: Trash is a view the tab filters into, not a second read.
-export async function list(orgId: string): Promise<MontiCookie[]> {
+export async function list(orgId: string): Promise<ScoutCookie[]> {
   const client = optionalClient();
   if (!client) {
     return [];
@@ -53,10 +53,10 @@ export async function loadPayload(
   return {cookies: row.cookies || [], source_url: row.source_url};
 }
 
-// `cookies` is passed separately rather than living on MontiCookie, because the
+// `cookies` is passed separately rather than living on ScoutCookie, because the
 // app type deliberately does not carry payloads -- see the comment there.
 export async function create(
-    orgId: string, cookie: MontiCookie, cookies?: CookieEntry[]): Promise<void> {
+    orgId: string, cookie: ScoutCookie, cookies?: CookieEntry[]): Promise<void> {
   const client = requireClient();
   const {error} = await client.from('cookie_sets').insert({
     ...cookieToRow(orgId, cookie),
@@ -68,7 +68,7 @@ export async function create(
 // Metadata only: name, folder, tags, status, colour. The payload goes through
 // savePayload, which has to write three columns at once.
 export async function update(
-    orgId: string, id: string, patch: Partial<MontiCookie>): Promise<void> {
+    orgId: string, id: string, patch: Partial<ScoutCookie>): Promise<void> {
   const client = requireClient();
   const {error} = await client
       .from('cookie_sets')

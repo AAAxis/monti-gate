@@ -40,7 +40,7 @@ export function describeDbError(error: unknown, fallback = 'Something went wrong
     return 'Your plan doesn\'t include any more automations. Delete one, or upgrade the ' +
       'plan to add more.';
   }
-  // Ids are also on-disk directory names (E:\MontiProfiles\<id>), which is what
+  // Ids are also on-disk directory names (E:\ScoutProfiles\<id>), which is what
   // the *_id_fs_safe CHECKs protect. The CSV importer writes profile_id
   // verbatim, so this is reachable from real user input.
   if (raw.includes('_id_fs_safe') || raw.includes('cookie_sets_id_shape')) {

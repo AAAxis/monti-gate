@@ -18,7 +18,7 @@
 import {reviseRow} from './csvImport';
 import {formatProxyLink, isProxyAssigned, parseProxyLink} from '../lib/proxies';
 import type {ImportLibrary, ImportRow, ImportRowInput} from './csvImport';
-import type {MontiProxy} from '../types';
+import type {ScoutProxy} from '../types';
 
 // What to do about a row whose name matches a profile that already exists.
 // 'update' is the default because the common case is an export coming back --
@@ -64,7 +64,7 @@ function nameMatchFor(row: ImportRow, library: ImportLibrary) {
 // Deliberately not applied when the file did supply credentials: those are a
 // statement, and a different username on the same host is a different account.
 export function savedCredentialsFor(
-    row: ImportRow, library: ImportLibrary): MontiProxy | null {
+    row: ImportRow, library: ImportLibrary): ScoutProxy | null {
   const parsed = row.proxy;
   if (!parsed || row.matchedProxyId || row.input.proxyId) {
     return null;

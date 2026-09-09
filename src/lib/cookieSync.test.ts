@@ -1,14 +1,14 @@
 import {describe, expect, it} from 'vitest';
 import {liveSetName, resolveLiveSetAction, sanitizeSetName} from './cookieSync';
-import type {MontiCookie, MontiProfile} from '../types';
+import type {ScoutCookie, ScoutProfile} from '../types';
 
-const set = (over: Partial<MontiCookie>): MontiCookie => ({
+const set = (over: Partial<ScoutCookie>): ScoutCookie => ({
   id: 's1', name: 'cookies.txt', url: 'https://x/y.json', count: 1,
   folder_id: null, tags: [], updated_at: '', deleted_at: null, ...over,
 });
-const profile = (over: Partial<MontiProfile>): MontiProfile => ({
+const profile = (over: Partial<ScoutProfile>): ScoutProfile => ({
   id: 'p1', name: 'Amazon US', cookie_mode: 'saved', cookie_id: 's1', ...over,
-} as MontiProfile & typeof over);
+} as ScoutProfile & typeof over);
 
 describe('resolveLiveSetAction', () => {
   it('updates the assigned set when it is this profile\'s live set', () => {

@@ -9,8 +9,8 @@ export const HEARTBEAT_MS: number;
 export const AI_IDLE_MS: number;
 export const MAX_LABEL: number;
 
-/** What is written into a profile's monti-automation.json, and what the browser
- *  fork's MontiAutomationState parses. `active` is always true when the file
+/** What is written into a profile's scout-automation.json, and what the browser
+ *  fork's ScoutAutomationState parses. `active` is always true when the file
  *  exists -- idle is the file's ABSENCE, so there is one way to say it. */
 export interface DrivingStateFile {
   active: true;

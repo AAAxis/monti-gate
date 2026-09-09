@@ -16,7 +16,7 @@
 
 -- public.folders is already polymorphic. `kind` carries a default and NO CHECK
 -- constraint, which 2026-08-04-proxy-folders.sql chose deliberately and
--- src/types.ts restates on MontiFolder: a fourth library needs "only a wider
+-- src/types.ts restates on ScoutFolder: a fourth library needs "only a wider
 -- union here and a matching branch in the load-time split". So there is
 -- nothing to alter on folders -- its RLS policies and grants are table-level
 -- and 'automation' inherits them free.

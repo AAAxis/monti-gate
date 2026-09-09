@@ -14,13 +14,13 @@ import {native} from '../../native';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {ParsedBookmark} from '../../lib/bookmarkImport';
-import type {MontiCookie} from '../../types';
+import type {ScoutCookie} from '../../types';
 
 export function CookiePickerModal({search, onSearch, selectedId, onSelect, onClose}: {
   search: string;
   onSearch: (value: string) => void;
   selectedId: string;
-  onSelect: (cookie: MontiCookie) => void;
+  onSelect: (cookie: ScoutCookie) => void;
   onClose: () => void;
 }) {
   const {data, toast, cookies} = useWorkspace();

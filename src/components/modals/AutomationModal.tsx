@@ -27,7 +27,7 @@ import {assigneeName} from '../../lib/assignees';
 import {MAX_PROFILE_TAGS} from '../../lib/tags';
 import type {AutomationSchedule, ScheduleKind} from '../../automations/schedule';
 import type {TagUsage} from '../../lib/tags';
-import type {MontiAutomation, OrgMember} from '../../types';
+import type {ScoutAutomation, OrgMember} from '../../types';
 import type {AutomationStep} from '../../automations/types';
 
 // Mirrors electron/automation/steps.cjs validateSteps closely enough to catch
@@ -287,7 +287,7 @@ export function AutomationModal({
   automations = [], folders = [], members = [], telegramLinked = false, telegramPref = null,
   onTelegramPref, onLinkTelegram, onClose, onSave, onRun, onDelete,
 }: {
-  automation: MontiAutomation;
+  automation: ScoutAutomation;
   exists: boolean;
   // Every tag in use across the workspace, for the suggestion row.
   tagOptions?: TagUsage[];
@@ -315,14 +315,14 @@ export function AutomationModal({
   onTelegramPref?: (value: 'always' | 'failure' | null) => void;
   onLinkTelegram?: () => void;
   onClose: () => void;
-  onSave: (next: MontiAutomation) => Promise<string | null>;
-  onRun?: (next: MontiAutomation) => void;
+  onSave: (next: ScoutAutomation) => Promise<string | null>;
+  onRun?: (next: ScoutAutomation) => void;
   // Raises the confirm dialog. It does not delete anything itself, and it is
   // deliberately not given the draft: you delete the saved workflow, not
   // whatever unsaved edits happen to be on screen.
   onDelete?: () => void;
 }) {
-  const [draft, setDraft] = useState<MontiAutomation>(automation);
+  const [draft, setDraft] = useState<ScoutAutomation>(automation);
   const [view, setView] = useState<'steps' | 'json'>('steps');
   const [json, setJson] = useState(() => JSON.stringify(automation.steps, null, 2));
   const [jsonError, setJsonError] = useState('');

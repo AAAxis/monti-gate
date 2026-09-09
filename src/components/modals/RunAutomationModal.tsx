@@ -33,7 +33,7 @@ import {ParamValueFields} from '../automations/ParamValueFields';
 import {isRunnable, proxiesToCheck, runReadiness} from '../../automations/runReadiness';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {RunReadiness} from '../../automations/runReadiness';
-import type {MontiAutomation, MontiProfile, MontiProxy} from '../../types';
+import type {ScoutAutomation, ScoutProfile, ScoutProxy} from '../../types';
 
 // Why a profile cannot be ticked, or null when it can. Live-session state
 // (a run already in flight) is folded in here rather than in runReadiness,
@@ -41,14 +41,14 @@ import type {MontiAutomation, MontiProfile, MontiProxy} from '../../types';
 type Block = 'failed' | 'missing' | 'running' | null;
 
 export function RunAutomationModal({automation, nested = false, onFixProxy, onClose}: {
-  automation: MontiAutomation;
+  automation: ScoutAutomation;
   // True when this opened over the automation editor's own Run button, which
   // leaves that dialog standing underneath.
   nested?: boolean;
   // Closes this dialog and opens that proxy's editor. Handed up rather than
   // opened here because the proxy editor is App's to own -- it is reachable
   // from three other places and none of them stack it inside another dialog.
-  onFixProxy: (proxy: MontiProxy) => void;
+  onFixProxy: (proxy: ScoutProxy) => void;
   onClose: () => void;
 }) {
   const {data, automations, profiles, proxies, selectedProfileId, checkingProxyIds} =
@@ -107,7 +107,7 @@ export function RunAutomationModal({automation, nested = false, onFixProxy, onCl
   // What this profile would actually run with. The same call run() makes, with
   // the same inputs, so the dialog and the run cannot disagree about whether a
   // required value is answered.
-  const varsFor = useCallback((profile: MontiProfile) => resolveRunVars({
+  const varsFor = useCallback((profile: ScoutProfile) => resolveRunVars({
     parameters,
     profileValues: profile.automation_vars?.[automation.id],
     overrides: overrides[profile.id],
@@ -118,10 +118,10 @@ export function RunAutomationModal({automation, nested = false, onFixProxy, onCl
   // ticked -- so blocking the tick would hide the only place the problem can be
   // fixed. This blocks the Run BUTTON instead, and the row says which value.
   const missingFor = useCallback(
-      (profile: MontiProfile) => describeMissingParams(parameters, varsFor(profile)),
+      (profile: ScoutProfile) => describeMissingParams(parameters, varsFor(profile)),
       [parameters, varsFor]);
 
-  function blockFor(profile: MontiProfile): Block {
+  function blockFor(profile: ScoutProfile): Block {
     if (running.has(profile.id)) {
       return 'running';
     }
@@ -237,7 +237,7 @@ export function RunAutomationModal({automation, nested = false, onFixProxy, onCl
   // Re-checks what is on screen regardless of freshness. Unlike the opening
   // sweep this one is asked for, so it keeps checkMany's summary.
   function recheck() {
-    const rows = new Map<string, MontiProxy>();
+    const rows = new Map<string, ScoutProxy>();
     for (const profile of visible) {
       const value = readiness.get(profile.id);
       if (value && 'proxy' in value) {

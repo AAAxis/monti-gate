@@ -371,7 +371,7 @@ export const CONNECTOR_PRESETS: ConnectorPreset[] = [
         hint: 'Leave empty for a relay that does not authenticate.'},
       {key: 'password', label: 'Password', kind: 'password', secret: true},
       {key: 'from', label: 'From', kind: 'text', required: true,
-        placeholder: 'monti@example.com'},
+        placeholder: 'scout@example.com'},
       {key: 'to', label: 'To', kind: 'text', required: true,
         placeholder: 'ops@example.com',
         hint: 'Separate multiple recipients with commas.'},

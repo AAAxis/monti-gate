@@ -7,7 +7,7 @@ import {native} from '../native';
 import {newId} from './core';
 import type {WorkspaceCore} from './core';
 import type {ProxyCheckResult, ProxyConfig} from '../native';
-import type {MontiProfile, MontiProxy} from '../types';
+import type {ScoutProfile, ScoutProxy} from '../types';
 
 const NO_CHECKER = 'Native proxy checker is not available. Restart Scout Web and try again.';
 
@@ -27,7 +27,7 @@ export function useProxyActions(
   // completing while someone edits that proxy's credentials cannot undo the
   // edit. Explicit nulls matter: a proxy that just started working must clear
   // its stored error, and PostgREST drops undefined rather than nulling it.
-  async function recordCheck(proxy: MontiProxy): Promise<boolean> {
+  async function recordCheck(proxy: ScoutProxy): Promise<boolean> {
     patch.proxies((list) => list.map((item) => item.id === proxy.id ? proxy : item));
     return withDb((activeOrgId) => db.proxies.recordCheck(activeOrgId, proxy.id, {
       country: proxy.country,
@@ -47,7 +47,7 @@ export function useProxyActions(
   // Runs the native check and folds its result into the proxy row. Shared by
   // the background sweep, the pre-launch gate and the manual re-check, so all
   // three record failures the same way.
-  async function runCheck(proxy: MontiProxy): Promise<MontiProxy> {
+  async function runCheck(proxy: ScoutProxy): Promise<ScoutProxy> {
     const result = await native?.checkProxy?.(proxy);
     if (!result) {
       throw new Error(NO_CHECKER);
@@ -135,7 +135,7 @@ export function useProxyActions(
   // how that path ended up reporting a dead proxy as a dead run several seconds
   // later, in a sentence about a profile the user never picked.
   async function resolveForLaunch(
-      profile: MontiProfile): Promise<MontiProxy | null | 'blocked'> {
+      profile: ScoutProfile): Promise<ScoutProxy | null | 'blocked'> {
     if ((profile.proxy_mode || 'assigned') !== 'assigned') {
       return null;
     }
@@ -164,7 +164,7 @@ export function useProxyActions(
     }
     toast.setMessage(`Checking proxy for ${profile.name}`);
     beginProxyCheck(assigned.id);
-    let checked: MontiProxy;
+    let checked: ScoutProxy;
     try {
       checked = await runCheck(assigned);
       await recordCheck(checked);
@@ -190,7 +190,7 @@ export function useProxyActions(
   // "Checking…" while it runs, and reports through a toast because the click that
   // started it may well have scrolled out of view by the time curl gives up ten
   // seconds later.
-  async function checkOnce(proxy: MontiProxy) {
+  async function checkOnce(proxy: ScoutProxy) {
     if (!native?.checkProxy) {
       toast.setMessage(NO_CHECKER);
       return;
@@ -234,7 +234,7 @@ export function useProxyActions(
   // one the Run dialog fires on open to freshen what it is about to show. The
   // per-row chips report it there, and a toast about work nobody requested,
   // arriving while they are still reading the list, is noise.
-  async function checkMany(list: MontiProxy[], {quiet = false} = {}) {
+  async function checkMany(list: ScoutProxy[], {quiet = false} = {}) {
     const targets = list.filter((proxy) => proxy.host && proxy.port);
     if (!targets.length) {
       if (!quiet) {
@@ -291,13 +291,13 @@ export function useProxyActions(
   // in place fixes those profiles too -- where re-importing with credentials
   // would mint a second proxy per host and leave the profiles on the dead one.
   async function setCredentials(
-      list: MontiProxy[], username: string, password: string): Promise<number> {
+      list: ScoutProxy[], username: string, password: string): Promise<number> {
     let updated = 0;
     for (const proxy of list) {
       // Every check column cleared, not just the error: the stored result
       // describes the proxy as it was without a login, and a country left behind
       // with no timestamp reads as a check that passed.
-      const next: MontiProxy = {
+      const next: ScoutProxy = {
         ...proxy,
         username: username || undefined,
         password: password || undefined,
@@ -327,7 +327,7 @@ export function useProxyActions(
   // the row: a check completing mid-edit must survive the rename. An emptied
   // name falls back to host:port, the same fallback save() uses -- a proxy
   // with no name at all has no line to render in the pickers that offer it.
-  async function rename(proxy: MontiProxy, name: string): Promise<boolean> {
+  async function rename(proxy: ScoutProxy, name: string): Promise<boolean> {
     const next = name.trim() || defaultProxyName(proxy.host, proxy.port);
     if (next === proxy.name) {
       return true;
@@ -345,7 +345,7 @@ export function useProxyActions(
   // never written by the checker: a proxy that fails a check says so in its
   // check cell, and having the sweep also flip the label to "Dead" would erase
   // whatever the user had put there.
-  async function setStatus(proxy: MontiProxy, status: string): Promise<boolean> {
+  async function setStatus(proxy: ScoutProxy, status: string): Promise<boolean> {
     if (status === (proxy.status || defaultProxyStatus)) {
       return true;
     }
@@ -363,7 +363,7 @@ export function useProxyActions(
   // local patch clears them too and the row reads "Not checked" until the
   // background sweep gets to it.
   async function setConnection(
-      proxy: MontiProxy, connectionPatch: db.proxies.ProxyConnectionPatch): Promise<boolean> {
+      proxy: ScoutProxy, connectionPatch: db.proxies.ProxyConnectionPatch): Promise<boolean> {
     const next = {
       type: connectionPatch.type ?? proxy.type ?? 'http',
       host: connectionPatch.host ?? proxy.host,
@@ -420,7 +420,7 @@ export function useProxyActions(
     port: number;
     username?: string;
     password?: string;
-  }): Promise<{proxy: MontiProxy; error?: undefined} | {proxy?: undefined; error: string}> {
+  }): Promise<{proxy: ScoutProxy; error?: undefined} | {proxy?: undefined; error: string}> {
     const existing = state.proxies.find((item) => item.id === draft.id);
     const connectionUnchanged = existing &&
       existing.type === draft.type &&
@@ -428,7 +428,7 @@ export function useProxyActions(
       existing.port === draft.port &&
       (existing.username || '') === (draft.username || '') &&
       (existing.password || '') === (draft.password || '');
-    const proxy: MontiProxy = {
+    const proxy: ScoutProxy = {
       // When the connection details changed, the six last_* columns are written
       // as explicit nulls by proxyToRow -- the stored check result no longer
       // describes this proxy, and the background loop will re-check it.
@@ -471,14 +471,14 @@ export function useProxyActions(
   // Nothing is checked here: importing 200 proxies would mean 200 concurrent
   // curl runs. The rows land unchecked, and useBackgroundProxyChecks already
   // sweeps exactly those, filling in country and ping a few at a time.
-  async function importList(entries: Array<Omit<MontiProxy, 'id'>>): Promise<{
+  async function importList(entries: Array<Omit<ScoutProxy, 'id'>>): Promise<{
     created: number;
     failed: Array<{name: string; error: string}>;
   }> {
-    const created: MontiProxy[] = [];
+    const created: ScoutProxy[] = [];
     const failed: Array<{name: string; error: string}> = [];
     for (const entry of entries) {
-      const proxy: MontiProxy = {...entry, id: newId()};
+      const proxy: ScoutProxy = {...entry, id: newId()};
       const error = await withDbError((activeOrgId) => db.proxies.upsert(activeOrgId, proxy));
       if (error) {
         failed.push({name: proxy.name || proxy.host, error});
@@ -509,7 +509,7 @@ export function useProxyActions(
     return true;
   }
 
-  async function create(proxy: MontiProxy): Promise<boolean> {
+  async function create(proxy: ScoutProxy): Promise<boolean> {
     if (!await withDb((activeOrgId) => db.proxies.upsert(activeOrgId, proxy))) {
       return false;
     }
@@ -517,7 +517,7 @@ export function useProxyActions(
     return true;
   }
 
-  async function update(proxy: MontiProxy): Promise<boolean> {
+  async function update(proxy: ScoutProxy): Promise<boolean> {
     if (!await withDb((activeOrgId) => db.proxies.upsert(activeOrgId, proxy))) {
       return false;
     }
@@ -539,7 +539,7 @@ export function useProxyActions(
     return true;
   }
 
-  async function exportToCsv(list: MontiProxy[]) {
+  async function exportToCsv(list: ScoutProxy[]) {
     if (!list.length) {
       return;
     }
@@ -570,7 +570,7 @@ export function useProxyActions(
         return [key, String(row[key] ?? '')];
       }));
     });
-    const savedPath = await native.saveTextFile(`monti-proxies-${Date.now()}.csv`, csv);
+    const savedPath = await native.saveTextFile(`scout-proxies-${Date.now()}.csv`, csv);
     if (savedPath) {
       toast.setMessage(`Exported ${list.length} ${list.length === 1 ? 'proxy' : 'proxies'} to ${savedPath.split('/').pop()}`);
     }

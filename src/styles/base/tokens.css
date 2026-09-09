@@ -250,7 +250,7 @@
    * these rules lived in src/styles.css. Vite does not warn when it cannot
    * resolve a url() -- it emits the string unchanged, so the only sign of a
    * wrong path here is a 404 and a missing mark at runtime. */
-  --monti-mark: url("../../assets/monti-mark.png");
+  --scout-mark: url("../../assets/scout-mark.png");
 
   color: var(--ink);
   background: var(--surface);

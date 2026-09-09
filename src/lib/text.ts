@@ -70,7 +70,7 @@ export function accountLabel(displayName: string, email: string) {
 // What the workspace switcher calls a workspace.
 //
 // `name`, never `legal_name`. The two are separate columns on purpose (see
-// MontiOrg in src/types.ts): `name` is what this workspace is called and its
+// ScoutOrg in src/types.ts): `name` is what this workspace is called and its
 // owner may rename it to "Client accounts" whenever they like, while
 // `legal_name` is the company behind it. The switcher answers "where am I
 // working", which is the first of those.

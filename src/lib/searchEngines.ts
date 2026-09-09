@@ -10,7 +10,7 @@ export type SearchEngine = {id: SearchEngineId; name: string; searchUrl: string}
 
 // `%s` is the query placeholder, the same convention Chromium's TemplateURL
 // uses, so these strings could later feed the browser's own default provider
-// (monti.default_search_engine) without being rewritten.
+// (scout.default_search_engine) without being rewritten.
 export const SEARCH_ENGINES: SearchEngine[] = [
   {id: 'google', name: 'Google', searchUrl: 'https://www.google.com/search?q=%s'},
   {id: 'duckduckgo', name: 'DuckDuckGo', searchUrl: 'https://duckduckgo.com/?q=%s'},
@@ -22,7 +22,7 @@ export const DEFAULT_SEARCH_ENGINE = SEARCH_ENGINES[0];
 // Per-machine, not per-org: which engine you search with is a personal habit,
 // unlike the bookmarks themselves, which are shared workspace state in Supabase.
 // Same storage shape as the theme preference in theme.tsx.
-const STORAGE_KEY = 'monti.searchEngine';
+const STORAGE_KEY = 'scout.searchEngine';
 
 export function engineById(id: string | null | undefined): SearchEngine {
   return SEARCH_ENGINES.find((engine) => engine.id === id) || DEFAULT_SEARCH_ENGINE;

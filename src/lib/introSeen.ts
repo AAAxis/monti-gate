@@ -5,7 +5,7 @@
 // same person on a second machine should see it again there. Same reasoning and
 // same storage as the theme preference (src/theme.tsx) and the active org id
 // (src/db/orgs.ts).
-const KEY = 'monti.profileIntroSeen';
+const KEY = 'scout.profileIntroSeen';
 
 export function hasSeenProfileIntro(): boolean {
   try {

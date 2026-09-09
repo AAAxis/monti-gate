@@ -1,4 +1,4 @@
-// Rasterizes scripts/panel-icon-art.cjs into the Monti Panel's action icons.
+// Rasterizes scripts/panel-icon-art.cjs into the Scout Panel's action icons.
 //
 //   npm run panel-icon
 //

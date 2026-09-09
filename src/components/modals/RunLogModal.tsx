@@ -14,7 +14,7 @@ import {useOrg} from '../../org';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import {RUN_LABEL, RUN_TONE} from '../../automations/runStatus';
 import type {RunLogEntry} from '../../automations/types';
-import type {MontiAutomation, AutomationRun} from '../../types';
+import type {ScoutAutomation, AutomationRun} from '../../types';
 
 // A log line's own class, not a badge -- these are lines of text, and a pill on
 // every warn line would out-shout the message. `apply-status-warn` used to be
@@ -31,7 +31,7 @@ function depthOf(path: string): number {
 }
 
 export function RunLogModal({automation, onClose}: {
-  automation: MontiAutomation;
+  automation: ScoutAutomation;
   onClose: () => void;
 }) {
   const org = useOrg();

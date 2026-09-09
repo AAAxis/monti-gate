@@ -1,8 +1,8 @@
 import * as db from '../db';
 import type {CookieFileSelection} from '../native';
-import type {MontiProfile} from '../types';
+import type {ScoutProfile} from '../types';
 
-export type CookieImportFields = Pick<MontiProfile,
+export type CookieImportFields = Pick<ScoutProfile,
   'cookie_import_path' | 'cookie_import_url' | 'cookie_import_name' | 'cookie_import_count'>;
 
 // Uploads a picked cookie file to Storage and returns the cookie_import_*

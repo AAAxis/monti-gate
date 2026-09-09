@@ -2,7 +2,7 @@
 // must agree between the bridge (which writes) and anyone reading the Cookies
 // tab. Kept as a pure function so the six ways it can go are unit-tested
 // without a workspace.
-import type {MontiCookie, MontiProfile} from '../types';
+import type {ScoutCookie, ScoutProfile} from '../types';
 
 export function liveSetName(profileName: string): string {
   return `${profileName} (live)`;
@@ -19,7 +19,7 @@ export function liveSetName(profileName: string): string {
 // of resolveLiveSetAction below: matching by id first is what stops a push
 // from one profile ever landing on a different profile's or the library's
 // same-named set.
-export function assignedSet(profile: MontiProfile, sets: MontiCookie[]): MontiCookie | null {
+export function assignedSet(profile: ScoutProfile, sets: ScoutCookie[]): ScoutCookie | null {
   if (profile.cookie_mode !== 'saved' || !profile.cookie_id) {
     return null;
   }
@@ -39,9 +39,9 @@ export function assignedSet(profile: MontiProfile, sets: MontiCookie[]): MontiCo
 // A's push overwrite profile B's live set, or a stray same-named library set
 // that neither profile owns.
 export function resolveLiveSetAction(
-    profile: MontiProfile,
-    sets: MontiCookie[],
-): {kind: 'update'; set: MontiCookie} | {kind: 'create'; name: string} {
+    profile: ScoutProfile,
+    sets: ScoutCookie[],
+): {kind: 'update'; set: ScoutCookie} | {kind: 'create'; name: string} {
   const name = liveSetName(profile.name);
   const assigned = assignedSet(profile, sets);
   if (assigned && (assigned.name === name || assigned.name === `${name}.json`)) {

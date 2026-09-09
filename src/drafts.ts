@@ -14,7 +14,7 @@ import {newRowId} from './lib/random';
 import {normalizeTags} from './lib/tags';
 import {valuesToStrings} from './automations/parameters';
 import {numberOrNull} from './lib/text';
-import type {MontiProfile, MontiProxy, ProxyMode, SharedBookmark} from './types';
+import type {ScoutProfile, ScoutProxy, ProxyMode, SharedBookmark} from './types';
 import type {FolderKind} from './workspace/useLibraryActions';
 
 export type ProfileDraft = {
@@ -31,28 +31,28 @@ export type ProfileDraft = {
   status: string;
   color: string;
   // `brand:<slug>`, an https URL, or '' for the initials plate. See
-  // MontiProfile.avatar; parsed in src/lib/profileAvatar.ts.
+  // ScoutProfile.avatar; parsed in src/lib/profileAvatar.ts.
   avatar: string;
   folder_id: string;
   // The teammate on the hook for this profile, as an auth user id, or '' for
   // unassigned.
   //
   // Unlike every other field here it does NOT travel through profileFromDraft
-  // into MontiProfile: profileToRow deliberately omits assigned_to so an
+  // into ScoutProfile: profileToRow deliberately omits assigned_to so an
   // ordinary edit cannot carry a stale value back over an assignment made in
   // another session. It rides in the draft only so the picker has somewhere to
   // hold the choice until Save, which then applies it through set_assignee.
   assigned_to: string;
   // Login credentials for whatever account this profile is signed into --
   // stored plaintext the same way proxy_search/proxy credentials already
-  // are (see MontiProfile.email/password in types.ts). Not used by Anty
+  // are (see ScoutProfile.email/password in types.ts). Not used by Anty
   // itself for anything; exposed so MCP-driven agents (get_profile/
   // update_profile) can read/fill a login form without the user re-typing
   // credentials into the agent's own prompt each time.
   email: string;
   password: string;
   // Where the pair above signs in. Reference only, exactly like them -- see
-  // MontiProfile.login_url. Also reaches automations as {{profile.login_url}}.
+  // ScoutProfile.login_url. Also reaches automations as {{profile.login_url}}.
   login_url: string;
   proxy_id: string;
   proxy_mode: ProxyMode;
@@ -127,7 +127,7 @@ export type FolderDraft = {
   // orphan everything filed in it.
   kind: FolderKind;
   name: string;
-  // A FOLDER_ICONS key. Always set in the draft even though MontiFolder.icon is
+  // A FOLDER_ICONS key. Always set in the draft even though ScoutFolder.icon is
   // optional -- the picker is a radiogroup and needs something selected.
   icon: string;
   // A PROFILE_COLORS key or a custom hex, same as ProfileDraft.color. Always
@@ -213,7 +213,7 @@ export function newProfileDraft(selfId = ''): ProfileDraft {
   };
 }
 
-export function draftFromProfile(profile: MontiProfile): ProfileDraft {
+export function draftFromProfile(profile: ScoutProfile): ProfileDraft {
   const fingerprint = profile.fingerprint || {};
   return {
     id: profile.id,
@@ -274,7 +274,7 @@ export function draftFromProfile(profile: MontiProfile): ProfileDraft {
 // becomes a string through valuesToStrings, which the Run dialog also uses --
 // the two surfaces show the same boxes and must fill them the same way.
 function profileVarsToDraft(
-    stored: MontiProfile['automation_vars']): Record<string, Record<string, string>> {
+    stored: ScoutProfile['automation_vars']): Record<string, Record<string, string>> {
   const out: Record<string, Record<string, string>> = {};
   for (const [automationId, values] of Object.entries(stored || {})) {
     out[automationId] = valuesToStrings(values);
@@ -288,8 +288,8 @@ function profileVarsToDraft(
 // an all-blank entry -- adding the block is itself a choice, and dropping it
 // would make the section vanish the next time the profile is opened.
 function draftVarsToProfile(
-    draft: Record<string, Record<string, string>>): MontiProfile['automation_vars'] {
-  const out: NonNullable<MontiProfile['automation_vars']> = {};
+    draft: Record<string, Record<string, string>>): ScoutProfile['automation_vars'] {
+  const out: NonNullable<ScoutProfile['automation_vars']> = {};
   for (const [automationId, values] of Object.entries(draft || {})) {
     const entry: Record<string, unknown> = {};
     for (const [name, value] of Object.entries(values || {})) {
@@ -316,10 +316,10 @@ export function withFingerprintOs(draft: ProfileDraft, os: string): ProfileDraft
   };
 }
 
-// The fingerprint half of a draft, in the shape MontiProfile stores it. Used
+// The fingerprint half of a draft, in the shape ScoutProfile stores it. Used
 // both when saving the editor and when a launch rotates the fingerprint.
 export function fingerprintFromDraftPatch(
-    patch: Partial<ProfileDraft>): NonNullable<MontiProfile['fingerprint']> {
+    patch: Partial<ProfileDraft>): NonNullable<ScoutProfile['fingerprint']> {
   return {
     os: patch.fingerprint_os,
     browser_version: patch.fingerprint_browser_version,
@@ -348,7 +348,7 @@ export function fingerprintFromDraftPatch(
 // The saved row a profile draft describes. `createdAt` is threaded in by the
 // caller because only it knows whether this is an edit (keep the original) or
 // a create (stamp now).
-export function profileFromDraft(draft: ProfileDraft, createdAt?: string): MontiProfile {
+export function profileFromDraft(draft: ProfileDraft, createdAt?: string): ScoutProfile {
   return {
     id: draft.id,
     name: draft.name.trim(),
@@ -398,7 +398,7 @@ export function newProxyDraft(): ProxyDraft {
   };
 }
 
-export function draftFromProxy(proxy: MontiProxy): ProxyDraft {
+export function draftFromProxy(proxy: ScoutProxy): ProxyDraft {
   return {
     id: proxy.id,
     name: proxy.name || '',

@@ -16,7 +16,7 @@
  * an empty Proxies/Profiles/Cookies tab are both a centred column under the
  * topbar with a mark at the head of it, and at different offsets the mark
  * jumped up the window as you moved between them. Both are the second flex
- * child of .content, so matching the padding is all it takes to land the Monti
+ * child of .content, so matching the padding is all it takes to land the Scout
  * mark and the empty state's glyph on the same line.
  *
  * This was 0 for a while, on the grounds that a tab whose first row sits lower
@@ -38,7 +38,7 @@
   width: 100%;
 }
 
-/* The Monti mark over the search box, on this tab and on the generated browser
+/* The Scout mark over the search box, on this tab and on the generated browser
  * home page (src/lib/homePage.ts emits the same thing in the same place). The
  * two are deliberately one page in two places, so a brand that landed on only
  * one of them would be the first thing to make them read as different screens.
@@ -63,14 +63,14 @@
 
 /* Masked, not an <img>. The source art is black line work on transparent, so
  * as an image it would be an invisible smudge on the dark theme -- the same
- * reason the sidebar's .brand-mark and .extension-mark.is-monti are masks.
+ * reason the sidebar's .brand-mark and .extension-mark.is-scout are masks.
  * Taller than either of those because here it is the page's own header rather
  * than a glyph in a row. */
 .start-brand-mark {
   background-color: var(--ink);
   display: block;
   height: 76px;
-  mask-image: var(--monti-mark);
+  mask-image: var(--scout-mark);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;
@@ -196,7 +196,7 @@
  * icon the sidebar rail gives the Automations tab and the same one the
  * generated page inlines as WORKFLOW_ICON. It is drawn by the component and
  * takes the label's own colour, so there is no rule for it here -- the masked
- * Monti helmet this replaced needed one. */
+ * Scout helmet this replaced needed one. */
 
 /* The rounded (i) that carries a section's one explanatory sentence, and the
  * bubble it opens on hover or keyboard focus.

@@ -13,7 +13,7 @@ import {native} from '../native';
 import {presetFor, runtimeConnector} from '../data/connectors';
 import {newId} from './core';
 import type {WorkspaceCore} from './core';
-import type {MontiConnector} from '../types';
+import type {ScoutConnector} from '../types';
 
 export type ConnectorActions = ReturnType<typeof useConnectorActions>;
 
@@ -32,7 +32,7 @@ export function useConnectorActions({data}: WorkspaceCore) {
     void native?.setConnectors?.(connectors.map(runtimeConnector));
   }, [connectors]);
 
-  function blank(kind: string): MontiConnector {
+  function blank(kind: string): ScoutConnector {
     const preset = presetFor(kind);
     const category = preset?.category || 'ai';
     return {
@@ -50,7 +50,7 @@ export function useConnectorActions({data}: WorkspaceCore) {
     };
   }
 
-  async function save(connector: MontiConnector, exists: boolean): Promise<string | null> {
+  async function save(connector: ScoutConnector, exists: boolean): Promise<string | null> {
     const error = await withDbError(
         (activeOrgId) => db.connectors.save(activeOrgId, connector, exists));
     if (error) {

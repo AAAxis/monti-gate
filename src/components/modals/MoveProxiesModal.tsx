@@ -18,10 +18,10 @@ import {countryName} from '../../data/folderIcons';
 import {isProxyAssigned, proxyCountryLabel, proxySearchText} from '../../lib/proxies';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
-import type {MontiFolder} from '../../types';
+import type {ScoutFolder} from '../../types';
 
 export function MoveProxiesModal({folder, seedCountry, onClose}: {
-  folder: MontiFolder;
+  folder: ScoutFolder;
   // Set when the folder was just created from a country suggestion: that
   // country's proxies arrive ticked and the search is pointed at them, so the
   // whole flow is one more click. Still only a proposal -- nothing moves until

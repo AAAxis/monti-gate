@@ -72,7 +72,7 @@ export function WorkspaceSetupModal({mode = 'onboard', orgId, orgName, onDone, o
 
   const [step, setStep] = useState<'type' | 'details'>('type');
   // Create mode only. What the workspace is called, as distinct from the company
-  // behind it -- see the note on legal_name in MontiOrg.
+  // behind it -- see the note on legal_name in ScoutOrg.
   const [name, setName] = useState('');
   const named = name.trim().length > 0;
   const [legalName, setLegalName] = useState('');

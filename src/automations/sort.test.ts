@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest';
 import {sortAutomations} from './sort';
-import type {MontiAutomation} from '../types';
+import type {ScoutAutomation} from '../types';
 
-function automation(id: string, createdAt?: string): MontiAutomation {
+function automation(id: string, createdAt?: string): ScoutAutomation {
   return {id, name: id, steps: [], created_at: createdAt};
 }
 

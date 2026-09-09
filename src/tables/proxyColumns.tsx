@@ -18,7 +18,7 @@ import {assigneeName} from '../lib/assignees';
 import {profilesUsingProxy, proxyCountryLabel, splitPastedConnection} from '../lib/proxies';
 import type {CellOption} from '../components/ui/CellControls';
 import type {TableColumn} from './columns';
-import type {MontiProfile, MontiProxy, CloudState} from '../types';
+import type {ScoutProfile, ScoutProxy, CloudState} from '../types';
 
 export type ProxyColumnContext = {
   state: CloudState;
@@ -43,15 +43,15 @@ export type ProxyCellOptions = {
 // get wrong are enforced: assignment goes through the set_assignee RPC, and
 // every connection edit clears the stored check.
 export type ProxyCellActions = {
-  setName: (proxy: MontiProxy, name: string) => void;
-  setStatus: (proxy: MontiProxy, status: string) => void;
-  setType: (proxy: MontiProxy, type: 'http' | 'socks5') => void;
-  setEndpoint: (proxy: MontiProxy, endpoint: ProxyEndpoint) => void;
-  setUsername: (proxy: MontiProxy, username: string) => void;
-  setPassword: (proxy: MontiProxy, password: string) => void;
-  setFolder: (proxy: MontiProxy, folderId: string) => void;
-  setAssignee: (proxy: MontiProxy, userId: string) => void;
-  recheckProxy: (proxy: MontiProxy) => void;
+  setName: (proxy: ScoutProxy, name: string) => void;
+  setStatus: (proxy: ScoutProxy, status: string) => void;
+  setType: (proxy: ScoutProxy, type: 'http' | 'socks5') => void;
+  setEndpoint: (proxy: ScoutProxy, endpoint: ProxyEndpoint) => void;
+  setUsername: (proxy: ScoutProxy, username: string) => void;
+  setPassword: (proxy: ScoutProxy, password: string) => void;
+  setFolder: (proxy: ScoutProxy, folderId: string) => void;
+  setAssignee: (proxy: ScoutProxy, userId: string) => void;
+  recheckProxy: (proxy: ScoutProxy) => void;
 };
 
 // What a save of the Host cell carries. Host and port always; the rest only
@@ -65,19 +65,19 @@ export type ProxyEndpoint = {
   password?: string;
 };
 
-export type ProxyColumn = TableColumn<MontiProxy, ProxyColumnContext>;
+export type ProxyColumn = TableColumn<ScoutProxy, ProxyColumnContext>;
 
 // A proxy's line in a sentence like "Rename …": the name if it has one, else
 // the host the cell falls back to.
-function proxyLabel(proxy: MontiProxy) {
+function proxyLabel(proxy: ScoutProxy) {
   return proxy.name || proxy.host;
 }
 
-function folderFor(proxy: MontiProxy, {state}: ProxyColumnContext) {
+function folderFor(proxy: ScoutProxy, {state}: ProxyColumnContext) {
   return state.proxy_folders.find((item) => item.id === proxy.folder_id);
 }
 
-function holders(proxy: MontiProxy, {state}: ProxyColumnContext): MontiProfile[] {
+function holders(proxy: ScoutProxy, {state}: ProxyColumnContext): ScoutProfile[] {
   return profilesUsingProxy(proxy, state.profiles);
 }
 

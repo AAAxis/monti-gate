@@ -15,7 +15,7 @@ import {CopyButton} from './CopyButton';
 import {Popover} from './Popover';
 import {FlagIcon} from './icons';
 import type {ReactNode} from 'react';
-import type {MontiProxy} from '../../types';
+import type {ScoutProxy} from '../../types';
 
 export type ProxyCheckState =
   | {status: 'unchecked'}
@@ -48,7 +48,7 @@ export function sinceLabel(iso: string) {
 // A stored proxy's persisted check, as the chip's state. The six last_* columns
 // are written by every check path (background sweep, manual button, import
 // review), so a restart shows the same chip the check produced.
-export function storedCheckState(proxy: MontiProxy | null | undefined): ProxyCheckState {
+export function storedCheckState(proxy: ScoutProxy | null | undefined): ProxyCheckState {
   if (!proxy) {
     return {status: 'unchecked'};
   }

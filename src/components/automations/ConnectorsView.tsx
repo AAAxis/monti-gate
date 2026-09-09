@@ -23,7 +23,7 @@ import {
 import {useOrg} from '../../org';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {ConnectorPreset} from '../../data/connectors';
-import type {MontiConnector} from '../../types';
+import type {ScoutConnector} from '../../types';
 
 // Preset icon keys -> glyphs. A map rather than dynamic lookup for the same
 // reason automations/icons.ts has one: lucide is imported by name and a key
@@ -76,7 +76,7 @@ function maskSecret(value: string): string {
 // One line of non-secret fact per card, chosen per kind: the model for an AI
 // connector, the chat for a bot, the host for a webhook or mail server. Never
 // a secret -- a webhook URL's path is the credential, so only its host shows.
-function detailFor(connector: MontiConnector): string {
+function detailFor(connector: ScoutConnector): string {
   const config = connector.config || {};
   switch (connector.kind) {
     case 'telegram':
@@ -100,9 +100,9 @@ function detailFor(connector: MontiConnector): string {
 type TestResult = {ok: boolean; message: string};
 
 function ConnectorCard({connector, canEdit, onEdit}: {
-  connector: MontiConnector;
+  connector: ScoutConnector;
   canEdit: boolean;
-  onEdit: (connector: MontiConnector) => void;
+  onEdit: (connector: ScoutConnector) => void;
 }) {
   const {connectors, toast} = useWorkspace();
   const preset = presetFor(connector.kind);
@@ -223,7 +223,7 @@ function ConnectorCard({connector, canEdit, onEdit}: {
 
 export function ConnectorsView({onNew, onEdit}: {
   onNew: () => void;
-  onEdit: (connector: MontiConnector) => void;
+  onEdit: (connector: ScoutConnector) => void;
 }) {
   const {data} = useWorkspace();
   const org = useOrg();

@@ -19,14 +19,14 @@ import {
   describeMissingParams, resolveRunVars, secretVarNames,
 } from '../automations/parameters';
 import type {AutomationStep, AutomationVars} from '../automations/types';
-import type {MontiAutomation, MontiProfile} from '../types';
+import type {ScoutAutomation, ScoutProfile} from '../types';
 
 // An automation plus the four things the runner cannot work out for itself.
 //
 // `paramsBlocked` is a sentence, not a flag: it names the profile and the
 // parameters it has no value for, and the run routes refuse with it verbatim
 // rather than opening a browser that dies on an unresolved {{vars.x}}.
-export type RunTile = MontiAutomation & {
+export type RunTile = ScoutAutomation & {
   // Keyed by automation id, and steps only: the runner needs a called
   // automation's body, not its row.
   resolvedAutomations?: Record<string, AutomationStep[]>;
@@ -36,9 +36,9 @@ export type RunTile = MontiAutomation & {
 };
 
 export function buildRunTile(
-    automation: MontiAutomation,
-    profile: MontiProfile,
-    catalogue: MontiAutomation[]): RunTile {
+    automation: ScoutAutomation,
+    profile: ScoutProfile,
+    catalogue: ScoutAutomation[]): RunTile {
   const tree = resolveCallTree(automation, catalogue);
   const calleeParameters = Object.keys(tree.resolved).map((id) =>
     catalogue.find((entry) => entry.id === id)?.parameters || []);

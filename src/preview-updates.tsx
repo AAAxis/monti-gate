@@ -74,7 +74,7 @@ function resource(overrides: Partial<ResourceState> = {}): ResourceState {
   return {
     browserStatus: 'ready',
     browserVersion: '151.0.7906.0',
-    browserPath: '/Users/roman/Library/Application Support/monti-anty/Browser/v-aRSCo2rF7erpS/Scout Web.app',
+    browserPath: '/Users/roman/Library/Application Support/Scout Web/Browser/v-aRSCo2rF7erpS/Scout Web.app',
     installedBuildId: 'aRSCo2r/F7erpSX',
     installedVersion: '151.0.7906.0',
     installedAt: minutesAgo(60 * 10),

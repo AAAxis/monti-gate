@@ -1,18 +1,18 @@
-# Monti Gate
+# Scout Web
 
 **The control plane for anonymous, disposable browser identities.**
 
-Monti Gate is the desktop app that manages everything about your browser
+Scout Web is the desktop app that manages everything about your browser
 profiles — proxies, cookies, extensions, fingerprints — without ever letting
 that data touch the browser session itself. Every profile it launches starts
 from zero: no shared state, no cross-contamination, no fingerprint leakage
-between identities. The browser only ever sees what Monti Gate hands it at
+between identities. The browser only ever sees what Scout Web hands it at
 launch time, and nothing more.
 
 We built it because every other multi-profile browser tool we tried made the
 same mistake: mixing management state (accounts, proxy pools, saved cookies)
 into the same process as the actual browsing session. That's a liability, not
-a feature. Monti Gate keeps them apart on purpose.
+a feature. Scout Web keeps them apart on purpose.
 
 ## What it does
 
@@ -32,11 +32,11 @@ a feature. Monti Gate keeps them apart on purpose.
 
 ## Architecture: two processes, one boundary
 
-Monti Gate is one half of a deliberate two-process design:
+Scout Web is one half of a deliberate two-process design:
 
 ```
 ┌───────────────────────┐        launch payload         ┌───────────────────────┐
-│    Monti Gate     │ ─────────────────────────────▶│    Monti Browser      │
+│    Scout Web     │ ─────────────────────────────▶│    Monti Browser      │
 │  (this repo, open     │   (proxy, fingerprint,        │  (proprietary,        │
 │   source)             │    cookies, extensions)       │   closed source)      │
 │                       │                               │                       │
@@ -49,13 +49,13 @@ Monti Gate is one half of a deliberate two-process design:
 └───────────────────────┘                               └───────────────────────┘
 ```
 
-Monti Gate never embeds browser UI, and Monti Browser never signs in to an
+Scout Web never embeds browser UI, and Monti Browser never signs in to an
 account or shows any management surface. Each browser session is handed
 exactly one launch payload and nothing else — it doesn't know your account
 exists.
 
 Monti Browser is our proprietary anti-detect Chromium engine — it's closed
-source and distributed as a compiled binary that Monti Gate downloads and
+source and distributed as a compiled binary that Scout Web downloads and
 launches on demand. This repo is the entire open-source surface of the
 product: the control plane, the UI, and the launch orchestration.
 

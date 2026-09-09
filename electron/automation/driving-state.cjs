@@ -1,6 +1,6 @@
 // "Something other than the person at the keyboard is driving this window."
 //
-// Written into a launched profile's own user-data-dir as monti-automation.json.
+// Written into a launched profile's own user-data-dir as scout-automation.json.
 // The browser fork watches that file (chrome/browser/monti/monti_automation_state)
 // and paints a pulsing orange border around the page content while it says
 // active, with a pill naming what holds the window.
@@ -8,8 +8,8 @@
 // A FILE, rather than a socket or a CDP command, for three reasons:
 //
 //   1. It is the contract this pair already has. The launcher hands a launch its
-//      proxy verdict, its theme and its run token by writing monti-session.json
-//      and monti-launch.json into the same tree. A fourth file is a fourth row of
+//      proxy verdict, its theme and its run token by writing scout-session.json
+//      and scout-launch.json into the same tree. A fourth file is a fourth row of
 //      an existing pattern; a new port or a new DevTools domain is neither.
 //   2. It survives both ends independently. The browser reads whatever is there
 //      when it starts, so a window launched while a run was already in flight
@@ -27,7 +27,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const FILE_NAME = 'monti-automation.json';
+const FILE_NAME = 'scout-automation.json';
 
 // How long a written state stays believable without being refreshed.
 //

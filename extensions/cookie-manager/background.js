@@ -1,8 +1,8 @@
 importScripts('cookie-format.js');
 
-const SEED_IMPORTED_KEY = 'montiSeedCookiesImported';
-const SEED_SIGNATURE_KEY = 'montiSeedCookiesSignature';
-const SYNC_STATE_KEY = 'montiSyncState';
+const SEED_IMPORTED_KEY = 'scoutSeedCookiesImported';
+const SEED_SIGNATURE_KEY = 'scoutSeedCookiesSignature';
+const SYNC_STATE_KEY = 'scoutSyncState';
 
 // ---- push cadence -----------------------------------------------------------
 // run-token.cjs's COOKIE_RATE allows 12 pushes/token/minute with a sliding 60s
@@ -20,7 +20,7 @@ const PUSH_RETRY_DELAY_MS = 10000;
 const PUSH_RATE_LIMIT_RETRY_DELAY_MS = 65000;
 
 function reportUnhandled(context) {
-  return (error) => console.error(`Monti cookie sync: ${context} failed`, error);
+  return (error) => console.error(`Scout cookie sync: ${context} failed`, error);
 }
 
 async function hashText(text) {
@@ -29,13 +29,13 @@ async function hashText(text) {
 }
 
 // ---- launch config ---------------------------------------------------------
-// monti-launch.json is written per launch by built-in-extensions.cjs and only
+// scout-launch.json is written per launch by built-in-extensions.cjs and only
 // when the launcher minted a run token. Absent file => the extension is
 // running outside a profile launch (or minting failed): sync is shown as
 // unavailable, everything else still works.
 async function launchConfig() {
   try {
-    const response = await fetch(chrome.runtime.getURL('monti-launch.json'));
+    const response = await fetch(chrome.runtime.getURL('scout-launch.json'));
     if (!response.ok) return null;
     const parsed = await response.json();
     return parsed.token && parsed.apiPort ? parsed : null;
@@ -60,11 +60,11 @@ async function profileMeta() {
 // from the renderer's own homeProxyStatus() output, so the panel and the start
 // page describe one session in one set of words.
 //
-// Absent for the same reason monti-launch.json is: the extension is running
+// Absent for the same reason scout-launch.json is: the extension is running
 // outside a profile launch. The panel says so rather than inventing a session.
 async function sessionData() {
   try {
-    const response = await fetch(chrome.runtime.getURL('monti-session.json'));
+    const response = await fetch(chrome.runtime.getURL('scout-session.json'));
     if (!response.ok) return null;
     const parsed = await response.json();
     return parsed && parsed.proxy ? parsed : null;
@@ -92,7 +92,7 @@ async function sessionData() {
 //                    unparseable body) and says nothing about the token.
 //   lastErrorSource  '' | 'push' | 'pull' -- which operation produced
 //                    lastError/lastErrorKind, since both share these fields.
-//   signature        SHA-256 hex digest of MontiCookieFormat.jarSignature(),
+//   signature        SHA-256 hex digest of ScoutCookieFormat.jarSignature(),
 //                    not the raw tab-separated dump: that string is
 //                    hundreds of KB for a real jar and this is rewritten on
 //                    close to every cookie change. Opaque outside this file;
@@ -197,7 +197,7 @@ async function updateBadge(sync) {
   } catch (error) {
     // Badge is decoration; never let it fail a sync. Still logged (not a bare
     // catch) so a broken action API is not invisible.
-    console.error('Monti cookie sync: failed to update badge', error);
+    console.error('Scout cookie sync: failed to update badge', error);
   }
 }
 
@@ -260,7 +260,7 @@ async function pushToLauncher(opts) {
     const config = await launchConfig();
     if (!config) {
       await setSyncState({available: false, pushPending: false});
-      return {ok: false, error: 'This window was not launched from Monti Gate.'};
+      return {ok: false, error: 'This window was not launched from Scout Web.'};
     }
     let state = await setSyncState({available: true});
 
@@ -344,7 +344,7 @@ async function pushToLauncher(opts) {
     }
 
     const cookies = await chrome.cookies.getAll({});
-    const signature = await hashText(MontiCookieFormat.jarSignature(cookies));
+    const signature = await hashText(ScoutCookieFormat.jarSignature(cookies));
     // The shortcut requires a clean last attempt, not just a matching
     // signature: skipping the fetch while an unresolved lastErrorKind sits in
     // state would let a transient failure (network blip, a 5xx) stick
@@ -403,7 +403,7 @@ async function pushToLauncher(opts) {
     // callers, leaving `pushPending:true` stuck with no lastError to explain
     // it. Wrapping the whole body closes that.
     const message = error && error.message ? error.message : String(error);
-    console.error('Monti cookie sync: push crashed', error);
+    console.error('Scout cookie sync: push crashed', error);
     await setSyncState({
       pushPending: false, lastError: message, lastErrorKind: 'internal', lastErrorSource: 'push',
     }).catch(reportUnhandled('persisting push crash state'));
@@ -463,7 +463,7 @@ function schedulePush() {
 async function listLauncherCookies(setId) {
   const config = await launchConfig();
   if (!config) {
-    return {ok: false, error: 'This window was not launched from Monti Gate.'};
+    return {ok: false, error: 'This window was not launched from Scout Web.'};
   }
   const result = await fetchLauncher(
       `http://127.0.0.1:${config.apiPort}/v1/cookies/list-for-profile`,
@@ -487,7 +487,7 @@ async function listLauncherCookieSets() {
   const config = await launchConfig();
   if (!config) {
     return {ok: false, available: false,
-      error: 'This window was not launched from Monti Gate.'};
+      error: 'This window was not launched from Scout Web.'};
   }
   const result = await fetchLauncher(
       `http://127.0.0.1:${config.apiPort}/v1/cookies/list-sets-for-profile`,
@@ -522,7 +522,7 @@ async function pullFromLauncher(setId) {
   try {
     const config = await launchConfig();
     if (!config) {
-      return {ok: false, error: 'This window was not launched from Monti Gate.'};
+      return {ok: false, error: 'This window was not launched from Scout Web.'};
     }
     const result = await fetchLauncher(
         `http://127.0.0.1:${config.apiPort}/v1/cookies/pull-for-profile`,
@@ -620,7 +620,7 @@ async function pullFromLauncher(setId) {
       set: result.body.set || null, setId: loadedId || null, assigned};
   } catch (error) {
     const message = error && error.message ? error.message : String(error);
-    console.error('Monti cookie sync: pull crashed', error);
+    console.error('Scout cookie sync: pull crashed', error);
     await setSyncState({
       lastError: message, lastErrorKind: 'internal', lastErrorSource: 'pull',
     }).catch(reportUnhandled('persisting pull crash state'));
@@ -651,7 +651,7 @@ async function saveAsSet(name, cookies) {
   try {
     const config = await launchConfig();
     if (!config) {
-      return {ok: false, error: 'This window was not launched from Monti Gate.'};
+      return {ok: false, error: 'This window was not launched from Scout Web.'};
     }
     const jar = Array.isArray(cookies) ? cookies : await chrome.cookies.getAll({});
     if (!jar.length) {
@@ -668,12 +668,12 @@ async function saveAsSet(name, cookies) {
       // The launcher answered 200 but recognized none of the cookies -- same
       // "the request completed but nothing came of it" case pushToLauncher
       // treats as saved-none, just not persisted into sync state here.
-      return {ok: false, error: 'Monti Gate did not recognize any of the cookies to save.'};
+      return {ok: false, error: 'Scout Web did not recognize any of the cookies to save.'};
     }
     return {ok: true, saved, set: result.body.set || ''};
   } catch (error) {
     const message = error && error.message ? error.message : String(error);
-    console.error('Monti cookie sync: save-as-set crashed', error);
+    console.error('Scout cookie sync: save-as-set crashed', error);
     return {ok: false, error: message};
   }
 }
@@ -697,7 +697,7 @@ async function overwriteSet(setId, cookies) {
     }
     const config = await launchConfig();
     if (!config) {
-      return {ok: false, error: 'This window was not launched from Monti Gate.'};
+      return {ok: false, error: 'This window was not launched from Scout Web.'};
     }
     const jar = Array.isArray(cookies) ? cookies : await chrome.cookies.getAll({});
     if (!jar.length) {
@@ -711,12 +711,12 @@ async function overwriteSet(setId, cookies) {
     }
     const saved = Number(result.body.saved) || 0;
     if (!saved) {
-      return {ok: false, error: 'Monti Gate did not recognize any of the cookies to save.'};
+      return {ok: false, error: 'Scout Web did not recognize any of the cookies to save.'};
     }
     return {ok: true, saved, set: result.body.set || ''};
   } catch (error) {
     const message = error && error.message ? error.message : String(error);
-    console.error('Monti cookie sync: overwrite-set crashed', error);
+    console.error('Scout cookie sync: overwrite-set crashed', error);
     return {ok: false, error: message};
   }
 }
@@ -755,7 +755,7 @@ async function resumeSyncToAssigned() {
 async function recheckProxy() {
   const config = await launchConfig();
   if (!config) {
-    return {ok: false, error: 'This window was not launched from Monti Gate.'};
+    return {ok: false, error: 'This window was not launched from Scout Web.'};
   }
   const result = await fetchLauncher(
       `http://127.0.0.1:${config.apiPort}/v1/proxies/recheck-from-page`,
@@ -774,7 +774,7 @@ async function recheckProxy() {
 
 // Every automation in this launch's workspace, for the panel's list.
 //
-// The panel's first paint still comes from monti-session.json -- the launch
+// The panel's first paint still comes from scout-session.json -- the launch
 // snapshot, which works with the launcher closed -- and this replaces it. Quiet
 // on failure for the same reason automationStatus is: a window opened outside
 // the launcher, or with the launcher since closed, is an ordinary state and the
@@ -816,7 +816,7 @@ async function runAutomation(automationId) {
   }
   const config = await launchConfig();
   if (!config) {
-    return {ok: false, error: 'This window was not launched from Monti Gate.'};
+    return {ok: false, error: 'This window was not launched from Scout Web.'};
   }
   const session = await sessionData();
   const offered = (session && Array.isArray(session.automations) ? session.automations : [])
@@ -874,7 +874,7 @@ async function automationStatus() {
 async function cancelAutomation() {
   const config = await launchConfig();
   if (!config) {
-    return {ok: false, error: 'This window was not launched from Monti Gate.'};
+    return {ok: false, error: 'This window was not launched from Scout Web.'};
   }
   const result = await fetchLauncher(
       `http://127.0.0.1:${config.apiPort}/v1/automations/cancel-from-page`,
@@ -897,7 +897,7 @@ async function cancelAutomation() {
 async function openAutomationsInLauncher() {
   const config = await launchConfig();
   if (!config) {
-    return {ok: false, error: 'This window was not launched from Monti Gate.'};
+    return {ok: false, error: 'This window was not launched from Scout Web.'};
   }
   const result = await fetchLauncher(
       `http://127.0.0.1:${config.apiPort}/v1/automations/open-in-launcher`,
@@ -933,14 +933,14 @@ async function exportCookies(scope, format) {
   const cookies = await chrome.cookies.getAll(domain ? {domain} : {});
   if (!cookies.length) return {count: 0};
   const meta = await profileMeta();
-  const stem = (meta.name || domain || 'monti-cookies')
-      .replace(/[^a-z0-9._-]+/gi, '-').replace(/^-+|-+$/g, '') || 'monti-cookies';
+  const stem = (meta.name || domain || 'scout-cookies')
+      .replace(/[^a-z0-9._-]+/gi, '-').replace(/^-+|-+$/g, '') || 'scout-cookies';
   if (format === 'netscape') {
     await downloadFile(`${stem}-cookies.txt`,
-        MontiCookieFormat.toNetscapeCookies(cookies), 'text/plain');
+        ScoutCookieFormat.toNetscapeCookies(cookies), 'text/plain');
   } else {
     await downloadFile(`${stem}-cookies.json`,
-        MontiCookieFormat.toCookieJson(cookies), 'application/json');
+        ScoutCookieFormat.toCookieJson(cookies), 'application/json');
   }
   return {count: cookies.length};
 }
@@ -991,7 +991,7 @@ async function clearJar() {
       else failed++;
     } catch (error) {
       failed++;
-      console.warn('Monti cookie clear failed', cookie.domain, cookie.name, error);
+      console.warn('Scout cookie clear failed', cookie.domain, cookie.name, error);
     }
   }
   return {count: removed, failed};
@@ -1006,7 +1006,7 @@ async function importCookies(rawCookies) {
   let imported = 0;
   let failed = 0;
   for (const raw of rawCookies) {
-    const cookie = MontiCookieFormat.normalizeCookie(raw);
+    const cookie = ScoutCookieFormat.normalizeCookie(raw);
     if (!cookie) {
       failed++;
       continue;
@@ -1027,7 +1027,7 @@ async function importCookies(rawCookies) {
       imported++;
     } catch (error) {
       failed++;
-      console.warn('Monti cookie import failed', cookie.domain, cookie.name, error);
+      console.warn('Scout cookie import failed', cookie.domain, cookie.name, error);
     }
   }
   return {count: imported, failed};
@@ -1151,7 +1151,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       // nothing on screen -- the same class of silent failure this rewrite
       // exists to close, just one layer up from the network calls.
       const errorMessage = error && error.message ? error.message : String(error);
-      console.error('Monti cookie sync: message handler failed', message && message.type, error);
+      console.error('Scout cookie sync: message handler failed', message && message.type, error);
       sendResponse({ok: false, error: errorMessage});
     }
   })();
@@ -1178,12 +1178,12 @@ async function importSeedCookiesIfPresent() {
     // The file exists but is not valid JSON, unlike the two returns above:
     // that is a packaging bug, not "nothing to seed", and silently dropping
     // every seed cookie here would be indistinguishable from the normal case.
-    console.error('Monti cookie sync: seed-cookies.json is present but could not be parsed', error);
+    console.error('Scout cookie sync: seed-cookies.json is present but could not be parsed', error);
     return;
   }
   const cookies = Array.isArray(payload) ? payload :
     Array.isArray(payload && payload.cookies) ? payload.cookies : [];
-  const signature = MontiCookieFormat.jarSignature(cookies);
+  const signature = ScoutCookieFormat.jarSignature(cookies);
   const state = await chrome.storage.local.get([SEED_IMPORTED_KEY, SEED_SIGNATURE_KEY]);
   if (state[SEED_IMPORTED_KEY] && state[SEED_SIGNATURE_KEY] === signature) return;
   const result = await importCookies(cookies);
@@ -1219,7 +1219,7 @@ function registerPanelBehavior() {
 //
 // Two signals, in order of when they become available:
 //
-//   1. `toolbarDark` in monti-session.json -- the appearance the launcher
+//   1. `toolbarDark` in scout-session.json -- the appearance the launcher
 //      resolved at launch, written by built-in-extensions.cjs. Available before
 //      anything is opened, which is the only moment that matters for an icon
 //      the user has not clicked yet.
@@ -1248,7 +1248,7 @@ function applyActionIcon(dark) {
   try {
     chrome.action.setIcon({path}, () => void chrome.runtime.lastError);
   } catch (error) {
-    console.warn('Monti: could not set the action icon', error);
+    console.warn('Scout: could not set the action icon', error);
   }
 }
 

@@ -10,7 +10,7 @@
 // pale fill, a matching border, and an ink dark enough to read on it. Each has
 // one value per theme, so a profile's colour inverts with the app.
 //
-// MontiProfile.color stays a plain string and the column is untouched: it holds
+// ScoutProfile.color stays a plain string and the column is untouched: it holds
 // a key for the six presets, or a hex when the user picks a custom colour.
 import type {CSSProperties} from 'react';
 

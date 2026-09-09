@@ -18,7 +18,7 @@ create table if not exists public.profile_notes (
   id uuid primary key default gen_random_uuid(),
   org_id uuid not null references public.organizations(id) on delete cascade,
   -- text, not uuid. A profile id is also its on-disk directory name under
-  -- E:\MontiProfiles\<id> -- see the note on ProfileRow in src/db/rows.ts.
+  -- E:\ScoutProfiles\<id> -- see the note on ProfileRow in src/db/rows.ts.
   profile_id text not null references public.profiles(id) on delete cascade,
   body text not null,
 
@@ -142,7 +142,7 @@ grant select on table public.profile_note_summaries to authenticated;
 -- The dead column this feature replaces.
 --
 -- It has been in the schema since the baseline and has never held a value:
--- rowToProfile does not map it, MontiProfile has no such field, and the API's
+-- rowToProfile does not map it, ScoutProfile has no such field, and the API's
 -- update whitelist rejects it. Both electron/mcp/tools.cjs and
 -- electron/api/routes.json carry comments explaining that `notes` was pulled
 -- from the MCP tool because an agent could report success on a write that never

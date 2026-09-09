@@ -31,7 +31,7 @@ import {
 import {startPageAutomations} from '../../lib/startPageAutomations';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {SearchEngine} from '../../lib/searchEngines';
-import type {MontiAutomation, SharedBookmark} from '../../types';
+import type {ScoutAutomation, SharedBookmark} from '../../types';
 
 export function StartPageTab({onEditBookmark, onAddBookmark}: {
   onEditBookmark: (bookmark: SharedBookmark) => void;
@@ -274,7 +274,7 @@ function AutomationSection() {
 // launcher is already open. The X is the only thing on it you can press, and
 // that one is a real button.
 function AutomationCard({automation, onUnpin}: {
-  automation: MontiAutomation;
+  automation: ScoutAutomation;
   onUnpin: () => void;
 }) {
   const label = automation.name || 'Automation';

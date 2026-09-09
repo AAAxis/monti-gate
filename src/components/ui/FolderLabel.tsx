@@ -6,10 +6,10 @@
 // entry in the column registry (tables/profileColumns.tsx) rather than a reason
 // for that registry to reach back into the tab that renders it.
 import {FolderGlyph} from './FolderGlyph';
-import type {MontiFolder} from '../../types';
+import type {ScoutFolder} from '../../types';
 
 export function FolderLabel({folder, fallback}: {
-  folder?: MontiFolder | null;
+  folder?: ScoutFolder | null;
   // What "no folder" is called, which differs per library: All profiles, All
   // proxies, All cookie-sets. The three tabs each had their own copy of this
   // component for the sake of that one string.

@@ -71,12 +71,12 @@ const {createDrivingState} = require('./automation/driving-state.cjs');
 const {runSummary} = require('./automation/progress.cjs');
 const {routes: apiRoutes} = require('./api/routes.json');
 
-// ── monti:// deep links ──────────────────────────────────────────────────────
+// ── scout:// deep links ──────────────────────────────────────────────────────
 // Two shapes, and nothing else is honoured:
-//   monti://auth?code=...  the PKCE authorization code coming back from Google
+//   scout://auth?code=...  the PKCE authorization code coming back from Google
 //                          via Supabase. Exchanged in the renderer, which is
 //                          the only place the matching code_verifier exists.
-//   monti://open           just focus (or start) the app. Carries no credential.
+//   scout://open           just focus (or start) the app. Carries no credential.
 //
 // The single-instance lock below is load-bearing, not hygiene: on Windows and
 // Linux a deep link is delivered as argv to the ALREADY RUNNING instance via
@@ -84,7 +84,7 @@ const {routes: apiRoutes} = require('./api/routes.json');
 // bug -- without it a second launch starts a whole second app that then fails
 // to bind the automation API port, stranding the user on "not ready" instead of
 // focusing the window they already had.
-const DEEP_LINK_SCHEME = 'monti';
+const DEEP_LINK_SCHEME = 'scout';
 
 // Must track --surface in src/styles.css: this is what the native window paints
 // behind the renderer, so a mismatch shows as a flash on launch and resize.
@@ -137,7 +137,7 @@ function handleDeepLink(raw) {
   const payload = parseDeepLink(raw);
   if (!payload) {
     // Do not log the raw URL: on the auth path it carries an authorization code.
-    console.log('[deep-link] ignored an unrecognised monti:// URL');
+    console.log('[deep-link] ignored an unrecognised scout:// URL');
     return;
   }
   focusMainWindow();
@@ -148,7 +148,7 @@ function handleDeepLink(raw) {
     deepLinkQueue.push(payload);
     return;
   }
-  mainWindow.webContents.send('monti:deep-link', payload);
+  mainWindow.webContents.send('scout:deep-link', payload);
 }
 
 function flushDeepLinkQueue() {
@@ -158,7 +158,7 @@ function flushDeepLinkQueue() {
   const pending = deepLinkQueue;
   deepLinkQueue = [];
   for (const payload of pending) {
-    mainWindow.webContents.send('monti:deep-link', payload);
+    mainWindow.webContents.send('scout:deep-link', payload);
   }
 }
 
@@ -169,7 +169,7 @@ function deepLinkFromArgv(argv) {
 // When the project is named on the command line (`electron .`, and the Windows
 // and Linux dev loops), the executable is Electron itself, so the scheme has to
 // be registered against that binary plus the app path -- otherwise the OS hands
-// monti:// to a bare Electron with no project and nothing happens. The macOS
+// scout:// to a bare Electron with no project and nothing happens. The macOS
 // dev bundle carries its app at Contents/Resources/app instead (see
 // scripts/ensure-macos-app.cjs), which makes defaultApp false and sends it down
 // the same branch as a packaged build, where registering the bundle is right.
@@ -271,7 +271,7 @@ function browserAppPath() {
   const storedBrowserAppPath = readSettings().browserAppPath || process.env.MONTI_BROWSER_APP || '';
   if (process.platform === 'win32') {
     // Windows should prefer the rebuilt managed browser resource over any
-    // stale saved browser path so older Monti builds do not keep overriding
+    // stale saved browser path so older Scout builds do not keep overriding
     // the current anonymous browser package forever.
     return managedBrowserAppPath() ||
       bundledBrowserAppPath() ||
@@ -459,10 +459,10 @@ function browserAppCandidates(preferredAppPath) {
 let mainWindow = null;
 
 const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000;
-const RESOURCE_BASE_URL = (process.env.MONTI_RESOURCE_BASE_URL ||
+const RESOURCE_BASE_URL = (process.env.SCOUT_RESOURCE_BASE_URL ||
   'https://pub-ab898453f3794cc8b9d0117b4111a778.r2.dev/resources').replace(/\/$/, '');
-const allowUpdaterInDev = process.env.MONTI_FORCE_UPDATER === '1';
-const updateProvider = app.isPackaged || allowUpdaterInDev || process.env.MONTI_UPDATE_FEED_URL ?
+const allowUpdaterInDev = process.env.SCOUT_FORCE_UPDATER === '1';
+const updateProvider = app.isPackaged || allowUpdaterInDev || process.env.SCOUT_UPDATE_FEED_URL ?
   'generic' :
   'disabled';
 const updateState = {
@@ -565,7 +565,7 @@ function applyUpdateError(error, {manual = false} = {}) {
 function broadcastUpdateState() {
   const snapshot = publicUpdateState();
   for (const win of BrowserWindow.getAllWindows()) {
-    win.webContents.send('monti:update-state', snapshot);
+    win.webContents.send('scout:update-state', snapshot);
   }
   return snapshot;
 }
@@ -580,7 +580,7 @@ function publicResourceState() {
 function broadcastResourceState() {
   const snapshot = publicResourceState();
   for (const win of BrowserWindow.getAllWindows()) {
-    win.webContents.send('monti:resource-state', snapshot);
+    win.webContents.send('scout:resource-state', snapshot);
   }
   return snapshot;
 }
@@ -592,7 +592,7 @@ function publicApiState() {
 function broadcastApiState() {
   const snapshot = publicApiState();
   for (const win of BrowserWindow.getAllWindows()) {
-    win.webContents.send('monti:api-state', snapshot);
+    win.webContents.send('scout:api-state', snapshot);
   }
   return snapshot;
 }
@@ -615,7 +615,7 @@ function parseJsonWithBom(raw) {
 function downloadJson(url) {
   return new Promise((resolve, reject) => {
     let raw = '';
-    https.get(url, {headers: {'User-Agent': 'MontiAnty/1.0'}}, (res) => {
+    https.get(url, {headers: {'User-Agent': 'ScoutWeb/1.0'}}, (res) => {
       if (res.statusCode !== 200) {
         res.resume();
         const failure = new Error(`HTTP ${res.statusCode} fetching ${url}`);
@@ -645,7 +645,7 @@ function downloadFile(url, destinationPath) {
   return new Promise((resolve, reject) => {
     ensureDirectoryPath(path.dirname(destinationPath));
     const file = fs.createWriteStream(destinationPath);
-    const request = https.get(url, {headers: {'User-Agent': 'MontiAnty/1.0'}}, (res) => {
+    const request = https.get(url, {headers: {'User-Agent': 'ScoutWeb/1.0'}}, (res) => {
       if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location) {
         file.close(() => fs.rmSync(destinationPath, {force: true}));
         resolve(downloadFile(new URL(res.headers.location, url).toString(), destinationPath));
@@ -780,7 +780,7 @@ function stampWindowsBrowserIcon(exePath) {
     return;
   }
   const icon = path.join(__dirname, '..', 'assets', 'app.ico');
-  const marker = path.join(path.dirname(exePath), '.monti-icon');
+  const marker = path.join(path.dirname(exePath), '.scout-icon');
   if (!fs.existsSync(icon) || !fs.existsSync(exePath)) {
     return;
   }
@@ -1043,12 +1043,12 @@ function configureAutoUpdater() {
   // closes the user's browser sessions without a "Restart & install" click.
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = false;
-  autoUpdater.allowPrerelease = process.env.MONTI_UPDATE_PRERELEASE === '1';
+  autoUpdater.allowPrerelease = process.env.SCOUT_UPDATE_PRERELEASE === '1';
 
-  if (process.env.MONTI_UPDATE_FEED_URL) {
+  if (process.env.SCOUT_UPDATE_FEED_URL) {
     autoUpdater.setFeedURL({
       provider: 'generic',
-      url: process.env.MONTI_UPDATE_FEED_URL,
+      url: process.env.SCOUT_UPDATE_FEED_URL,
     });
   }
 
@@ -1124,7 +1124,7 @@ function createWindow() {
     icon: icon || undefined,
     // Painted before the renderer loads. Without it the shell is white, which
     // flashes hard against a dark UI on every cold start. The renderer corrects
-    // this via monti:set-theme once it knows the user's actual preference.
+    // this via scout:set-theme once it knows the user's actual preference.
     backgroundColor: nativeTheme.shouldUseDarkColors ? WINDOW_BG.dark : WINDOW_BG.light,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
@@ -1135,7 +1135,7 @@ function createWindow() {
   });
   mainWindow = win;
   // A fresh renderer has not subscribed yet; it re-arms this via
-  // monti:deep-link-ready. Without the reset, a link arriving during a reload
+  // scout:deep-link-ready. Without the reset, a link arriving during a reload
   // would be sent into a window that is not listening and lost.
   deepLinkReady = false;
   win.on('closed', () => {
@@ -1153,7 +1153,7 @@ function createWindow() {
   });
 
   const devUrl = process.env.VITE_DEV_SERVER_URL || 'http://127.0.0.1:5173';
-  if (process.env.MONTI_LAUNCHER_DEV === '1') {
+  if (process.env.SCOUT_LAUNCHER_DEV === '1') {
     void win.loadURL(devUrl);
   } else {
     void win.loadFile(path.join(__dirname, '../dist/index.html'));
@@ -1313,7 +1313,7 @@ function downloadBuffer(url, redirectsLeft = 5, onProgress = null) {
         match[2] ? Buffer.from(match[3], 'base64') : Buffer.from(decodeURIComponent(match[3])));
   }
   return new Promise((resolve, reject) => {
-    https.get(url, {headers: {'User-Agent': 'MontiAnty/1.0'}}, (res) => {
+    https.get(url, {headers: {'User-Agent': 'ScoutWeb/1.0'}}, (res) => {
       if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location && redirectsLeft > 0) {
         res.resume();
         resolve(downloadBuffer(
@@ -1367,7 +1367,7 @@ function crxZipOffset(buffer) {
 
 function unzipBufferTo(zipBuffer, destDir) {
   fs.mkdirSync(destDir, {recursive: true});
-  const tmpZip = path.join(os.tmpdir(), `monti-ext-${crypto.randomUUID()}.zip`);
+  const tmpZip = path.join(os.tmpdir(), `scout-ext-${crypto.randomUUID()}.zip`);
   fs.writeFileSync(tmpZip, zipBuffer);
   try {
     if (process.platform === 'win32') {
@@ -1555,7 +1555,7 @@ function flattenNestedExtensionDir(destDir) {
 
 function sendBuiltInDownloadProgress(key, progress) {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send('monti:built-in-download-progress', {key, ...progress});
+    mainWindow.webContents.send('scout:built-in-download-progress', {key, ...progress});
   }
 }
 
@@ -1625,7 +1625,7 @@ function catchUpWebstoreBuiltIns(toggles) {
 // authenticated Supabase client) can upload it to Storage itself -- main.cjs
 // never needs its own Supabase credentials.
 function zipFolderToBase64(folderPath) {
-  const tmpZip = path.join(os.tmpdir(), `monti-ext-upload-${crypto.randomUUID()}.zip`);
+  const tmpZip = path.join(os.tmpdir(), `scout-ext-upload-${crypto.randomUUID()}.zip`);
   try {
     const result = spawnSync('/usr/bin/zip', ['-r', '-q', tmpZip, '.'], {cwd: folderPath});
     if (result.status !== 0) {
@@ -1750,7 +1750,7 @@ function proxyArgs(proxy) {
   // do RFC 1929 username/password auth, and a bare --proxy-server never seeds
   // the HTTP proxy auth cache either, so an authenticated proxy passed this way
   // always fails (ERR_SOCKS_CONNECTION_FAILED, or a 407 for http). Passing only
-  // the --monti-proxy-* switches routes the browser through
+  // the --scout-proxy-* switches routes the browser through
   // MontiProfileService::Connect(), which starts the local authenticated
   // SocksBridge and points the profile at that instead.
   const args = [
@@ -1768,7 +1768,7 @@ function proxyArgs(proxy) {
 
 // An assigned proxy is delivered twice, and both halves are load-bearing.
 //
-// The --monti-proxy-* switches above are read at startup by
+// The --scout-proxy-* switches above are read at startup by
 // MontiProxyFromCommandLine (chrome/browser/ui/startup/startup_browser_creator
 // _impl.cc), which builds an monti::MontiProxy and starts the SocksBridge for
 // this session. That is what carries an authenticated proxy, since no
@@ -2196,7 +2196,7 @@ function fallbackHomeHtml(profileName) {
 function writeHomeFile(payload) {
   const html = payload.homeHtml || fallbackHomeHtml(payload.name);
   const root = payload.userDataDir || app.getPath('userData');
-  const homeDir = path.join(root, 'MontiHome');
+  const homeDir = path.join(root, 'ScoutHome');
   ensureDirectoryPath(homeDir);
   const homePath = path.join(homeDir, 'home.html');
   // 0600 because this file can carry a run token (see mintRunToken). It is a
@@ -2211,17 +2211,17 @@ function writeHomeFile(payload) {
 }
 
 // Two URLs, not one. `startupUrl` is where the *first* tab goes -- the profile's
-// start_url when it has one. `montiHomeUrl` is the generated MontiHome/home.html,
+// start_url when it has one. `scoutHomeUrl` is the generated ScoutHome/home.html,
 // and it is where *every other* tab goes: the new-tab page and the home button.
 //
 // These used to be a single `launchUrl` argument, which meant a profile with a
 // start_url had newtab_page_location_override pointed at it too, so every Cmd+T
-// for the life of that profile opened the start URL instead of the Monti home
+// for the life of that profile opened the start URL instead of the Scout home
 // page. The four Android rows in a customer's CSV import were the only ones
 // carrying start_url=facebook.com, which made it look like a mobile-fingerprint
 // bug; it was neither mobile nor fingerprint. The first tab never needed the
 // override -- it is opened by the positional URL arg and session.startup_urls.
-function writeProfileStartupPrefs(userDataDir, startupUrl, montiHomeUrl) {
+function writeProfileStartupPrefs(userDataDir, startupUrl, scoutHomeUrl) {
   if (!userDataDir || !startupUrl) {
     return;
   }
@@ -2237,9 +2237,9 @@ function writeProfileStartupPrefs(userDataDir, startupUrl, montiHomeUrl) {
   // Falling back to startupUrl keeps a caller that only knows one URL working,
   // rather than silently clearing the override and handing back Chromium's own
   // new-tab page.
-  const newTabUrl = montiHomeUrl || startupUrl;
+  const newTabUrl = scoutHomeUrl || startupUrl;
   prefs.homepage = newTabUrl;
-  // The Monti home page is a file:// page, not the NTP, so the home button has
+  // The Scout home page is a file:// page, not the NTP, so the home button has
   // to be told to use `homepage` rather than treat it as the new-tab page.
   prefs.homepage_is_newtabpage = false;
   prefs.newtab_page_location_override = newTabUrl;
@@ -2350,7 +2350,7 @@ function fileSafeName(value) {
 }
 
 function profileLaunchersRoot() {
-  return path.join(app.getPath('home'), 'Applications', 'Monti Profiles');
+  return path.join(app.getPath('home'), 'Applications', 'Scout Profiles');
 }
 
 function profileLauncherPath(payload) {
@@ -2383,7 +2383,7 @@ function writeProfileIcon(payload, browserAppPath, resourcesDir) {
     // Read and write rather than copyFileSync. assets/ ships inside app.asar,
     // and Electron implements copyFileSync from an archive by extracting to a
     // temp file first and copying from that -- which is where
-    //   ENOENT ... copyfile '/var/folders/.../T/.com.monti.anty.XXXXXX'
+    //   ENOENT ... copyfile '/var/folders/.../T/.com.scout.web.XXXXXX'
     // comes from when that temp file is gone by the time the copy runs.
     // readFileSync reads out of the archive directly and has no such window.
     //
@@ -2434,7 +2434,7 @@ function writeProfileLauncherApp(payload, resolved, args, timezone) {
 
   const displayName = fileSafeName(payload.name);
   const bundleId = `com.monti.browser.profile.${bundleSafeId(payload.id || displayName)}`;
-  const executableName = 'MontiProfileLauncher';
+  const executableName = 'ScoutProfileLauncher';
   const infoPlist = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
@@ -2465,7 +2465,7 @@ function writeProfileLauncherApp(payload, resolved, args, timezone) {
   fs.writeFileSync(path.join(contentsDir, 'PkgInfo'), 'APPL????');
   writeProfileIcon(payload, resolved.appPath, resourcesDir);
 
-  const logPath = `/tmp/monti-profile-${bundleSafeId(payload.id || displayName)}.log`;
+  const logPath = `/tmp/scout-profile-${bundleSafeId(payload.id || displayName)}.log`;
   const launchArgs = args.map(shellQuote).join(' ');
   // TZ is respected by V8/ICU for Intl.DateTimeFormat and Date's reported
   // timezone/offset, so this is what actually makes the browser's apparent
@@ -2591,7 +2591,7 @@ async function spawnProfile(payload, extraArgs = []) {
 }
 
 // The renderer's profileDataDir() (src/main.tsx) hands back a bare relative
-// path on Windows (e.g. "MontiProfiles/<id>", no drive letter). Every file
+// path on Windows (e.g. "ScoutProfiles/<id>", no drive letter). Every file
 // operation below resolves payload.userDataDir with path.join(), and the
 // --user-data-dir switch handed to the spawned browser is a relative string
 // too -- both Node and Chromium resolve a relative path against the
@@ -2676,9 +2676,9 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
     profileIconPng(payload.color, nativeTheme.shouldUseDarkColors);
   // Always written, even when the profile has a start_url: the home page is the
   // new-tab page for the whole session, not just the fallback for the first tab.
-  const montiHomeUrl = writeHomeFile(payload);
-  const launchUrl = payload.startUrl || montiHomeUrl;
-  writeProfileStartupPrefs(payload.userDataDir, launchUrl, montiHomeUrl);
+  const scoutHomeUrl = writeHomeFile(payload);
+  const launchUrl = payload.startUrl || scoutHomeUrl;
+  writeProfileStartupPrefs(payload.userDataDir, launchUrl, scoutHomeUrl);
   writeProfileProxyAssignment(payload.userDataDir, payload.proxy);
   // Built-in extensions (see built-in-extensions.cjs): the folders vendored in
   // extensions/, copied into this profile's own user-data-dir, plus any Web
@@ -2690,7 +2690,7 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
   // user-data-dir of a browser that may still be running until that call.
   //
   // Being bundled is not the same as being active -- FoxyWall's own
-  // monti-config.json still gates auto-connect to payload.useFreeProxy, so
+  // scout-config.json still gates auto-connect to payload.useFreeProxy, so
   // merely installing it never makes it touch chrome.proxy.settings and an
   // assigned-proxy profile's connection is never contested.
   extensionPaths.push(...await builtInExtensionPaths(payload));
@@ -2698,7 +2698,7 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
   // After builtInExtensionPaths, never before: the id is derived from the
   // extension's on-disk directory, which that call creates. The browser's
   // native "Monti Helper" toolbar button opens this extension's side panel.
-  const panelExtensionId = builtInExtensions.montiPanelExtensionId(payload);
+  const panelExtensionId = builtInExtensions.scoutPanelExtensionId(payload);
   // On GPU-less/RDP hosts a --window-size switch is the difference between a
   // window that shows and one that never does: with software rendering the
   // browser creates the window but leaves it WS_VISIBLE-off, so the process
@@ -2835,11 +2835,11 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
   };
 }
 
-ipcMain.handle('monti:launch-profile', async (_event, payload, extraArgs) => {
+ipcMain.handle('scout:launch-profile', async (_event, payload, extraArgs) => {
   return spawnProfile(payload, Array.isArray(extraArgs) ? extraArgs : []);
 });
 
-ipcMain.handle('monti:check-proxy', async (_event, proxy) => {
+ipcMain.handle('scout:check-proxy', async (_event, proxy) => {
   return checkProxy(proxy);
 });
 
@@ -2889,7 +2889,7 @@ function externalUrlAllowed(raw) {
   }
   // Dev only: the landing site runs on plain http at localhost, so without this
   // the sign-in links are untestable before deploy. Never widened in a build.
-  if (process.env.MONTI_LAUNCHER_DEV === '1' &&
+  if (process.env.SCOUT_LAUNCHER_DEV === '1' &&
       parsed.protocol === 'http:' &&
       (parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost')) {
     return true;
@@ -2900,15 +2900,15 @@ function externalUrlAllowed(raw) {
   return EXTERNAL_URL_HOSTS.has(parsed.hostname) || isSupabaseAuthorizeUrl(parsed);
 }
 
-// The renderer calls this once it has subscribed to monti:deep-link. Anything
+// The renderer calls this once it has subscribed to scout:deep-link. Anything
 // that arrived before then (a cold start straight from a deep link) is replayed.
-ipcMain.handle('monti:deep-link-ready', async () => {
+ipcMain.handle('scout:deep-link-ready', async () => {
   deepLinkReady = true;
   flushDeepLinkQueue();
   return true;
 });
 
-ipcMain.handle('monti:open-external', async (_event, url) => {
+ipcMain.handle('scout:open-external', async (_event, url) => {
   if (!externalUrlAllowed(url)) {
     console.log('[open-external] refused:', typeof url === 'string' ? url.slice(0, 120) : typeof url);
     return false;
@@ -2920,7 +2920,7 @@ ipcMain.handle('monti:open-external', async (_event, url) => {
 // Bookmark favicons. Resolved in the main process so the renderer never issues
 // the cross-origin requests itself, and cached on disk by host -- see
 // electron/favicons.cjs for why this does not use a third-party icon service.
-ipcMain.handle('monti:bookmark-favicon', async (_event, url) => {
+ipcMain.handle('scout:bookmark-favicon', async (_event, url) => {
   if (typeof url !== 'string' || !url) return null;
   try {
     return await resolveFavicon(path.join(app.getPath('userData'), 'Favicons'), url);
@@ -2935,7 +2935,7 @@ ipcMain.handle('monti:bookmark-favicon', async (_event, url) => {
 // renderer, so pinning it to 'light'/'dark' while the user is on "System" would
 // stop matchMedia from ever firing again and the app would no longer follow
 // macOS appearance changes. Passing 'system' through keeps that live.
-ipcMain.handle('monti:set-theme', async (_event, preference) => {
+ipcMain.handle('scout:set-theme', async (_event, preference) => {
   nativeTheme.themeSource =
     preference === 'dark' || preference === 'light' ? preference : 'system';
   if (mainWindow && !mainWindow.isDestroyed()) {
@@ -2952,15 +2952,15 @@ ipcMain.handle('monti:set-theme', async (_event, preference) => {
 // tab on Windows) without telling us, and a mirrored copy in localStorage would
 // then show a toggle that disagrees with the OS. Every set reads back.
 //
-// In development this registers the Electron binary rather than Monti Launcher,
+// In development this registers the Electron binary rather than Scout Web,
 // which is harmless but confusing, so the renderer is told whether this build is
 // packaged and disables the row when it isn't.
-ipcMain.handle('monti:get-login-item', async () => {
+ipcMain.handle('scout:get-login-item', async () => {
   const settings = app.getLoginItemSettings();
   return {openAtLogin: Boolean(settings.openAtLogin), packaged: app.isPackaged};
 });
 
-ipcMain.handle('monti:set-login-item', async (_event, enabled) => {
+ipcMain.handle('scout:set-login-item', async (_event, enabled) => {
   app.setLoginItemSettings({openAtLogin: Boolean(enabled), openAsHidden: false});
   const settings = app.getLoginItemSettings();
   return {openAtLogin: Boolean(settings.openAtLogin), packaged: app.isPackaged};
@@ -2973,9 +2973,9 @@ ipcMain.handle('monti:set-login-item', async (_event, enabled) => {
 // what a relative one resolves against -- see resolveProfileUserDataDir. Passing
 // the renderer's own root string back through the same function means Settings
 // shows the real destination rather than a plausible-looking guess.
-ipcMain.handle('monti:resolve-profile-root', async (_event, root) => {
+ipcMain.handle('scout:resolve-profile-root', async (_event, root) => {
   const resolved = resolveProfileUserDataDir(
-      typeof root === 'string' && root ? root : 'MontiProfiles');
+      typeof root === 'string' && root ? root : 'ScoutProfiles');
   let exists = false;
   try {
     exists = fs.existsSync(resolved);
@@ -2989,7 +2989,7 @@ ipcMain.handle('monti:resolve-profile-root', async (_event, root) => {
 // Reveals a directory in Finder/Explorer. showItemInFolder selects the item in
 // its *parent*, which for a directory means the user lands one level up looking
 // at it -- right for a "Show in Finder" button next to a path.
-ipcMain.handle('monti:reveal-path', async (_event, target) => {
+ipcMain.handle('scout:reveal-path', async (_event, target) => {
   if (typeof target !== 'string' || !target) {
     return {ok: false, error: 'No path'};
   }
@@ -3017,14 +3017,14 @@ nativeTheme.on('updated', () => {
   applyDockIcon();
 });
 
-ipcMain.handle('monti:update-status', async () => {
+ipcMain.handle('scout:update-status', async () => {
   return publicUpdateState();
 });
 
 // Built lazily: app.getPath('userData') is only meaningful once the app is
 // ready, and nothing asks for release notes before the changelog is opened.
 let releaseNotes = null;
-ipcMain.handle('monti:release-notes', async (_event, {force = false} = {}) => {
+ipcMain.handle('scout:release-notes', async (_event, {force = false} = {}) => {
   if (!releaseNotes) {
     releaseNotes = createReleaseNotes({
       userDataPath: app.getPath('userData'),
@@ -3034,35 +3034,35 @@ ipcMain.handle('monti:release-notes', async (_event, {force = false} = {}) => {
   return releaseNotes.load({force});
 });
 
-ipcMain.handle('monti:resource-status', async () => {
+ipcMain.handle('scout:resource-status', async () => {
   return publicResourceState();
 });
 
 // Look, don't fetch. What the Updates page's "Check for updates" calls.
-ipcMain.handle('monti:check-browser-resource', async () => {
+ipcMain.handle('scout:check-browser-resource', async () => {
   return checkBrowserResource({manual: true});
 });
 
 // Fetch and install, whatever the check said. Backs both "Update to X" and
 // "Reinstall" -- the second is a repair for a corrupted install, so it has to
 // work even when the build ids already agree.
-ipcMain.handle('monti:download-browser-resource', async () => {
+ipcMain.handle('scout:download-browser-resource', async () => {
   return installBrowserResource({manual: true});
 });
 
-ipcMain.handle('monti:api-status', async () => {
+ipcMain.handle('scout:api-status', async () => {
   return publicApiState();
 });
 
-ipcMain.handle('monti:list-api-keys', async (_event, ownerUserId) => {
+ipcMain.handle('scout:list-api-keys', async (_event, ownerUserId) => {
   return publicAutomationKeys(typeof ownerUserId === 'string' ? ownerUserId : null);
 });
 
-ipcMain.handle('monti:create-api-key', async (_event, {name, folderScope, ownerUserId, orgId, integrationId}) => {
+ipcMain.handle('scout:create-api-key', async (_event, {name, folderScope, ownerUserId, orgId, integrationId}) => {
   return createAutomationKey(name, folderScope, {ownerUserId, orgId, integrationId});
 });
 
-ipcMain.handle('monti:revoke-api-key', async (_event, id) => {
+ipcMain.handle('scout:revoke-api-key', async (_event, id) => {
   return {revoked: revokeAutomationKey(id)};
 });
 
@@ -3089,7 +3089,7 @@ ipcMain.handle('monti:revoke-api-key', async (_event, id) => {
 //
 // This depends on Electron's `runAsNode` fuse, which is enabled by default and
 // which electron-builder does not touch. If anyone ever disables it, every
-// integration breaks silently -- monti:verify-integration is what will say so.
+// integration breaks silently -- scout:verify-integration is what will say so.
 function mcpServerCommand() {
   return process.execPath;
 }
@@ -3112,9 +3112,9 @@ function mcpSpawnSpec(token) {
       // to stdout, and anything on the MCP server's stdout that is not a
       // protocol frame breaks every client that talks to it.
       NODE_OPTIONS: '',
-      MONTI_API_TOKEN: token,
-      MONTI_API_BASE: apiState.url || `http://127.0.0.1:${AUTOMATION_API_PORT}`,
-      MONTI_LAUNCHER_VERSION: app.getVersion(),
+      SCOUT_API_TOKEN: token,
+      SCOUT_API_BASE: apiState.url || `http://127.0.0.1:${AUTOMATION_API_PORT}`,
+      SCOUT_LAUNCHER_VERSION: app.getVersion(),
     },
   };
 }
@@ -3129,7 +3129,7 @@ function entryIsCurrent(entry) {
     entry.args[0] === mcpServerScriptPath();
 }
 
-ipcMain.handle('monti:apply-integration-config', async (_event, {integrationId, token}) => {
+ipcMain.handle('scout:apply-integration-config', async (_event, {integrationId, token}) => {
   try {
     if (integrations.isManual(integrationId)) {
       return {ok: false, error: `No auto-apply available for ${integrationId}`};
@@ -3151,7 +3151,7 @@ ipcMain.handle('monti:apply-integration-config', async (_event, {integrationId, 
 // tool) can edit or delete at any time, and revoking a key never removed the
 // block it was written into. The Integrations tab needs both facts, plus
 // whether the tool is on this machine at all.
-ipcMain.handle('monti:integration-status', async (_event, {integrationId}) => {
+ipcMain.handle('scout:integration-status', async (_event, {integrationId}) => {
   const home = app.getPath('home');
   const manual = integrations.isManual(integrationId);
   const entry = manual ?
@@ -3179,7 +3179,7 @@ ipcMain.handle('monti:integration-status', async (_event, {integrationId}) => {
 
 // Which agent tools are on this machine, in one call, so the tab can label
 // every card on load instead of firing one IPC per integration.
-ipcMain.handle('monti:detect-integrations', async () => {
+ipcMain.handle('scout:detect-integrations', async () => {
   const home = app.getPath('home');
   const detected = {};
   for (const integrationId of Object.keys(integrations.TOOLS)) {
@@ -3191,7 +3191,7 @@ ipcMain.handle('monti:detect-integrations', async () => {
 // The other half of connecting. Without this, disconnecting left the tool
 // pointed at a revoked token: it would keep trying to start the MCP server and
 // keep failing, with nothing in the UI to explain why.
-ipcMain.handle('monti:remove-integration-config', async (_event, {integrationId}) => {
+ipcMain.handle('scout:remove-integration-config', async (_event, {integrationId}) => {
   try {
     if (integrations.isManual(integrationId)) {
       return {ok: true, path: null};
@@ -3217,7 +3217,7 @@ ipcMain.handle('monti:remove-integration-config', async (_event, {integrationId}
 // Returns needsKey when the token in the file is gone or revoked: minting a
 // replacement needs ownerUserId/orgId, which only the renderer knows, so that
 // case has to go back to the normal connect flow.
-ipcMain.handle('monti:repair-integration', async (_event, {integrationId}) => {
+ipcMain.handle('scout:repair-integration', async (_event, {integrationId}) => {
   try {
     if (integrations.isManual(integrationId)) {
       return {ok: false, error: `Nothing to repair for ${integrationId}`};
@@ -3229,7 +3229,7 @@ ipcMain.handle('monti:repair-integration', async (_event, {integrationId}) => {
     if (!entry.hasEntry) {
       return {ok: false, needsKey: true};
     }
-    const token = entry.env?.MONTI_API_TOKEN;
+    const token = entry.env?.SCOUT_API_TOKEN;
     if (!token) {
       return {ok: false, needsKey: true};
     }
@@ -3381,17 +3381,17 @@ function verifyHandshake(entry) {
       params: {
         protocolVersion: '2025-06-18',
         capabilities: {},
-        clientInfo: {name: 'monti-launcher-verify', version: app.getVersion()},
+        clientInfo: {name: 'scout-launcher-verify', version: app.getVersion()},
       },
     });
     send({jsonrpc: '2.0', method: 'notifications/initialized'});
     send({jsonrpc: '2.0', id: 2, method: 'tools/list', params: {}});
     send({jsonrpc: '2.0', id: 3, method: 'tools/call',
-      params: {name: 'monti_list_profiles', arguments: {}}});
+      params: {name: 'scout_list_profiles', arguments: {}}});
   });
 }
 
-ipcMain.handle('monti:verify-integration', async (_event, {integrationId}) => {
+ipcMain.handle('scout:verify-integration', async (_event, {integrationId}) => {
   const home = app.getPath('home');
   const checks = [];
   const add = (id, label, ok, detail) => checks.push({id, label, ok, detail: detail || ''});
@@ -3425,8 +3425,8 @@ ipcMain.handle('monti:verify-integration', async (_event, {integrationId}) => {
   const entry = integrations.readIntegrationEntry({
     integrationId, home, platform: process.platform,
   });
-  add('config', 'Config carries the monti server', entry.hasEntry,
-      entry.hasEntry ? entry.configPath : `${entry.configPath} has no monti entry.`);
+  add('config', 'Config carries the scout server', entry.hasEntry,
+      entry.hasEntry ? entry.configPath : `${entry.configPath} has no scout entry.`);
   if (!entry.hasEntry) {
     return {ok: false, checks};
   }
@@ -3457,7 +3457,7 @@ ipcMain.handle('monti:verify-integration', async (_event, {integrationId}) => {
   });
   add('handshake', 'MCP server responds', handshake.ok,
       handshake.ok ?
-        `${handshake.serverInfo?.name || 'monti'} ${handshake.serverInfo?.version || ''}`.trim() :
+        `${handshake.serverInfo?.name || 'scout'} ${handshake.serverInfo?.version || ''}`.trim() :
         handshake.detail);
   if (!handshake.ok) {
     return {ok: false, checks};
@@ -3470,11 +3470,11 @@ ipcMain.handle('monti:verify-integration', async (_event, {integrationId}) => {
   return {ok: checks.every((check) => check.ok), checks};
 });
 
-ipcMain.handle('monti:check-for-updates', async () => {
+ipcMain.handle('scout:check-for-updates', async () => {
   return checkForUpdates({manual: true});
 });
 
-ipcMain.handle('monti:download-update', async () => {
+ipcMain.handle('scout:download-update', async () => {
   return downloadUpdate();
 });
 
@@ -3489,7 +3489,7 @@ ipcMain.handle('monti:download-update', async () => {
 async function countRunningProfileSessions() {
   let entries = [];
   try {
-    entries = fs.readdirSync(resolveProfileUserDataDir('MontiProfiles'), {withFileTypes: true});
+    entries = fs.readdirSync(resolveProfileUserDataDir('ScoutProfiles'), {withFileTypes: true});
   } catch {
     return 0;
   }
@@ -3500,7 +3500,7 @@ async function countRunningProfileSessions() {
     }
     try {
       const port = Number(fs.readFileSync(
-          path.join(resolveProfileUserDataDir(path.join('MontiProfiles', entry.name)), 'DevToolsActivePort'),
+          path.join(resolveProfileUserDataDir(path.join('ScoutProfiles', entry.name)), 'DevToolsActivePort'),
           'utf8').split('\n')[0].trim());
       if (port > 0) {
         ports.push(port);
@@ -3515,11 +3515,11 @@ async function countRunningProfileSessions() {
   return alive.filter(Boolean).length;
 }
 
-ipcMain.handle('monti:running-session-count', async () => {
+ipcMain.handle('scout:running-session-count', async () => {
   return countRunningProfileSessions();
 });
 
-ipcMain.handle('monti:install-update', async () => {
+ipcMain.handle('scout:install-update', async () => {
   if (!updateState.downloaded) {
     return {ok: false, error: 'No downloaded update is ready to install.'};
   }
@@ -3551,13 +3551,13 @@ ipcMain.handle('monti:install-update', async () => {
 // {ok:false, error} rather than throwing so the Extensions tab can leave the
 // switch off and show why, instead of writing a toggle every profile then
 // silently launches without.
-ipcMain.handle('monti:install-built-in-extension', async (_event, {key}) =>
+ipcMain.handle('scout:install-built-in-extension', async (_event, {key}) =>
   ensureWebstoreBuiltIn(key, {notify: true}));
 
 // Which Web Store built-ins this machine actually has on disk. The toggle is
 // org-wide, the bytes are per machine, so the card needs both to know whether
 // to offer Enable, a progress bar, or nothing.
-ipcMain.handle('monti:built-in-extension-status', async () => {
+ipcMain.handle('scout:built-in-extension-status', async () => {
   const installed = {};
   for (const entry of builtInExtensions.BUILT_IN_EXTENSIONS) {
     if (entry.source.kind !== 'webstore') continue;
@@ -3568,12 +3568,12 @@ ipcMain.handle('monti:built-in-extension-status', async () => {
 
 // Fired once when the workspace's cloud state loads: picks up anything a
 // teammate enabled on their machine. Fire-and-forget by design.
-ipcMain.handle('monti:catch-up-built-in-extensions', async (_event, {toggles}) => {
+ipcMain.handle('scout:catch-up-built-in-extensions', async (_event, {toggles}) => {
   catchUpWebstoreBuiltIns(toggles);
   return {ok: true};
 });
 
-ipcMain.handle('monti:select-extension-folder', async () => {
+ipcMain.handle('scout:select-extension-folder', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select unpacked extension folder',
     properties: ['openDirectory'],
@@ -3587,7 +3587,7 @@ ipcMain.handle('monti:select-extension-folder', async () => {
 // Zips a locally-picked extension folder and returns it base64-encoded so
 // the renderer can upload it to Supabase Storage with its own authenticated
 // client -- this process never needs its own Supabase credentials.
-ipcMain.handle('monti:zip-extension-folder', async (_event, folderPath) => {
+ipcMain.handle('scout:zip-extension-folder', async (_event, folderPath) => {
   try {
     if (!folderPath || !fs.existsSync(path.join(folderPath, 'manifest.json'))) {
       return {ok: false, error: 'Not a valid unpacked extension folder (no manifest.json).'};
@@ -3598,7 +3598,7 @@ ipcMain.handle('monti:zip-extension-folder', async (_event, folderPath) => {
   }
 });
 
-ipcMain.handle('monti:select-cookie-file', async () => {
+ipcMain.handle('scout:select-cookie-file', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select cookies file',
     properties: ['openFile'],
@@ -3632,7 +3632,7 @@ ipcMain.handle('monti:select-cookie-file', async () => {
 // uploaded. A file that cannot be read comes back with count 0 rather than
 // taking the whole selection down with it -- one bad export in a folder of
 // twenty is not a reason to refuse the other nineteen.
-ipcMain.handle('monti:select-cookie-files', async () => {
+ipcMain.handle('scout:select-cookie-files', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select cookie files',
     properties: ['openFile', 'multiSelections'],
@@ -3660,7 +3660,7 @@ ipcMain.handle('monti:select-cookie-files', async () => {
   });
 });
 
-ipcMain.handle('monti:select-cookie-folder', async () => {
+ipcMain.handle('scout:select-cookie-folder', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select folder with cookie files',
     properties: ['openDirectory'],
@@ -3671,7 +3671,7 @@ ipcMain.handle('monti:select-cookie-folder', async () => {
   return result.filePaths[0];
 });
 
-ipcMain.handle('monti:match-cookie-files', async (_event, {folderPath, profileNames}) => {
+ipcMain.handle('scout:match-cookie-files', async (_event, {folderPath, profileNames}) => {
   let entries = [];
   try {
     entries = fs.readdirSync(folderPath, {withFileTypes: true})
@@ -3706,7 +3706,7 @@ ipcMain.handle('monti:match-cookie-files', async (_event, {folderPath, profileNa
   return matches;
 });
 
-ipcMain.handle('monti:save-text-file', async (_event, {defaultName, content}) => {
+ipcMain.handle('scout:save-text-file', async (_event, {defaultName, content}) => {
   const result = await dialog.showSaveDialog({
     title: 'Export',
     defaultPath: defaultName,
@@ -3721,7 +3721,7 @@ ipcMain.handle('monti:save-text-file', async (_event, {defaultName, content}) =>
 // A proxy list is whatever the vendor emailed: .txt far more often than .csv,
 // occasionally no extension at all. The renderer parses the contents itself
 // (lib/proxies.ts), so this only has to hand back the text.
-ipcMain.handle('monti:select-proxy-file', async () => {
+ipcMain.handle('scout:select-proxy-file', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select proxy list',
     properties: ['openFile'],
@@ -3742,7 +3742,7 @@ ipcMain.handle('monti:select-proxy-file', async () => {
 // every browser a user is likely to be migrating from. Same division of labour
 // as the proxy picker above: this hands back the text and the renderer parses
 // it (lib/bookmarkImport.ts), where a real DOM parser is already available.
-ipcMain.handle('monti:select-bookmark-file', async () => {
+ipcMain.handle('scout:select-bookmark-file', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select bookmarks file',
     properties: ['openFile'],
@@ -3758,7 +3758,7 @@ ipcMain.handle('monti:select-bookmark-file', async () => {
   return {path: filePath, content: fs.readFileSync(filePath, 'utf8')};
 });
 
-ipcMain.handle('monti:select-import-csv', async () => {
+ipcMain.handle('scout:select-import-csv', async () => {
   const result = await dialog.showOpenDialog({
     title: 'Select profile inventory CSV',
     properties: ['openFile'],
@@ -3775,11 +3775,11 @@ ipcMain.handle('monti:select-import-csv', async () => {
   return {path: filePath, content};
 });
 
-ipcMain.handle('monti:get-browser-path', async () => {
+ipcMain.handle('scout:get-browser-path', async () => {
   return browserAppPath();
 });
 
-ipcMain.handle('monti:set-browser-path', async (_event, nextBrowserAppPath) => {
+ipcMain.handle('scout:set-browser-path', async (_event, nextBrowserAppPath) => {
   writeSettings({...readSettings(), browserAppPath: nextBrowserAppPath});
   return nextBrowserAppPath;
 });
@@ -3827,7 +3827,7 @@ function askRenderer(res, channel, payload) {
   mainWindow.webContents.send(channel, {requestId, ...payload});
 }
 
-ipcMain.on('monti:api-result', (_event, {requestId, result, error, status}) => {
+ipcMain.on('scout:api-result', (_event, {requestId, result, error, status}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4079,7 +4079,7 @@ const automationLaunches = new Map();
 // a file in the profile's own tree rather than a channel.
 //
 // The directory is resolved the way resolveProfileCdp resolves it -- profiles
-// live under MontiProfiles/<id> relative to userData -- rather than being read
+// live under ScoutProfiles/<id> relative to userData -- rather than being read
 // off a launch payload, because most of the callers below have a profile id and
 // nothing else.
 const drivingState = createDrivingState({
@@ -4088,7 +4088,7 @@ const drivingState = createDrivingState({
       return '';
     }
     try {
-      return resolveProfileUserDataDir(path.join('MontiProfiles', profileId));
+      return resolveProfileUserDataDir(path.join('ScoutProfiles', profileId));
     } catch {
       return '';
     }
@@ -4176,7 +4176,7 @@ async function resolveProfileCdp(profileId) {
     automationLaunches.delete(profileId);
   }
   try {
-    const dir = resolveProfileUserDataDir(path.join('MontiProfiles', profileId));
+    const dir = resolveProfileUserDataDir(path.join('ScoutProfiles', profileId));
     const port = Number(fs.readFileSync(path.join(dir, 'DevToolsActivePort'), 'utf8')
         .split('\n')[0].trim());
     if (port > 0 && await cdpAlive(port)) {
@@ -4322,7 +4322,7 @@ function sendRunEvent(event) {
     }
   }
   if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send('monti:automation-run-event', event);
+    mainWindow.webContents.send('scout:automation-run-event', event);
   }
 }
 
@@ -4391,11 +4391,11 @@ const runTokens = createRunTokens({
   },
 });
 
-ipcMain.handle('monti:mint-run-token',
+ipcMain.handle('scout:mint-run-token',
     async (_event, {profileId, profileName, orgId, cdpPort, automations}) =>
       runTokens.mint({profileId, profileName, orgId, cdpPort, automations}));
 
-ipcMain.handle('monti:reserve-cdp-port', async () => {
+ipcMain.handle('scout:reserve-cdp-port', async () => {
   // The renderer has no node:net, so port allocation lives here even though
   // the launch it belongs to is driven from there.
   return getFreePort();
@@ -4404,7 +4404,7 @@ ipcMain.handle('monti:reserve-cdp-port', async () => {
 // Where a profile's debugging endpoint is, or null. Same two-tier resolution
 // the HTTP API uses, so a run can attach to a session this process did not
 // start -- including one adopted from DevToolsActivePort after a restart.
-ipcMain.handle('monti:resolve-profile-cdp', async (_event, {profileId}) => {
+ipcMain.handle('scout:resolve-profile-cdp', async (_event, {profileId}) => {
   try {
     return await resolveProfileCdp(profileId);
   } catch (error) {
@@ -4424,7 +4424,7 @@ ipcMain.handle('monti:resolve-profile-cdp', async (_event, {profileId}) => {
 // Reuses withPage, which opens a socket and closes it in a finally. A pool was
 // rejected for the MCP tools for the same reason it is not wanted here: a
 // stale handle is worth more debugging than a connection is worth saving.
-ipcMain.handle('monti:check-selector', async (_event, {profileId, selector}) => {
+ipcMain.handle('scout:check-selector', async (_event, {profileId, selector}) => {
   const query = String(selector || '').trim();
   if (!query) {
     return {ok: false, error: 'Enter a selector first.'};
@@ -4465,7 +4465,7 @@ ipcMain.handle('monti:check-selector', async (_event, {profileId, selector}) => 
 // --remote-debugging-port and the browser takes a second or two to bind it, so
 // resolving the session immediately would find nothing and the run would report
 // "not open" for a window that is opening.
-ipcMain.handle('monti:wait-for-cdp', async (_event, {port, timeoutMs}) => {
+ipcMain.handle('scout:wait-for-cdp', async (_event, {port, timeoutMs}) => {
   try {
     await waitForCdpReady(port, Math.min(Number(timeoutMs) || 20000, 60000));
     return {ok: true, cdpUrl: `http://127.0.0.1:${port}`};
@@ -4474,7 +4474,7 @@ ipcMain.handle('monti:wait-for-cdp', async (_event, {port, timeoutMs}) => {
   }
 });
 
-ipcMain.handle('monti:start-automation-run', async (_event, payload) => {
+ipcMain.handle('scout:start-automation-run', async (_event, payload) => {
   try {
     const runId = await automationRunner.start({
       app,
@@ -4497,7 +4497,7 @@ ipcMain.handle('monti:start-automation-run', async (_event, payload) => {
       // Cookies-tab toast (useAutomationBridge, same handler as the loopback
       // API's cookie-sync push route below).
       pushCookies: (profileId, cookies) =>
-        askRendererOnPageChannel('monti:cookie-sync-push-request', {profileId, cookies}),
+        askRendererOnPageChannel('scout:cookie-sync-push-request', {profileId, cookies}),
       // close_on_finish, which until now was a checkbox that saved and did
       // nothing. Two conditions, not one: the automation has to ask for it AND
       // this run has to have opened the browser itself. ownsSession comes from
@@ -4520,7 +4520,7 @@ ipcMain.handle('monti:start-automation-run', async (_event, payload) => {
           return null;
         }
         const {title, body} = automationNotify.composeFinishMessage(record);
-        // "Straight to Monti" is the built-in delivery: the bell row and the
+        // "Straight to Scout" is the built-in delivery: the bell row and the
         // desktop notification fire whenever the setting says notify, and a
         // connector -- when one is named -- is an additional channel out.
         raiseOsNotification(title, body);
@@ -4572,7 +4572,7 @@ ipcMain.handle('monti:start-automation-run', async (_event, payload) => {
   }
 });
 
-ipcMain.handle('monti:cancel-automation-run', async (_event, {runId}) => {
+ipcMain.handle('scout:cancel-automation-run', async (_event, {runId}) => {
   return {ok: automationRunner.cancel(runId)};
 });
 
@@ -4583,7 +4583,7 @@ ipcMain.handle('monti:cancel-automation-run', async (_event, {runId}) => {
 // read `connectors`, so it hands the resolved list across whenever it changes.
 // Memory only -- nothing here is written to disk, exactly as run tokens are
 // handled, and for the same reason.
-ipcMain.handle('monti:set-connectors', async (_event, {connectors}) => {
+ipcMain.handle('scout:set-connectors', async (_event, {connectors}) => {
   automationConnectors.setConnectors(connectors);
   return {ok: true};
 });
@@ -4598,7 +4598,7 @@ ipcMain.handle('monti:set-connectors', async (_event, {connectors}) => {
 // form's model picker. Takes the draft (key included) rather than an id for
 // the same reason the Test button does: the endpoint being asked is the one
 // about to be saved, not whatever the last save wrote.
-ipcMain.handle('monti:list-connector-models', async (_event, {connector}) => {
+ipcMain.handle('scout:list-connector-models', async (_event, {connector}) => {
   try {
     const models = await automationAi.listModels({provider: connector});
     return {ok: true, models};
@@ -4613,7 +4613,7 @@ ipcMain.handle('monti:list-connector-models', async (_event, {connector}) => {
 // getUpdates feed for the deep-link code the renderer minted; sending is the
 // same Telegram adapter every telegram connector uses, against the member's
 // own chat.
-ipcMain.handle('monti:telegram-link-poll', async (_event, {token, code, welcome}) => {
+ipcMain.handle('scout:telegram-link-poll', async (_event, {token, code, welcome}) => {
   try {
     const found = await telegramLink.pollForStart({token, code, welcome});
     return found ?
@@ -4624,7 +4624,7 @@ ipcMain.handle('monti:telegram-link-poll', async (_event, {token, code, welcome}
   }
 });
 
-ipcMain.handle('monti:telegram-send', async (_event, {token, chatId, text, parseMode}) => {
+ipcMain.handle('scout:telegram-send', async (_event, {token, chatId, text, parseMode}) => {
   try {
     await automationConnectors.send({
       connector: {kind: 'telegram', category: 'message', config: {botToken: token, chatId}},
@@ -4637,13 +4637,13 @@ ipcMain.handle('monti:telegram-send', async (_event, {token, chatId, text, parse
   }
 });
 
-ipcMain.handle('monti:test-connector', async (_event, {connector}) => {
+ipcMain.handle('scout:test-connector', async (_event, {connector}) => {
   try {
     if (connector?.category === 'message') {
       await automationConnectors.send({
         connector,
-        message: 'Test message from Monti. Your connector works.',
-        subject: 'Monti connector test',
+        message: 'Test message from Scout. Your connector works.',
+        subject: 'Scout connector test',
       });
     } else {
       await automationAi.complete({
@@ -4662,23 +4662,23 @@ ipcMain.handle('monti:test-connector', async (_event, {connector}) => {
 
 // A run that is in flight right now, so a reopened window can rejoin one that
 // started before it mounted rather than showing nothing.
-ipcMain.handle('monti:active-automation-runs', async () => automationRunner.activeRuns());
+ipcMain.handle('scout:active-automation-runs', async () => automationRunner.activeRuns());
 
-ipcMain.handle('monti:read-run-screenshot', async (_event, {runId, name}) => {
+ipcMain.handle('scout:read-run-screenshot', async (_event, {runId, name}) => {
   return automationStore.readScreenshot(app, runId, name);
 });
 
 // The crash buffer. Runs that reached a terminal status on disk but may never
 // have been written to Supabase -- because the window was closed, or the user
 // was signed out, when they finished.
-ipcMain.handle('monti:pending-automation-runs', async () => automationStore.pendingRuns(app));
+ipcMain.handle('scout:pending-automation-runs', async () => automationStore.pendingRuns(app));
 
-ipcMain.handle('monti:mark-automation-run-flushed', async (_event, {runId}) => {
+ipcMain.handle('scout:mark-automation-run-flushed', async (_event, {runId}) => {
   automationStore.markFlushed(app, runId);
   return {ok: true};
 });
 
-ipcMain.on('monti:bulk-match-cookies-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:bulk-match-cookies-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4694,7 +4694,7 @@ ipcMain.on('monti:bulk-match-cookies-result', (_event, {requestId, result, error
   pending.res.end(JSON.stringify({status: true, ...result}));
 });
 
-ipcMain.on('monti:push-local-cookies-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:push-local-cookies-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4710,7 +4710,7 @@ ipcMain.on('monti:push-local-cookies-result', (_event, {requestId, result, error
   pending.res.end(JSON.stringify({status: true, ...result}));
 });
 
-ipcMain.on('monti:reimport-proxies-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:reimport-proxies-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4726,7 +4726,7 @@ ipcMain.on('monti:reimport-proxies-result', (_event, {requestId, result, error})
   pending.res.end(JSON.stringify({status: true, ...result}));
 });
 
-ipcMain.on('monti:assign-profile-proxy-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:assign-profile-proxy-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4742,7 +4742,7 @@ ipcMain.on('monti:assign-profile-proxy-result', (_event, {requestId, result, err
   pending.res.end(JSON.stringify({status: true, ...result}));
 });
 
-ipcMain.on('monti:get-profile-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:get-profile-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4760,7 +4760,7 @@ ipcMain.on('monti:get-profile-result', (_event, {requestId, result, error}) => {
   sendJson(pending.res, 200, {status: true, profile: result.profile});
 });
 
-ipcMain.on('monti:list-proxies-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:list-proxies-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4774,7 +4774,7 @@ ipcMain.on('monti:list-proxies-result', (_event, {requestId, result, error}) => 
   sendJson(pending.res, 200, {status: true, proxies: result?.proxies || []});
 });
 
-ipcMain.on('monti:create-proxy-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:create-proxy-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4788,7 +4788,7 @@ ipcMain.on('monti:create-proxy-result', (_event, {requestId, result, error}) => 
   sendJson(pending.res, 200, {status: true, ...result});
 });
 
-ipcMain.on('monti:update-proxy-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:update-proxy-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4802,7 +4802,7 @@ ipcMain.on('monti:update-proxy-result', (_event, {requestId, result, error}) => 
   sendJson(pending.res, 200, {status: true, ...result});
 });
 
-ipcMain.on('monti:delete-proxy-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:delete-proxy-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4816,7 +4816,7 @@ ipcMain.on('monti:delete-proxy-result', (_event, {requestId, result, error}) => 
   sendJson(pending.res, 200, {status: true, ...result});
 });
 
-ipcMain.on('monti:update-profile-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:update-profile-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4832,7 +4832,7 @@ ipcMain.on('monti:update-profile-result', (_event, {requestId, result, error}) =
   pending.res.end(JSON.stringify({status: true, ...result}));
 });
 
-ipcMain.on('monti:delete-profile-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:delete-profile-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4846,7 +4846,7 @@ ipcMain.on('monti:delete-profile-result', (_event, {requestId, result, error}) =
   sendJson(pending.res, 200, {status: true, ...result});
 });
 
-ipcMain.on('monti:update-fingerprint-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:update-fingerprint-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4862,7 +4862,7 @@ ipcMain.on('monti:update-fingerprint-result', (_event, {requestId, result, error
   pending.res.end(JSON.stringify({status: true, ...result}));
 });
 
-ipcMain.on('monti:launch-automation-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:launch-automation-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4890,7 +4890,7 @@ ipcMain.on('monti:launch-automation-result', (_event, {requestId, result, error}
   })();
 });
 
-ipcMain.on('monti:monitoring-report-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:monitoring-report-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4904,7 +4904,7 @@ ipcMain.on('monti:monitoring-report-result', (_event, {requestId, result, error}
   sendJson(pending.res, 200, {status: true});
 });
 
-ipcMain.on('monti:list-profiles-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:list-profiles-result', (_event, {requestId, result, error}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -4979,7 +4979,7 @@ function isLoopbackRedirectUri(value) {
 // Standard "loopback OAuth" pattern used by CLI tools (gh, gcloud, aws) when
 // there's no hosted authorization server: the client (e.g. an MCP client, running on
 // this same machine) opens this URL in a real browser, the user approves
-// inside Monti Launcher itself, and Anty redirects back to the client's own
+// inside Scout Web itself, and it redirects back to the client's own
 // local callback with a short-lived one-time code. /v1/oauth/token then
 // exchanges that code for the actual key -- so the long-lived token never
 // sits in a URL/browser history, only the disposable code does.
@@ -5013,7 +5013,7 @@ function handleOAuthAuthorize(req, res, parsedUrl) {
     sendJson(res, 504, {status: false, msg: 'Timed out waiting for approval in Scout Web'});
   }, 5 * 60 * 1000);
   pendingAutomationRequests.set(requestId, {res, timeout, redirectUri, state});
-  mainWindow.webContents.send('monti:oauth-authorize-request', {
+  mainWindow.webContents.send('scout:oauth-authorize-request', {
     requestId,
     clientName,
     requestedScope: scope,
@@ -5060,7 +5060,7 @@ async function startTileForEntry(entry, tile, trigger) {
     secretVarNames: tile.secretVarNames,
     onEvent: sendRunEvent,
     pushCookies: (profileId, cookies) =>
-      askRendererOnPageChannel('monti:cookie-sync-push-request', {profileId, cookies}),
+      askRendererOnPageChannel('scout:cookie-sync-push-request', {profileId, cookies}),
   });
 }
 
@@ -5103,7 +5103,7 @@ function runAnyFromPage(req, res) {
     sendJson: sendPageJson,
     startAnyRun: async (entry, automationId) => {
       const tile = await askRendererOnPageChannel(
-          'monti:panel-resolve-automation-request',
+          'scout:panel-resolve-automation-request',
           {profileId: entry.profileId, orgId: entry.orgId || '', automationId});
       // 'start-page' rather than a trigger of its own, matching runFromPage.
       // The panel already reports its offered runs as start-page runs (they go
@@ -5128,7 +5128,7 @@ function automationListFromPage(req, res) {
   handleAutomationListFromPage({
     req, res, tokens: runTokens, sendJson: sendPageJson,
     listAutomations: (entry) =>
-      askRendererOnPageChannel('monti:panel-automations-request',
+      askRendererOnPageChannel('scout:panel-automations-request',
           {profileId: entry.profileId, orgId: entry.orgId || ''}),
   });
 }
@@ -5155,7 +5155,7 @@ function openInLauncherFromPage(req, res) {
     open: (entry, automation) => {
       focusMainWindow();
       if (mainWindow) {
-        mainWindow.webContents.send('monti:open-automation-request', {
+        mainWindow.webContents.send('scout:open-automation-request', {
           automationId: automation ? automation.id : null,
           profileId: entry.profileId,
         });
@@ -5237,11 +5237,11 @@ function askRendererForRecheck(profileId) {
           new Error('Timed out waiting for Scout Web to answer'), {status: 504}));
     }, AUTOMATION_REQUEST_TIMEOUT_MS);
     pendingPageRequests.set(requestId, {resolve, reject, timeout});
-    mainWindow.webContents.send('monti:recheck-proxy-request', {requestId, profileId});
+    mainWindow.webContents.send('scout:recheck-proxy-request', {requestId, profileId});
   });
 }
 
-ipcMain.on('monti:recheck-proxy-result', (_event, {requestId, result, error}) => {
+ipcMain.on('scout:recheck-proxy-result', (_event, {requestId, result, error}) => {
   const pending = pendingPageRequests.get(requestId);
   if (!pending) {
     return;
@@ -5317,17 +5317,17 @@ function settlePageRequest(requestId, result, error, status) {
   pending.resolve(result);
 }
 
-ipcMain.on('monti:cookie-sync-push-result', (_event, {requestId, result, error, status}) =>
+ipcMain.on('scout:cookie-sync-push-result', (_event, {requestId, result, error, status}) =>
   settlePageRequest(requestId, result, error, status));
-ipcMain.on('monti:cookie-list-result', (_event, {requestId, result, error, status}) =>
+ipcMain.on('scout:cookie-list-result', (_event, {requestId, result, error, status}) =>
   settlePageRequest(requestId, result, error, status));
-ipcMain.on('monti:cookie-sync-pull-result', (_event, {requestId, result, error, status}) =>
+ipcMain.on('scout:cookie-sync-pull-result', (_event, {requestId, result, error, status}) =>
   settlePageRequest(requestId, result, error, status));
-ipcMain.on('monti:cookie-sets-result', (_event, {requestId, result, error, status}) =>
+ipcMain.on('scout:cookie-sets-result', (_event, {requestId, result, error, status}) =>
   settlePageRequest(requestId, result, error, status));
-ipcMain.on('monti:panel-automations-result', (_event, {requestId, result, error, status}) =>
+ipcMain.on('scout:panel-automations-result', (_event, {requestId, result, error, status}) =>
   settlePageRequest(requestId, result, error, status));
-ipcMain.on('monti:panel-resolve-automation-result', (_event, {requestId, result, error, status}) =>
+ipcMain.on('scout:panel-resolve-automation-result', (_event, {requestId, result, error, status}) =>
   settlePageRequest(requestId, result, error, status));
 
 function cookiePushFromProfile(req, res) {
@@ -5341,7 +5341,7 @@ function cookiePushFromProfile(req, res) {
     // request data the renderer resolves against that same entry-derived
     // workspace, and refuses if it is not in it.
     pushCookies: (entry, cookies, saveAs, saveToSetId) =>
-      askRendererOnPageChannel('monti:cookie-sync-push-request', {
+      askRendererOnPageChannel('scout:cookie-sync-push-request', {
         profileId: entry.profileId, orgId: entry.orgId || '',
         cookies, saveAs, saveToSetId,
       }),
@@ -5352,7 +5352,7 @@ function cookiePullForProfile(req, res) {
   handleCookiePullFromPage({
     req, res, tokens: runTokens, sendJson: sendPageJson,
     pullCookies: (entry, setId) =>
-      askRendererOnPageChannel('monti:cookie-sync-pull-request',
+      askRendererOnPageChannel('scout:cookie-sync-pull-request',
           {profileId: entry.profileId, orgId: entry.orgId || '', setId}),
   });
 }
@@ -5361,7 +5361,7 @@ function cookieListForProfile(req, res) {
   handleCookieListFromPage({
     req, res, tokens: runTokens, sendJson: sendPageJson,
     listCookies: (entry, setId) =>
-      askRendererOnPageChannel('monti:cookie-list-request',
+      askRendererOnPageChannel('scout:cookie-list-request',
           {profileId: entry.profileId, orgId: entry.orgId || '', setId}),
   });
 }
@@ -5370,7 +5370,7 @@ function cookieSetsForProfile(req, res) {
   handleCookieSetsFromPage({
     req, res, tokens: runTokens, sendJson: sendPageJson,
     listSets: (entry) =>
-      askRendererOnPageChannel('monti:cookie-sets-request',
+      askRendererOnPageChannel('scout:cookie-sets-request',
           {profileId: entry.profileId, orgId: entry.orgId || ''}),
   });
 }
@@ -5398,7 +5398,7 @@ function handleOAuthTokenExchange(req, res) {
   });
 }
 
-ipcMain.on('monti:oauth-authorize-result', (_event, {requestId, approved, folderScope, keyName}) => {
+ipcMain.on('scout:oauth-authorize-result', (_event, {requestId, approved, folderScope, keyName}) => {
   const pending = pendingAutomationRequests.get(requestId);
   if (!pending) {
     return;
@@ -5447,7 +5447,7 @@ function startAutomationApiServer() {
       return;
     }
     if (req.method === 'GET' && req.url === '/health') {
-      sendJson(res, 200, {status: true, service: 'monti-anty-api'});
+      sendJson(res, 200, {status: true, service: 'scout-web-api'});
       return;
     }
     const parsedUrl = new URL(req.url, 'http://127.0.0.1');
@@ -5600,7 +5600,7 @@ function startAutomationApiServer() {
         sendJson(res, 504, {status: false, msg: 'Timed out waiting for Scout Web to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, {res, timeout});
-      mainWindow.webContents.send('monti:list-profiles-request', {
+      mainWindow.webContents.send('scout:list-profiles-request', {
         requestId,
         folder: parsedUrl.searchParams.get('folder') || null,
         allowedFolders: key.folderScope,
@@ -5618,7 +5618,7 @@ function startAutomationApiServer() {
         sendJson(res, 504, {status: false, msg: 'Timed out waiting for Scout Web to respond'});
       }, AUTOMATION_REQUEST_TIMEOUT_MS);
       pendingAutomationRequests.set(requestId, {res, timeout});
-      mainWindow.webContents.send('monti:list-proxies-request', {requestId});
+      mainWindow.webContents.send('scout:list-proxies-request', {requestId});
       return;
     }
     // Was sixteen chained pathname comparisons. Same set, read off the table
@@ -5861,19 +5861,19 @@ function startAutomationApiServer() {
         {res, timeout, cdpPort, profileId: payload.profileId, keyId: key.id} :
         {res, timeout});
       if (isPushLocal) {
-        mainWindow.webContents.send('monti:push-local-cookies-request', {
+        mainWindow.webContents.send('scout:push-local-cookies-request', {
           requestId,
           profileId: payload.profileId,
           profileName: typeof payload.profileName === 'string' ? payload.profileName : '',
           cookies: payload.cookies,
         });
       } else if (isReimportProxies) {
-        mainWindow.webContents.send('monti:reimport-proxies-request', {
+        mainWindow.webContents.send('scout:reimport-proxies-request', {
           requestId,
           proxies: payload.proxies,
         });
       } else if (isCreateProxy) {
-        mainWindow.webContents.send('monti:create-proxy-request', {
+        mainWindow.webContents.send('scout:create-proxy-request', {
           requestId,
           name: typeof payload.name === 'string' ? payload.name : '',
           type: payload.type === 'http' ? 'http' : 'socks5',
@@ -5890,18 +5890,18 @@ function startAutomationApiServer() {
         if (Number.isInteger(payload.port)) fields.port = payload.port;
         if (typeof payload.username === 'string') fields.username = payload.username;
         if (typeof payload.password === 'string') fields.password = payload.password;
-        mainWindow.webContents.send('monti:update-proxy-request', {
+        mainWindow.webContents.send('scout:update-proxy-request', {
           requestId,
           proxyId: payload.proxyId,
           fields,
         });
       } else if (isDeleteProxy) {
-        mainWindow.webContents.send('monti:delete-proxy-request', {
+        mainWindow.webContents.send('scout:delete-proxy-request', {
           requestId,
           proxyId: payload.proxyId,
         });
       } else if (isAssignProfileProxy) {
-        mainWindow.webContents.send('monti:assign-profile-proxy-request', {
+        mainWindow.webContents.send('scout:assign-profile-proxy-request', {
           requestId,
           profileId: payload.profileId,
           proxyId: typeof payload.proxyId === 'string' ? payload.proxyId : '',
@@ -5910,7 +5910,7 @@ function startAutomationApiServer() {
           allowedFolders: key.folderScope,
         });
       } else if (isGetProfile) {
-        mainWindow.webContents.send('monti:get-profile-request', {
+        mainWindow.webContents.send('scout:get-profile-request', {
           requestId,
           profileId: payload.profileId,
           allowedFolders: key.folderScope,
@@ -5925,7 +5925,7 @@ function startAutomationApiServer() {
         if (Array.isArray(payload.tags)) fields.tags = payload.tags.filter((tag) => typeof tag === 'string');
         if (typeof payload.status === 'string') fields.status = payload.status;
         if (typeof payload.color === 'string') fields.color = payload.color;
-        // Brand marks only, and the empty string to clear. MontiProfile.avatar
+        // Brand marks only, and the empty string to clear. ScoutProfile.avatar
         // also accepts an https URL, but that half is the editor's: a URL here
         // would let a key holder point every avatar in the org at a host of
         // their choosing and have the launcher fetch it on every render. A
@@ -5960,35 +5960,35 @@ function startAutomationApiServer() {
             !Array.isArray(payload.automationVars)) {
           fields.automation_vars = payload.automationVars;
         }
-        mainWindow.webContents.send('monti:update-profile-request', {
+        mainWindow.webContents.send('scout:update-profile-request', {
           requestId,
           profileId: payload.profileId,
           fields,
           allowedFolders: key.folderScope,
         });
       } else if (isDeleteProfile) {
-        mainWindow.webContents.send('monti:delete-profile-request', {
+        mainWindow.webContents.send('scout:delete-profile-request', {
           requestId,
           profileId: payload.profileId,
           permanent: payload.permanent === true,
           allowedFolders: key.folderScope,
         });
       } else if (isUpdateFingerprint) {
-        mainWindow.webContents.send('monti:update-fingerprint-request', {
+        mainWindow.webContents.send('scout:update-fingerprint-request', {
           requestId,
           profileId: payload.profileId,
           fingerprint: payload.fingerprint,
           allowedFolders: key.folderScope,
         });
       } else if (isLaunchAutomation) {
-        mainWindow.webContents.send('monti:launch-automation-request', {
+        mainWindow.webContents.send('scout:launch-automation-request', {
           requestId,
           profileId: payload.profileId,
           cdpPort,
           allowedFolders: key.folderScope,
         });
       } else if (isMonitoringReport) {
-        mainWindow.webContents.send('monti:monitoring-report-request', {
+        mainWindow.webContents.send('scout:monitoring-report-request', {
           requestId,
           runId: payload.runId,
           profileId: payload.profileId,
@@ -5997,7 +5997,7 @@ function startAutomationApiServer() {
           screenshotBase64: typeof payload.screenshotBase64 === 'string' ? payload.screenshotBase64 : null,
         });
       } else if (parsedUrl.pathname === '/v1/cookies/bulk-match') {
-        mainWindow.webContents.send('monti:bulk-match-cookies-request', {
+        mainWindow.webContents.send('scout:bulk-match-cookies-request', {
           requestId,
           folderPath: payload.folderPath,
           // profileIds omitted/empty means "match against every profile".

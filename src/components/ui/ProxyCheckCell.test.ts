@@ -1,8 +1,8 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {sinceLabel, storedCheckState} from './ProxyCheckCell';
-import type {MontiProxy} from '../../types';
+import type {ScoutProxy} from '../../types';
 
-function proxy(patch: Partial<MontiProxy>): MontiProxy {
+function proxy(patch: Partial<ScoutProxy>): ScoutProxy {
   return {id: 'p1', name: 'p1', type: 'socks5', host: '198.51.100.10', port: 1080, ...patch};
 }
 

@@ -22,7 +22,7 @@ import {
 } from './importReview';
 import type {ImportLibrary} from './csvImport';
 import type {ReviewRow} from './importReview';
-import type {MontiProfile, MontiProxy} from '../types';
+import type {ScoutProfile, ScoutProxy} from '../types';
 
 const empty: ImportLibrary = {profiles: [], proxies: [], folders: []};
 
@@ -30,11 +30,11 @@ function library(patch: Partial<ImportLibrary>): ImportLibrary {
   return {...empty, ...patch};
 }
 
-function proxy(patch: Partial<MontiProxy> & Pick<MontiProxy, 'id' | 'host' | 'port'>): MontiProxy {
+function proxy(patch: Partial<ScoutProxy> & Pick<ScoutProxy, 'id' | 'host' | 'port'>): ScoutProxy {
   return {name: `${patch.host}:${patch.port}`, type: 'socks5', ...patch};
 }
 
-function profile(patch: Partial<MontiProfile> & Pick<MontiProfile, 'id' | 'name'>): MontiProfile {
+function profile(patch: Partial<ScoutProfile> & Pick<ScoutProfile, 'id' | 'name'>): ScoutProfile {
   return patch;
 }
 

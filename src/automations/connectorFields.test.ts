@@ -5,7 +5,7 @@
 // connector ids in a row and gave up. Two things had to be true for that to
 // happen, and this file pins the half that lives in the schema: the compaction
 // in electron/mcp/tools.cjs now renders a connector field as "<category>
-// connector id from monti_list_connectors", and a field with no category would
+// connector id from scout_list_connectors", and a field with no category would
 // silently degrade that back to "any" -- the useless answer it used to give.
 //
 // The other half was that no tool listed connectors at all. That one is a

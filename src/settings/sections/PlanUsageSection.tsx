@@ -15,7 +15,7 @@ import type {BadgeTone} from '../../components/ui/Badge';
 import {formatDate} from '../../lib/text';
 import {useOrg} from '../../org';
 import {hasUpgrade, isPlanKey, PLANS, planLabel, planPrice, showsPlanPicker} from '../../plans';
-import type {MontiOrg} from '../../types';
+import type {ScoutOrg} from '../../types';
 import {SettingsGroup, SettingsRow} from '../rows';
 
 type Props = {
@@ -108,7 +108,7 @@ function limitText(value: number | null | undefined): string {
 // Renders nothing until the org has loaded. An unrecognised plan string still
 // gets its tiles -- unlike the mirror-driven version, these numbers do not
 // depend on the plan being one this build knows about.
-function IncludedGroup({org, plan}: {org: MontiOrg | null | undefined; plan: string | null | undefined}) {
+function IncludedGroup({org, plan}: {org: ScoutOrg | null | undefined; plan: string | null | undefined}) {
   if (!org) {
     return null;
   }

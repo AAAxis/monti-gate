@@ -28,18 +28,18 @@ import type {ApiKey, ApiState} from '../../native';
 function manualSnippet(integration: Integration, token: string | undefined, base: string) {
   const value = token || '<your key>';
   if (integration.manualFormat === 'env') {
-    return [`MONTI_API_BASE=${base}`, `MONTI_API_TOKEN=${value}`].join('\n');
+    return [`SCOUT_API_BASE=${base}`, `SCOUT_API_TOKEN=${value}`].join('\n');
   }
   return JSON.stringify({
     mcpServers: {
-      monti: {
+      scout: {
         type: 'stdio',
         command: 'Scout Web',
         args: ['<the path shown after you connect>'],
         env: {
           ELECTRON_RUN_AS_NODE: '1',
-          MONTI_API_TOKEN: value,
-          MONTI_API_BASE: base,
+          SCOUT_API_TOKEN: value,
+          SCOUT_API_BASE: base,
         },
       },
     },
@@ -147,7 +147,7 @@ export function IntegrationModal({integration, integrations, apiKeys, apiState}:
             <li>
               {manual ?
                 `Shows you that key once, to paste into ${integration.configLabel} — there is no config file here for Scout Web to write.` :
-                `Writes an "monti" MCP server into ${integration.configLabel}, pointing at the server bundled in this app. Nothing to install.`}
+                `Writes an "scout" MCP server into ${integration.configLabel}, pointing at the server bundled in this app. Nothing to install.`}
             </li>
             <li>{integration.restartLabel}. {integration.confirmLabel}</li>
           </ol>
@@ -225,7 +225,7 @@ export function IntegrationModal({integration, integrations, apiKeys, apiState}:
           <h3>Your move</h3>
           <p>
             {config ?
-              `${configPath} no longer has the monti entry — something else edited or replaced the file. Replace the key below: minting a new one writes the entry back at the same time.` :
+              `${configPath} no longer has the scout entry — something else edited or replaced the file. Replace the key below: minting a new one writes the entry back at the same time.` :
               `Checking what ${integration.name} has on disk…`}
           </p>
         </section>

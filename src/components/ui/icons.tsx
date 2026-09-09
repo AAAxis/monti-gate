@@ -96,7 +96,7 @@ export function IntegrationMark({integration, size = 20}: {integration: Integrat
 // The card's own heading carries the name, so every branch here is decorative.
 export function ExtensionMark({logo, tint}: {logo?: string; tint?: boolean}) {
   if (tint) {
-    return <span aria-hidden="true" className="extension-mark is-monti" />;
+    return <span aria-hidden="true" className="extension-mark is-scout" />;
   }
   if (logo) {
     return <img alt="" className="extension-mark" src={logo} />;

@@ -1,8 +1,8 @@
-# launcher/ — Monti Gate
+# launcher/ — Scout Web
 
 Electron + React + Vite desktop app. The **control plane**: everything to do with
 accounts, cloud state, billing, and deciding what a browser session gets handed.
-`npm` package name `monti-anty`, appId `com.monti.anty`.
+`npm` package name `scout-web`, appId `com.scout.web`.
 
 ## Layout
 
@@ -12,7 +12,7 @@ accounts, cloud state, billing, and deciding what a browser session gets handed.
 | `src/db/` | 13 files | The data layer. One module per table plus `client.ts`, `rows.ts`, `mappers.ts`, `errors.ts`. See below. |
 | `src/org.tsx` | | `OrgProvider` / `useOrg()`. Owns the auth subscription and resolves which organization the signed-in user is looking at. Mounted above `App`. |
 | `src/supabase.ts` | 13 lines | Creates the client from `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. Exports `null` when env is missing — every caller must null-check. |
-| `src/types.ts` | | `MontiProfile`, `MontiCookie`, `CloudState`, `MontiOrg`, `OrgMembership`, etc. |
+| `src/types.ts` | | `ScoutProfile`, `ScoutCookie`, `CloudState`, `ScoutOrg`, `OrgMembership`, etc. |
 | `src/native.ts` | | Typed wrapper over the preload bridge. |
 | `electron/main.cjs` | **87 KB** | Main process. Browser executable resolution, launch payload assembly, proxy assignment written into the profile dir, cookie-seed extension generation, session-restore clearing, auto-update. |
 | `electron/preload.cjs` | | contextBridge surface. |
@@ -24,7 +24,7 @@ accounts, cloud state, billing, and deciding what a browser session gets handed.
 ## Commands
 
 ```powershell
-cd E:\monti\launcher
+cd E:\scout\launcher
 npm run typecheck     # tsc --noEmit          <- works
 npm run build         # vite build            <- works
 npm run dist:win      # electron-builder nsis <- works
@@ -37,7 +37,7 @@ Vite and Electron separately:
 ```powershell
 npx vite --host 127.0.0.1
 # in a second shell:
-$env:MONTI_LAUNCHER_DEV = "1"; npx electron .
+$env:SCOUT_LAUNCHER_DEV = "1"; npx electron .
 ```
 
 ## How cloud state works
@@ -127,7 +127,7 @@ who knows an email can compute that user's "API token". Replaced in `prompts/07`
 switches. Nothing else. The browser must never receive credentials, tokens, or a
 Supabase session.
 
-`--user-data-dir` resolves under `E:\MontiProfiles\<profile-id>`. Profile ids are
+`--user-data-dir` resolves under `E:\ScoutProfiles\<profile-id>`. Profile ids are
 therefore on-disk directory names — a schema migration that renumbers them orphans
 every existing profile's data.
 

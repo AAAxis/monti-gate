@@ -1,4 +1,4 @@
-import type {MontiProfile} from '../types';
+import type {ScoutProfile} from '../types';
 import {AVATAR_MAX_BYTES, imageExtensionFor} from './account';
 import {optionalClient, raise, requireClient, STORAGE_BUCKET} from './client';
 import {profilePatchToRow, profileToRow, rowToProfile} from './mappers';
@@ -15,7 +15,7 @@ const COLUMNS =
 
 // Trashed profiles come back too -- the Trash view reads the same list and
 // filters on deleted_at, exactly as it did against the blob.
-export async function list(orgId: string): Promise<MontiProfile[]> {
+export async function list(orgId: string): Promise<ScoutProfile[]> {
   const client = optionalClient();
   if (!client) {
     return [];
@@ -39,9 +39,9 @@ export async function list(orgId: string): Promise<MontiProfile[]> {
 // whether the profile is new; they pick.
 //
 // The id is never regenerated in either path: it is also the on-disk directory
-// name under E:\MontiProfiles\<id>, so changing it orphans that profile's
+// name under E:\ScoutProfiles\<id>, so changing it orphans that profile's
 // browser data.
-export async function create(orgId: string, profile: MontiProfile): Promise<void> {
+export async function create(orgId: string, profile: ScoutProfile): Promise<void> {
   const client = requireClient();
   const {error} = await client.from('browser_profiles').insert(profileToRow(orgId, profile));
   raise(error, 'profiles.create');
@@ -49,7 +49,7 @@ export async function create(orgId: string, profile: MontiProfile): Promise<void
 
 // Writes every editable column of an existing row. `id` and `org_id` are
 // stripped from the payload: they are the lookup keys, not fields to rewrite.
-export async function replace(orgId: string, profile: MontiProfile): Promise<void> {
+export async function replace(orgId: string, profile: ScoutProfile): Promise<void> {
   const client = requireClient();
   const {id: _id, org_id: _orgId, ...row} = profileToRow(orgId, profile);
   const {error} = await client
@@ -63,14 +63,14 @@ export async function replace(orgId: string, profile: MontiProfile): Promise<voi
 // Create-or-replace, decided by the caller rather than by the database, for the
 // reason in the comment above.
 export async function save(
-    orgId: string, profile: MontiProfile, exists: boolean): Promise<void> {
+    orgId: string, profile: ScoutProfile, exists: boolean): Promise<void> {
   return exists ? replace(orgId, profile) : create(orgId, profile);
 }
 
 // Only the keys present in `patch` are written, so a worker changing a status
 // cannot clobber another worker's proxy assignment on the same row.
 export async function update(
-    orgId: string, id: string, patch: Partial<MontiProfile>): Promise<void> {
+    orgId: string, id: string, patch: Partial<ScoutProfile>): Promise<void> {
   const client = requireClient();
   const {error} = await client
       .from('browser_profiles')
@@ -123,7 +123,7 @@ export async function purge(orgId: string, ids: string[]): Promise<void> {
 }
 
 // Uploads a picture for a profile's avatar and returns its public URL. The
-// caller stores that URL in MontiProfile.avatar; nothing here writes the row,
+// caller stores that URL in ScoutProfile.avatar; nothing here writes the row,
 // because the editor holds an unsaved draft and a picture that landed in
 // Storage before Cancel was pressed should not have changed the profile.
 //

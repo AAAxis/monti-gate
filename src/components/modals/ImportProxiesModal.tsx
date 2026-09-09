@@ -39,7 +39,7 @@ import {
 } from './importParts';
 import type {ImportOutcome} from './importParts';
 import type {ClipboardEvent} from 'react';
-import type {MontiProxy} from '../../types';
+import type {ScoutProxy} from '../../types';
 
 type Step = 'source' | 'review' | 'destination';
 type DestinationKind = 'new' | 'existing' | 'unfiled';
@@ -70,7 +70,7 @@ function endpointOf(row: ProxyRow) {
   return parsed ? {host: parsed.host, port: parsed.port} : null;
 }
 
-function rowsFromFile(content: string, existing: MontiProxy[]): ProxyRow[] {
+function rowsFromFile(content: string, existing: ScoutProxy[]): ProxyRow[] {
   return parseProxyList(content, existing).map((entry) => ({
     id: String(entry.line),
     line: entry.line,
@@ -551,14 +551,14 @@ function SourceStep({onPick, say, path}: {
             </button>
             <button
               className="ghost"
-              onClick={() => void saveExampleFile('monti-proxies-example.txt',
+              onClick={() => void saveExampleFile('scout-proxies-example.txt',
                   proxyImportExampleList(), say, native?.saveTextFile)}
             >
               <Download size={18} /> Example list
             </button>
             <button
               className="ghost"
-              onClick={() => void saveExampleFile('monti-proxies-example.csv',
+              onClick={() => void saveExampleFile('scout-proxies-example.csv',
                   proxyImportExampleCsv(), say, native?.saveTextFile)}
             >
               <Download size={18} /> Example CSV

@@ -1,7 +1,7 @@
 import type {
-  MontiAutomation,
-  MontiProfile,
-  MontiProxy,
+  ScoutAutomation,
+  ScoutProfile,
+  ScoutProxy,
   AutomationRun,
   BuiltInExtensionToggles,
   RuntimeFingerprint,
@@ -63,13 +63,13 @@ export type LaunchProfilePayload = {
   // This launch's page credential and the loopback port to spend it on — the
   // same {port, token} embedded in homeHtml. Carried as a field too so
   // built-in-extensions.cjs can hand it to the cookie-manager extension
-  // (monti-launch.json). Null when minting failed; the extension then shows
+  // (scout-launch.json). Null when minting failed; the extension then shows
   // sync as unavailable rather than broken.
   startPage?: {port: number; token: string} | null;
   // Everything the browser's side panel shows about this session, resolved at
   // launch: who this profile is, what its proxy is doing, and what it may run.
   // built-in-extensions.cjs writes it beside the panel extension as
-  // monti-session.json; the panel reads that file for its first paint.
+  // scout-session.json; the panel reads that file for its first paint.
   //
   // The proxy block is homeProxyStatus() output verbatim, the same object the
   // start page is built from, so the two surfaces cannot word one session two
@@ -282,7 +282,7 @@ export type IntegrationVerification = {
   checks: IntegrationCheck[];
 };
 
-type MontiNative = {
+type ScoutNative = {
   launchProfile(payload: LaunchProfilePayload, extraArgs?: string[]): Promise<{
     ok: boolean;
     pid?: number;
@@ -320,7 +320,7 @@ type MontiNative = {
   // is fire-and-forget: nothing else notices if the user later edits or deletes
   // the block it wrote.
   integrationStatus?(integrationId: string): Promise<IntegrationStatus>;
-  // Deletes the monti entry this app wrote. Pairs with revokeApiKey -- revoking
+  // Deletes the scout entry this app wrote. Pairs with revokeApiKey -- revoking
   // alone leaves the tool pointed at a dead token.
   removeIntegrationConfig?(integrationId: string): Promise<{ok: boolean; path?: string | null; error?: string}>;
   // Repoints a stale entry at this build's server, keeping the token already in
@@ -421,8 +421,8 @@ type MontiNative = {
   // Returns as soon as the run is registered, NOT when it finishes: a real run
   // is minutes long, so anything that awaited completion would look like a hang.
   startAutomationRun?(payload: {
-    automation: MontiAutomation;
-    profile: MontiProfile;
+    automation: ScoutAutomation;
+    profile: ScoutProfile;
     trigger: RunTrigger;
     cdpUrl: string;
     vars?: AutomationVars;
@@ -496,7 +496,7 @@ type MontiNative = {
         };}) => void,
   ): () => void;
 
-  // monti:// deep links. `auth` carries the PKCE authorization code back from
+  // scout:// deep links. `auth` carries the PKCE authorization code back from
   // Google-via-Supabase; `open` just means "focus the app" and carries nothing.
   // Call deepLinkReady() after subscribing -- links that arrived during a cold
   // start are queued in the main process and replayed on that signal.
@@ -719,7 +719,7 @@ type MontiNative = {
   ): () => void;
   sendGetProfileResult?(
     requestId: string,
-    result?: {profile: MontiProfile | null},
+    result?: {profile: ScoutProfile | null},
     error?: string,
   ): void;
   // GET /v1/proxies: full proxy list, each annotated with which profiles
@@ -730,7 +730,7 @@ type MontiNative = {
   ): () => void;
   sendListProxiesResult?(
     requestId: string,
-    result?: {proxies: Array<MontiProxy & {assignedProfileIds: string[]}>},
+    result?: {proxies: Array<ScoutProxy & {assignedProfileIds: string[]}>},
     error?: string,
   ): void;
   // POST /v1/proxies/create
@@ -755,7 +755,7 @@ type MontiNative = {
     callback: (payload: {
       requestId: string;
       proxyId: string;
-      fields: Partial<Pick<MontiProxy, 'name' | 'type' | 'host' | 'port' | 'username' | 'password'>>;
+      fields: Partial<Pick<ScoutProxy, 'name' | 'type' | 'host' | 'port' | 'username' | 'password'>>;
     }) => void,
   ): () => void;
   sendUpdateProxyResult?(
@@ -789,7 +789,7 @@ type MontiNative = {
     callback: (payload: {
       requestId: string;
       profileId: string;
-      fields: Partial<Pick<MontiProfile,
+      fields: Partial<Pick<ScoutProfile,
         'name' | 'tags' | 'status' | 'color' | 'avatar' | 'folder_id' | 'email' | 'password' |
         'login_url' | 'proxy_mode' | 'proxy_id' | 'start_url' | 'automation_id'>>;
       // null grants every folder; an array is the allow-list this key may
@@ -938,8 +938,8 @@ type MontiNative = {
 
 declare global {
   interface Window {
-    montiNative?: MontiNative;
+    scoutNative?: ScoutNative;
   }
 }
 
-export const native = window.montiNative;
+export const native = window.scoutNative;

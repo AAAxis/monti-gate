@@ -15,10 +15,10 @@ import {AutomationMark} from '../automations/AutomationMark';
 import {FolderGlyph} from '../ui/FolderGlyph';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
-import type {MontiFolder} from '../../types';
+import type {ScoutFolder} from '../../types';
 
 export function MoveAutomationsModal({folder, onClose}: {
-  folder: MontiFolder;
+  folder: ScoutFolder;
   onClose: () => void;
 }) {
   const {data, toast, automations} = useWorkspace();

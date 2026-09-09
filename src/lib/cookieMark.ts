@@ -9,11 +9,11 @@
 // A set that is green in its own library and grey in a profile's dialog is not
 // a mark, and four copies of `cookie.color || folder?.color` is how that
 // happens.
-import type {MontiCookie, MontiFolder} from '../types';
+import type {ScoutCookie, ScoutFolder} from '../types';
 
 export function cookieSetColor(
-    cookie: Pick<MontiCookie, 'color' | 'folder_id'>,
-    folders: MontiFolder[]): string | undefined {
+    cookie: Pick<ScoutCookie, 'color' | 'folder_id'>,
+    folders: ScoutFolder[]): string | undefined {
   if (cookie.color) {
     return cookie.color;
   }

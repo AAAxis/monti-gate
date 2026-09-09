@@ -8,7 +8,7 @@
 # ref is recorded in supabase/.temp/project-ref by `supabase link` and is
 # untracked; see secrets/README.md in the umbrella repo.
 
-project_id = "monti"
+project_id = "scout"
 
 [db]
 # Match the hosted project, so a local stack reproduces its behaviour.
@@ -31,7 +31,7 @@ max_rows = 1000
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000", "monti://auth/callback"]
+additional_redirect_urls = ["http://localhost:3000", "scout://auth/callback"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 enable_signup = true
@@ -41,7 +41,7 @@ enable_signup = true
 enable_confirmations = false
 
 # Google sign-in is what forced PKCE in the launcher client -- the callback
-# returns through an monti:// deep link, so the implicit flow's URL fragment is
+# returns through an scout:// deep link, so the implicit flow's URL fragment is
 # unusable. Secrets come from the environment, never from this file.
 [auth.external.google]
 enabled = true

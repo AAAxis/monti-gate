@@ -135,16 +135,16 @@ function polar(radius, degrees) {
   };
 }
 
-// assets/monti-mark.svg is the brand file as exported, so its paths carry
+// assets/scout-mark.svg is the brand file as exported, so its paths carry
 // fill="black" and the whole thing is wrapped in a clipPath-bound <g>. Only the
 // paths are wanted here -- the clip is the export's own bounding box and would
 // crop the mark once it is scaled into the tile.
 function helmetPaths(fill) {
   const source = fs.readFileSync(
-      path.join(__dirname, '..', 'assets', 'monti-mark.svg'), 'utf8');
+      path.join(__dirname, '..', 'assets', 'scout-mark.svg'), 'utf8');
   const paths = source.match(/<path\b[^>]*\/>/g);
   if (!paths || !paths.length) {
-    throw new Error('assets/monti-mark.svg has no <path> elements to draw');
+    throw new Error('assets/scout-mark.svg has no <path> elements to draw');
   }
   return paths
       .map((markup) => markup.replace(/fill="[^"]*"/g, `fill="${fill}"`))

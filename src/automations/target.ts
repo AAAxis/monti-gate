@@ -10,7 +10,7 @@
 // selector that "passed" fails every run -- so `lastRunProfileId` is consulted
 // first, and it is written by every run of this automation whatever started it.
 // Check therefore tests against the page the last run actually used.
-import type {MontiAutomation, MontiProfile, CloudState} from '../types';
+import type {ScoutAutomation, ScoutProfile, CloudState} from '../types';
 
 // In order: the profile this automation last ran on, the one it runs on launch
 // when there is exactly one, and otherwise whatever is highlighted on the
@@ -18,10 +18,10 @@ import type {MontiAutomation, MontiProfile, CloudState} from '../types';
 // which is why null is a normal answer here, not a failure.
 export function runTarget(
     state: CloudState,
-    automation: MontiAutomation | null,
+    automation: ScoutAutomation | null,
     selectedProfileId: string | null,
     lastRunProfileId?: string | null,
-): MontiProfile | null {
+): ScoutProfile | null {
   const live = (id: string | null | undefined) => id ?
     state.profiles.find((profile) => profile.id === id && !profile.deleted_at) || null :
     null;

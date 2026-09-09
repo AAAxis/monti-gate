@@ -144,8 +144,8 @@ describe('the watermark store', () => {
   });
 
   it('scopes the key by kind, workspace and person', () => {
-    expect(seenKey('profiles', 'org-1', 'user-1')).toBe('monti:seen:profiles:org-1:user-1');
-    expect(seenKey('cookies', null, null)).toBe('monti:seen:cookies:none:anon');
+    expect(seenKey('profiles', 'org-1', 'user-1')).toBe('scout:seen:profiles:org-1:user-1');
+    expect(seenKey('cookies', null, null)).toBe('scout:seen:cookies:none:anon');
   });
 
   // A first read seeds now() and hands it straight back, so the first session

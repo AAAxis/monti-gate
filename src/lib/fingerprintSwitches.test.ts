@@ -1,9 +1,9 @@
 import {describe, expect, it} from 'vitest';
 import {buildRuntimeFingerprint, fingerprintSwitches} from './fingerprint';
-import type {MontiProfile} from '../types';
+import type {ScoutProfile} from '../types';
 
-function profile(fingerprint: MontiProfile['fingerprint']): MontiProfile {
-  return {id: 'p1', name: 'Test', fingerprint} as MontiProfile;
+function profile(fingerprint: ScoutProfile['fingerprint']): ScoutProfile {
+  return {id: 'p1', name: 'Test', fingerprint} as ScoutProfile;
 }
 
 describe('fingerprintSwitches', () => {
@@ -41,7 +41,7 @@ describe('fingerprintSwitches', () => {
         .toBe('--user-agent=Mozilla/5.0 (X11; Linux x86_64)');
   });
 
-  // The browser namespace is `monti`; this switch was spelled `monti` and no
+  // The browser namespace is `scout`; this switch was spelled `scout` and no
   // C++ ever read it. Removed rather than corrected -- nothing consumes the OS
   // hint, which the fingerprint JSON already carries as `preset`.
   it('no longer emits the dead fingerprint-os switch', () => {
@@ -49,7 +49,7 @@ describe('fingerprintSwitches', () => {
   });
 
   it('is empty for a profile with no fingerprint', () => {
-    expect(fingerprintSwitches({id: 'p1', name: 'Test'} as MontiProfile)).toBe('');
+    expect(fingerprintSwitches({id: 'p1', name: 'Test'} as ScoutProfile)).toBe('');
   });
 });
 
@@ -64,7 +64,7 @@ describe('fingerprintSwitches', () => {
 // profile, whatever the user picked, reported Windows 10 to anything reading
 // UA-CH.
 describe('buildRuntimeFingerprint platform_version', () => {
-  const fp = (os: string) => buildRuntimeFingerprint(profile({os}) as MontiProfile);
+  const fp = (os: string) => buildRuntimeFingerprint(profile({os}) as ScoutProfile);
 
   it('separates Windows 11 from Windows 10 on the one field that can', () => {
     // Chromium's own mapping: Windows 11 is >= 13, Windows 10 is <= 10.

@@ -116,7 +116,7 @@ export type HandoffRow = {
 };
 
 // id is text, not uuid: a profile id is also its on-disk directory name under
-// E:\MontiProfiles\<id>, and 30 of the 44 legacy directories are plain numbers.
+// E:\ScoutProfiles\<id>, and 30 of the 44 legacy directories are plain numbers.
 // 0005 widened it and added profiles_id_fs_safe to keep the name path-safe.
 export type ProfileRow = {
   id: string;
@@ -148,7 +148,7 @@ export type ProfileRow = {
   password: string | null;
   // The sign-in page those two belong to. Added 2026-08-09 (20260818000000);
   // null on every row written before then. Reference only -- nothing fills a
-  // login form; see MontiProfile.login_url.
+  // login form; see ScoutProfile.login_url.
   login_url: string | null;
   // The automation to run when this profile launches. Added 2026-08-05.
   automation_id: string | null;
@@ -158,7 +158,7 @@ export type ProfileRow = {
   // however that run starts. Added 20260814000000_automation_parameters.sql.
   automation_vars: Record<string, Record<string, unknown>> | null;
   // The profile's picture: `brand:<slug>`, an https URL, or null for the
-  // initials plate. Added 2026-08-05. See MontiProfile.avatar in src/types.ts.
+  // initials plate. Added 2026-08-05. See ScoutProfile.avatar in src/types.ts.
   avatar: string | null;
   // Who is on the hook for it. Added 2026-08-06-handoffs.sql. Nullable on every
   // table that has it -- unclaimed is the default and the common case.

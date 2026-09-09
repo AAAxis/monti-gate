@@ -1,7 +1,7 @@
 -- Where a proxy actually exits, at city granularity rather than country.
 --
 -- A profile's timezone is what every anti-fraud system compares against the IP
--- address it sees, and Monti was resolving it from the proxy's *country*:
+-- address it sees, and Scout was resolving it from the proxy's *country*:
 -- electron/main.cjs's COUNTRY_DEFAULTS maps a country code to one timezone, so
 -- `us` meant America/New_York for every US proxy in existence. A Denver or Los
 -- Angeles egress therefore reported an Eastern timezone, and the mismatch is

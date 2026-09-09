@@ -20,19 +20,19 @@ import {
 } from '../../data/connectors';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
 import type {ConnectorField} from '../../data/connectors';
-import type {MontiConnector} from '../../types';
+import type {ScoutConnector} from '../../types';
 
 // One value, not two booleans: `ok` picks the tone and `message` is the
 // service's own sentence, which is the only diagnostic worth showing.
 type TestResult = {ok: boolean; message: string};
 
 export function ConnectorModal({connector, exists, onClose}: {
-  connector: MontiConnector;
+  connector: ScoutConnector;
   exists: boolean;
   onClose: () => void;
 }) {
   const {data, connectors, toast} = useWorkspace();
-  const [draft, setDraft] = useState<MontiConnector>(connector);
+  const [draft, setDraft] = useState<ScoutConnector>(connector);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [test, setTest] = useState<TestResult | null>(null);

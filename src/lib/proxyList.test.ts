@@ -1,10 +1,10 @@
 import {describe, expect, it} from 'vitest';
 import {parseProxyList} from './proxyList';
 import {proxyImportExampleCsv, proxyImportExampleList} from '../data/importTemplate';
-import type {MontiProxy} from '../types';
+import type {ScoutProxy} from '../types';
 
-const none: MontiProxy[] = [];
-const proxies = (content: string, existing: MontiProxy[] = none) =>
+const none: ScoutProxy[] = [];
+const proxies = (content: string, existing: ScoutProxy[] = none) =>
   parseProxyList(content, existing).map((entry) => entry.proxy);
 
 describe('parseProxyList — the line path', () => {
@@ -73,7 +73,7 @@ describe('parseProxyList — the line path', () => {
   it('marks a proxy already in the library as a duplicate', () => {
     const existing = [{
       id: '1', name: 'x', type: 'socks5', host: '198.51.100.10', port: 1080, username: '',
-    } as MontiProxy];
+    } as ScoutProxy];
     expect(parseProxyList('198.51.100.10,1080', existing)[0].duplicate).toBe(true);
   });
 });

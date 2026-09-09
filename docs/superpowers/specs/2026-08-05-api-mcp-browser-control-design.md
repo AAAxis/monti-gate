@@ -6,7 +6,7 @@ Status: approved, not yet implemented
 ## Why
 
 `docs/mcp-capabilities.md` audited what an agent can actually do through the
-Monti MCP server. Its top four recommendations have since been implemented —
+Scout MCP server. Its top four recommendations have since been implemented —
 proxy credentials are redacted (`src/hooks/useAutomationBridge.ts:143-158`),
 signed-out no longer masquerades as an empty account (`requireSignedIn()`), and
 every write path enforces folder scope through `resolveInScope`
@@ -18,17 +18,17 @@ What remains open is recommendations **#5, #6, #7 and #9**, and they are one
 theme: an agent can look at a page but cannot touch it.
 
 - There is no click, type, press, scroll, hover, select or wait-for-selector
-  tool. The only lever is `monti_eval` running `element.click()`, which fires
+  tool. The only lever is `scout_eval` running `element.click()`, which fires
   **untrusted** DOM events — precisely the signature an anti-detect browser
   exists to avoid. Meanwhile `electron/automation/steps.cjs:177-198` already
   dispatches real `Input.dispatchMouseEvent`, `Input.dispatchKeyEvent` and
   `Input.insertText` for the automation runner's own `click` and `type` steps.
   The correct code exists; MCP simply cannot reach it.
-- `monti_list_tabs` returns tab ids **no other tool accepts**. Every page tool
+- `scout_list_tabs` returns tab ids **no other tool accepts**. Every page tool
   silently drives whatever `pageTarget()` picks — the first `http(s)` page, else
   the first page (`electron/cdp-core.cjs:72`). "The active page" in the tool
   descriptions is a fiction.
-- `folderId` is a settable argument on `monti_update_profile` with no tool that
+- `folderId` is a settable argument on `scout_update_profile` with no tool that
   lists valid folder ids. `status` is a free string with no tool that lists the
   workspace's statuses.
 - An agent can drive a fleet of profiles but cannot create one.
@@ -97,7 +97,7 @@ removed, since every tool is a route.
 
 **`tabId` becomes an optional argument on every page route.** Omitted, it
 resolves as today. Supplied, it addresses a real tab. This retires the "active
-page" fiction and makes `monti_list_tabs`'s output usable for the first time.
+page" fiction and makes `scout_list_tabs`'s output usable for the first time.
 
 **Prerequisite, and the one non-obvious piece of work:** the `local` branch at
 `electron/main.cjs:4306-4321` is hardcoded to answer with the step schema —
@@ -118,7 +118,7 @@ New routes and tools:
 - `create_profile` — the single largest "the app can, the agent cannot" gap.
 - `create_folder`, `create_proxy`, `update_proxy`.
 - `proxyMode` becomes a field on `update_profile`, so an agent can move a
-  profile to Direct or Free Proxy. Today `monti_assign_proxy` always forces
+  profile to Direct or Free Proxy. Today `scout_assign_proxy` always forces
   `'assigned'` and nothing can change it back.
 
 Routes that exist and work over HTTP today but have no tool at all
@@ -137,7 +137,7 @@ Two stay withheld, and for stated reasons rather than by omission:
 
 **Deliberately still withheld: a read-the-cookie-jar tool.** Every other gap
 here is about reach. That one hands an agent transferable session credentials
-for accounts the profile is logged into, and `monti_eval` already serves the
+for accounts the profile is logged into, and `scout_eval` already serves the
 legitimate "am I signed in" case without the httpOnly ones. This is a decision,
 not an oversight, and the omission is to be commented as such in `routes.json`
 so a later session does not "complete" the surface by adding it.
@@ -154,7 +154,7 @@ Two layers, and only one of them is a boundary:
   key's `toolPacks` and answers 403 with a message naming the pack. This is the
   real gate, and it is checked on the HTTP route — so it holds for plain `curl`
   and for a stale MCP client alike.
-- **Advertisement.** `MONTI_TOOL_PACKS=read,drive,manage` is written into the
+- **Advertisement.** `SCOUT_TOOL_PACKS=read,drive,manage` is written into the
   client's config beside the token at connect time, so `tools/list` filters
   instantly with no network call and no dependency on the launcher being up when
   the agent starts. This is a courtesy, not a boundary — the same relationship
@@ -170,7 +170,7 @@ Two layers, and only one of them is a boundary:
 49 tools total; 42 enabled on a default connection. The count is the cost of
 "fully listed" and was accepted with that trade-off stated.
 
-`monti_delete_automation` stays in **manage** rather than moving to
+`scout_delete_automation` stays in **manage** rather than moving to
 `destructive`, even though its name argues otherwise. It is exposed today, so
 filing it under a default-off pack would silently narrow every connection that
 already exists. It is already gated to unscoped keys, which is the protection
@@ -197,7 +197,7 @@ second collapsible idiom.
 - Each group is a collapsed row: name, endpoint count, pack badges. Click opens
   it.
 - Each endpoint row shows **both faces of one capability** — `POST
-  /v1/pages/click` and `monti_click` — with its pack badge. Click opens the
+  /v1/pages/click` and `scout_click` — with its pack badge. Click opens the
   field list, request body and curl line.
 - A search box filters across paths, labels and tool names, and auto-opens the
   groups holding matches.

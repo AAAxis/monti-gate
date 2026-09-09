@@ -146,7 +146,7 @@ jobs:
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: monti-anty-macos
+          name: scout-web-macos
           path: |
             release/*.dmg
             release/*.dmg.blockmap
@@ -232,7 +232,7 @@ jobs:
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: monti-anty-windows
+          name: scout-web-windows
           path: |
             release/*.exe
             release/*.exe.blockmap
@@ -337,7 +337,7 @@ jobs:
           aws s3 cp release-artifacts/latest.yml "s3://${R2_BUCKET}/latest.yml" \
             --endpoint-url "${R2_ENDPOINT}" \
             --cache-control "public, max-age=60"
-          # Matched by platform, not by product name. These said "Monti-Gate-"
+          # Matched by platform, not by product name. These said "Scout Web-"
           # through two renames, so they matched nothing and every tagged
           # release quietly uploaded no installer at all — the step failed and
           # continue-on-error swallowed it.

@@ -41,13 +41,13 @@ export type Arrival = {
 };
 
 export function seenKey(kind: NewKind, orgId: string | null, userId: string | null): string {
-  return `monti:seen:${kind}:${orgId || 'none'}:${userId || 'anon'}`;
+  return `scout:seen:${kind}:${orgId || 'none'}:${userId || 'anon'}`;
 }
 
 // The watermark for one kind, seeding it to now() when absent.
 //
 // The seed is the important half, and it is why a fresh install -- or the first
-// launch after this shipped, since the old monti:automations-seen key is not
+// launch after this shipped, since the old scout:automations-seen key is not
 // read -- does not open onto a wall of green covering everything the workspace
 // has ever contained. Everything already there predates now(), so nothing
 // qualifies.

@@ -16,7 +16,7 @@ export function trashCutoffIso(): string {
 }
 
 // Mirrors the profiles_id_fs_safe CHECK in supabase/migrations/0005. Ids are
-// also directory names under E:\MontiProfiles, and the database is what
+// also directory names under E:\ScoutProfiles, and the database is what
 // enforces that -- this is only here so the CSV importer, which takes
 // profile_id straight from a user-supplied file, can name the offending row in
 // its skipped list instead of surfacing a raw constraint violation.

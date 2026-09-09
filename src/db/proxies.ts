@@ -1,4 +1,4 @@
-import type {MontiProxy} from '../types';
+import type {ScoutProxy} from '../types';
 import {optionalClient, raise, requireClient} from './client';
 import {proxyToRow, rowToProxy} from './mappers';
 import type {ProxyRow} from './rows';
@@ -8,7 +8,7 @@ const COLUMNS =
   'last_country,last_latency_ms,created_at,last_country_code,last_error,assigned_to,' +
   'last_timezone,last_city,last_region,last_latitude,last_longitude,created_by';
 
-export async function list(orgId: string): Promise<MontiProxy[]> {
+export async function list(orgId: string): Promise<ScoutProxy[]> {
   const client = optionalClient();
   if (!client) {
     return [];
@@ -22,7 +22,7 @@ export async function list(orgId: string): Promise<MontiProxy[]> {
   return ((data || []) as unknown as ProxyRow[]).map(rowToProxy);
 }
 
-export async function upsert(orgId: string, proxy: MontiProxy): Promise<void> {
+export async function upsert(orgId: string, proxy: ScoutProxy): Promise<void> {
   const client = requireClient();
   const {error} = await client
       .from('proxies')

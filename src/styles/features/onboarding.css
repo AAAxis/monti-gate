@@ -60,7 +60,7 @@
   background-color: var(--plan-accent);
   display: block;
   height: 40px;
-  mask-image: var(--monti-mark);
+  mask-image: var(--scout-mark);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;

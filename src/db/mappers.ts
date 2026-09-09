@@ -12,15 +12,15 @@ import {normalizeSchedule} from '../automations/schedule';
 import {isRunStatus} from '../automations/runStatus';
 import {normalizeTags} from '../lib/tags';
 import type {
-  MontiAutomation,
-  MontiConnector,
-  MontiCookie,
-  MontiFolder,
-  MontiOrg,
-  MontiProfile,
-  MontiProxy,
+  ScoutAutomation,
+  ScoutConnector,
+  ScoutCookie,
+  ScoutFolder,
+  ScoutOrg,
+  ScoutProfile,
+  ScoutProxy,
   AutomationRun,
-  MontiNotification,
+  ScoutNotification,
   BuiltInExtensionToggles,
   NoteAuthorKind,
   OrgInvite,
@@ -91,7 +91,7 @@ function switchesToText(value: string[] | null | undefined): string | null {
 
 // ---- organizations ------------------------------------------------------
 
-export function rowToOrg(row: OrganizationRow): MontiOrg {
+export function rowToOrg(row: OrganizationRow): ScoutOrg {
   return {
     id: row.id,
     name: row.name,
@@ -126,9 +126,9 @@ export function rowToOrg(row: OrganizationRow): MontiOrg {
 
 // ---- profiles -----------------------------------------------------------
 
-export function rowToProfile(row: ProfileRow): MontiProfile {
+export function rowToProfile(row: ProfileRow): ScoutProfile {
   const fingerprint = row.fingerprint && Object.keys(row.fingerprint).length > 0 ?
-    row.fingerprint as MontiProfile['fingerprint'] :
+    row.fingerprint as ScoutProfile['fingerprint'] :
     undefined;
   return {
     id: row.id,
@@ -148,7 +148,7 @@ export function rowToProfile(row: ProfileRow): MontiProfile {
     cookie_import_url: row.cookie_import_url,
     cookie_import_name: row.cookie_import_name,
     cookie_import_count: row.cookie_import_count,
-    cookie_mode: undef(row.cookie_mode) as MontiProfile['cookie_mode'],
+    cookie_mode: undef(row.cookie_mode) as ScoutProfile['cookie_mode'],
     cookie_id: row.cookie_set_id,
     automation_id: row.automation_id,
     automation_vars: normalizeProfileVars(row.automation_vars),
@@ -181,7 +181,7 @@ export function rowToProfile(row: ProfileRow): MontiProfile {
 //
 // `updated_at` is set here because no trigger maintains it: 0001/0005 give the
 // column a default but nothing refreshes it on update.
-export function profileToRow(orgId: string, profile: MontiProfile): Insert<ProfileRow> {
+export function profileToRow(orgId: string, profile: ScoutProfile): Insert<ProfileRow> {
   const startUrl = profile.start_url?.trim();
   return {
     id: profile.id,
@@ -216,7 +216,7 @@ export function profileToRow(orgId: string, profile: MontiProfile): Insert<Profi
 // Partial patch for an update -- only the keys present in `patch` are sent, so
 // two workers editing different fields of the same profile do not overwrite
 // each other's untouched columns.
-export function profilePatchToRow(patch: Partial<MontiProfile>): Partial<ProfileRow> {
+export function profilePatchToRow(patch: Partial<ScoutProfile>): Partial<ProfileRow> {
   const row: Partial<ProfileRow> = {updated_at: new Date().toISOString()};
   if ('name' in patch) {
     row.name = patch.name as string;
@@ -333,12 +333,12 @@ export function rowToProfileNoteSummary(row: ProfileNoteSummaryRow): ProfileNote
 
 // ---- proxies ------------------------------------------------------------
 
-export function rowToProxy(row: ProxyRow): MontiProxy {
+export function rowToProxy(row: ProxyRow): ScoutProxy {
   return {
     id: row.id,
     name: row.name || '',
     status: undef(row.status),
-    type: undef(row.type) as MontiProxy['type'],
+    type: undef(row.type) as ScoutProxy['type'],
     host: row.host || '',
     port: row.port || 0,
     username: undef(row.username),
@@ -370,7 +370,7 @@ export function rowToProxy(row: ProxyRow): MontiProxy {
 // update path too. created_by keeps its DB default, auth.uid(), so a
 // colleague's edit cannot rewrite authorship to themselves, and created_at
 // keeps the moment the proxy actually arrived.
-export function proxyToRow(orgId: string, proxy: MontiProxy): Insert<ProxyRow> {
+export function proxyToRow(orgId: string, proxy: ScoutProxy): Insert<ProxyRow> {
   return {
     id: proxy.id,
     org_id: orgId,
@@ -398,7 +398,7 @@ export function proxyToRow(orgId: string, proxy: MontiProxy): Insert<ProxyRow> {
 
 // ---- folders ------------------------------------------------------------
 
-export function rowToFolder(row: FolderRow): MontiFolder {
+export function rowToFolder(row: FolderRow): ScoutFolder {
   return {
     id: row.id,
     name: row.name || '',
@@ -415,7 +415,7 @@ export function rowToFolder(row: FolderRow): MontiFolder {
 
 // ---- cookie sets --------------------------------------------------------
 
-export function rowToCookie(row: CookieSetRow): MontiCookie {
+export function rowToCookie(row: CookieSetRow): ScoutCookie {
   return {
     id: row.id,
     name: row.name || '',
@@ -444,7 +444,7 @@ export function rowToCookie(row: CookieSetRow): MontiCookie {
 // `cookies` is not here either -- the payload is passed separately by
 // cookieSets.create, because it is the one column large enough that a caller
 // should have to mean it.
-export function cookieToRow(orgId: string, cookie: MontiCookie): Insert<CookieSetRow> {
+export function cookieToRow(orgId: string, cookie: ScoutCookie): Insert<CookieSetRow> {
   return {
     id: cookie.id,
     org_id: orgId,
@@ -466,7 +466,7 @@ export function cookieToRow(orgId: string, cookie: MontiCookie): Insert<CookieSe
 // Only the keys actually present are sent, so two workers renaming and
 // re-filing the same set cannot clobber each other's field. updated_at is
 // stamped on every patch: no trigger maintains it.
-export function cookiePatchToRow(patch: Partial<MontiCookie>): Partial<CookieSetRow> {
+export function cookiePatchToRow(patch: Partial<ScoutCookie>): Partial<CookieSetRow> {
   const row: Partial<CookieSetRow> = {updated_at: new Date().toISOString()};
   if ('name' in patch) {
     row.name = patch.name ?? null;
@@ -563,7 +563,7 @@ export function rowToStatus(row: CustomStatusRow): string {
 // constraint saying it is one: a row read through a future view or a cast
 // that loses the guarantee must deserialise into "no fields set", not crash
 // whatever reads a field off null.
-export function rowToConnector(row: ConnectorRow): MontiConnector {
+export function rowToConnector(row: ConnectorRow): ScoutConnector {
   const config = row.config && typeof row.config === 'object' && !Array.isArray(row.config) ?
     row.config : {};
   return {
@@ -584,7 +584,7 @@ export function rowToConnector(row: ConnectorRow): MontiConnector {
 // base_url means "use the preset's endpoint", and '' is not that -- it would
 // resolve to a request against the empty URL. Same for a blank api_key.
 export function connectorToRow(
-    orgId: string, connector: MontiConnector): Insert<ConnectorRow> {
+    orgId: string, connector: ScoutConnector): Insert<ConnectorRow> {
   return {
     id: connector.id,
     org_id: orgId,
@@ -600,7 +600,7 @@ export function connectorToRow(
   };
 }
 
-export function rowToAutomation(row: AutomationRow): MontiAutomation {
+export function rowToAutomation(row: AutomationRow): ScoutAutomation {
   return {
     id: row.id,
     name: row.name,
@@ -638,7 +638,7 @@ export function rowToAutomation(row: AutomationRow): MontiAutomation {
 // maintains it, so a save that did not touch it would leave the column at
 // whatever the insert default wrote.
 export function automationToRow(
-    orgId: string, automation: MontiAutomation): Insert<AutomationRow> {
+    orgId: string, automation: ScoutAutomation): Insert<AutomationRow> {
   return {
     id: automation.id,
     org_id: orgId,
@@ -676,7 +676,7 @@ export function automationToRow(
 }
 
 export function automationPatchToRow(
-    patch: Partial<MontiAutomation>): Partial<AutomationRow> {
+    patch: Partial<ScoutAutomation>): Partial<AutomationRow> {
   const row: Partial<AutomationRow> = {updated_at: new Date().toISOString()};
   if ('name' in patch) {
     row.name = patch.name as string;
@@ -774,7 +774,7 @@ export function runToRow(orgId: string, run: AutomationRun): Insert<AutomationRu
 
 // ---- notifications ------------------------------------------------------
 
-export function rowToNotification(row: NotificationRow): MontiNotification {
+export function rowToNotification(row: NotificationRow): ScoutNotification {
   return {
     id: row.id,
     kind: row.kind,
@@ -791,7 +791,7 @@ export function rowToNotification(row: NotificationRow): MontiNotification {
 }
 
 export function notificationToRow(
-    orgId: string, notification: MontiNotification): Insert<NotificationRow> {
+    orgId: string, notification: ScoutNotification): Insert<NotificationRow> {
   return {
     id: notification.id,
     org_id: orgId,

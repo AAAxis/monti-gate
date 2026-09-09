@@ -47,9 +47,9 @@ lost:
   icon filename) but integrates onlinesim.io. SMS-Activate is a different
   company. Keeping the name is an explicit product decision.
 - FoxyWall authenticates against its own Supabase project
-  (`uhpuqiptxcjluwsetoev`), separate from Monti's (`jpsmdjtxuxlkyuotwxfg`),
+  (`uhpuqiptxcjluwsetoev`), separate from Scout's (`jpsmdjtxuxlkyuotwxfg`),
   with its own anonymous `VPN-XXXX-XXXX-XXXX` accounts, entitlements and
-  upgrade flow, unconnected to the signed-in Monti account. That backend is
+  upgrade flow, unconnected to the signed-in Scout account. That backend is
   live and functional. Unifying the two account systems is a much larger
   question than this change.
 

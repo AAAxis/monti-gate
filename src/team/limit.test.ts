@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest';
 import {seatCap} from './limit';
-import type {MontiOrg} from '../types';
+import type {ScoutOrg} from '../types';
 
-function org(seat_limit: number | null): MontiOrg {
+function org(seat_limit: number | null): ScoutOrg {
   return {
     id: 'org-1',
     name: 'Test',

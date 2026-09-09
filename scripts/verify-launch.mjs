@@ -5,7 +5,7 @@
 // back what the page actually observes. Verifies:
 //   - the browser never navigates to the real target/login/direct page when
 //     the proxy is missing or unreachable (fails closed to a local error
-//     page instead, per StartupBrowserCreatorImpl's Monti-launch gate)
+//     page instead, per StartupBrowserCreatorImpl's Scout-launch gate)
 //   - the fingerprint the launcher would send is faithfully applied in the
 //     renderer (navigator.hardwareConcurrency/deviceMemory/languages,
 //     Intl timezone, WebGL unmasked vendor/renderer, userAgent)
@@ -20,7 +20,7 @@ import WebSocket from 'ws';
 
 const BROWSER_APP = process.env.MONTI_BROWSER_APP ||
   '/Users/dima/monti-browser/out/Release-dmg/Monti.app';
-const EXECUTABLE = path.join(BROWSER_APP, 'Contents/MacOS/Monti');
+const EXECUTABLE = path.join(BROWSER_APP, 'Contents/MacOS/Scout');
 const LOCAL_API_PORT = 39217;
 
 function base64UrlEncode(text) {
@@ -32,7 +32,7 @@ function base64UrlEncode(text) {
 
 const FINGERPRINT_PAYLOAD = {
   platform: 'Win32',
-  ua_string: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 MontiVerify/1',
+  ua_string: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 ScoutVerify/1',
   preset: 'windows',
   seed: 424242,
   webrtc_mode: 'noise',
@@ -151,7 +151,7 @@ function killTree(child) {
 
 async function runScenario({name, profileId, devtoolsPort, extraArgs, expectHref}) {
   console.log(`\n=== Scenario: ${name} ===`);
-  const userDataDir = mkdtempSync(path.join(tmpdir(), `monti-verify-${profileId}-`));
+  const userDataDir = mkdtempSync(path.join(tmpdir(), `scout-verify-${profileId}-`));
   const fingerprintArg = base64UrlEncode(JSON.stringify(FINGERPRINT_PAYLOAD));
   const args = [
     '--monti-profile-launch',
@@ -181,7 +181,7 @@ async function runScenario({name, profileId, devtoolsPort, extraArgs, expectHref
 
   try {
     const target = await waitFor(() => findPageTarget(devtoolsPort), {label: 'devtools page target'});
-    // Give the Monti-launch gate time to resolve. This may pass through the
+    // Give the Scout-launch gate time to resolve. This may pass through the
     // "connecting" interstitial first (while SocksBridge/egress-check attempts
     // run their retries) before landing on the terminal error page, so wait
     // for the specific expected URL rather than any /v1.0/internal/* page.
@@ -194,13 +194,13 @@ async function runScenario({name, profileId, devtoolsPort, extraArgs, expectHref
     console.log('Observed:', JSON.stringify(observed, null, 2));
 
     check('never navigated to the real target URL', observed.href !== 'https://example.com/should-never-load');
-    check('first/only page is not about:blank, chrome://monti*, or data:',
+    check('first/only page is not about:blank, chrome://scout*, or data:',
       !observed.href.startsWith('about:blank') &&
-      !observed.href.startsWith('chrome://monti') &&
+      !observed.href.startsWith('chrome://scout') &&
       !observed.href.startsWith('data:'));
     check('landed on expected local page', observed.href === expectHref, observed.href);
-    check('no "Sign in to Monti" / "Cloud account required" text',
-      !/Sign in to Monti|Cloud account required/i.test(observed.bodyText));
+    check('no "Sign in to Scout" / "Cloud account required" text',
+      !/Sign in to Scout|Cloud account required/i.test(observed.bodyText));
     check('navigator.hardwareConcurrency matches payload',
       observed.hardwareConcurrency === FINGERPRINT_PAYLOAD.cpu_cores,
       `got ${observed.hardwareConcurrency}, want ${FINGERPRINT_PAYLOAD.cpu_cores}`);
@@ -244,7 +244,7 @@ async function runScenario({name, profileId, devtoolsPort, extraArgs, expectHref
 async function main() {
   const scenarios = [
     {
-      name: 'missing proxy (no --monti-proxy-* switches)',
+      name: 'missing proxy (no --scout-proxy-* switches)',
       profileId: 'verify-missing-proxy',
       devtoolsPort: 9333,
       extraArgs: [],

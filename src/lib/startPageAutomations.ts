@@ -8,13 +8,13 @@
 //
 // `pinned` is org-wide, which is why there is no join table: the per-profile
 // slot is automation_id, and pinning is the many-to-many half.
-import type {MontiAutomation, MontiProfile} from '../types';
+import type {ScoutAutomation, ScoutProfile} from '../types';
 
 export function startPageAutomations(
-    automations: MontiAutomation[],
+    automations: ScoutAutomation[],
     // Omitted on the Start page tab, which is previewing what every profile
     // gets rather than one profile's page: that is the pinned set alone.
-    profile?: Pick<MontiProfile, 'automation_id'>): MontiAutomation[] {
+    profile?: Pick<ScoutProfile, 'automation_id'>): ScoutAutomation[] {
   // deleted_at first, and here rather than at the three call sites, for the
   // same reason this function exists at all: a trashed automation that still
   // drew a tile on one of them and not the others is exactly the silent

@@ -17,7 +17,7 @@ import {
 import * as orgsDb from './db/orgs';
 import {describeDbError} from './db/errors';
 import {supabase} from './supabase';
-import type {MontiOrg, OrgMembership, OrgRole} from './types';
+import type {ScoutOrg, OrgMembership, OrgRole} from './types';
 import type {TableLayouts} from './tables/columns';
 
 export type OrgContextValue = {
@@ -49,7 +49,7 @@ export type OrgContextValue = {
   tableColumns: TableLayouts;
   orgs: OrgMembership[];
   orgId: string | null;
-  org: MontiOrg | null;
+  org: ScoutOrg | null;
   role: OrgRole | null;
   // Whether this person owns any workspace at all. False for somebody who
   // arrived by invitation and has never made one of their own -- bootstrap_org

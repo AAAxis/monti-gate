@@ -1,8 +1,8 @@
 -- public.ai_providers: which model an automation's AI steps talk to, and with
 -- what key.
 --
--- Until now the relationship ran one way -- an agent drove Monti over MCP, and
--- Monti never called a model. The `aiPrompt` and `aiCheck` steps reverse it, and
+-- Until now the relationship ran one way -- an agent drove Scout over MCP, and
+-- Scout never called a model. The `aiPrompt` and `aiCheck` steps reverse it, and
 -- they need somewhere to look up an endpoint and a credential.
 --
 -- ON THE KEY BEING PLAINTEXT. It is, in a text column, like proxies.password and

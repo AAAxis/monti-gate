@@ -1,4 +1,4 @@
-// The Monti MCP server. Runs as a stdio child of whichever agent tool the user
+// The Scout MCP server. Runs as a stdio child of whichever agent tool the user
 // connected -- Claude Code, Codex, Cursor, and the rest.
 //
 // It ships inside this app and is started through the launcher's own binary
@@ -24,7 +24,7 @@
 
 // Redirect the console before requiring anything that might log on load.
 const write = (line) => process.stdout.write(`${line}\n`);
-const log = (...parts) => process.stderr.write(`[monti-mcp] ${parts.map(String).join(' ')}\n`);
+const log = (...parts) => process.stderr.write(`[scout-mcp] ${parts.map(String).join(' ')}\n`);
 console.log = log;
 console.info = log;
 console.debug = log;
@@ -34,8 +34,8 @@ console.error = log;
 const {createClient} = require('./api.cjs');
 const tools = require('./tools.cjs');
 
-const SERVER_NAME = 'monti';
-const SERVER_VERSION = process.env.MONTI_LAUNCHER_VERSION || '1.0.0';
+const SERVER_NAME = 'scout';
+const SERVER_VERSION = process.env.SCOUT_LAUNCHER_VERSION || '1.0.0';
 // Newest first -- this is the order a client picks from.
 const SUPPORTED_VERSIONS = [
   '2026-07-28',
@@ -46,14 +46,14 @@ const SUPPORTED_VERSIONS = [
 ];
 const CAPABILITIES = {tools: {}};
 const INSTRUCTIONS =
-  'Drive Monti anti-detect browser profiles. Each profile is an isolated ' +
+  'Drive Scout anti-detect browser profiles. Each profile is an isolated ' +
   'browser identity with its own proxy, fingerprint and cookie jar. Typical ' +
-  'flow: monti_list_profiles, then monti_launch_profile, then monti_navigate / ' +
-  'monti_read_page / monti_screenshot, then monti_close_profile. A launched ' +
+  'flow: scout_list_profiles, then scout_launch_profile, then scout_navigate / ' +
+  'scout_read_page / scout_screenshot, then scout_close_profile. A launched ' +
   'session is anonymous — never send it credentials or tokens.';
 
-const API_BASE = process.env.MONTI_API_BASE || 'http://127.0.0.1:39219';
-const API_TOKEN = process.env.MONTI_API_TOKEN || '';
+const API_BASE = process.env.SCOUT_API_BASE || 'http://127.0.0.1:39219';
+const API_TOKEN = process.env.SCOUT_API_TOKEN || '';
 const api = createClient(API_BASE, API_TOKEN);
 
 // Requests the client asked us to abandon. Checked after each await so a
@@ -248,6 +248,6 @@ process.on('uncaughtException', (error) => log('uncaught:', error?.stack || erro
 process.on('unhandledRejection', (error) => log('unhandled rejection:', error?.stack || error));
 
 if (!API_TOKEN) {
-  log('MONTI_API_TOKEN is not set — every tool call will fail with 401. ' +
-      'Reconnect this integration from Monti Gate.');
+  log('SCOUT_API_TOKEN is not set — every tool call will fail with 401. ' +
+      'Reconnect this integration from Scout Web.');
 }

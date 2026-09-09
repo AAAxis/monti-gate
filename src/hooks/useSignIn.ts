@@ -153,7 +153,7 @@ export function useSignIn() {
   // renderer's storage and is never sent anywhere, so the code that comes back
   // is useless to anyone who intercepts it.
   //
-  // We redirect to /auth/desktop rather than straight to monti://auth because a
+  // We redirect to /auth/desktop rather than straight to scout://auth because a
   // custom scheme is not a page: the OS handler fires, but the browser tab is
   // left on a URL it cannot render and spins forever -- even when sign-in
   // succeeded. /auth/desktop is a real page that forwards the code onward.
@@ -198,7 +198,7 @@ export function useSignIn() {
   }
 
   // The other half of the flow: the main process hands us whatever came back
-  // through monti://. Exchanging the code establishes the session, and
+  // through scout://. Exchanging the code establishes the session, and
   // OrgProvider's onAuthStateChange takes it from there (including bootstrapping
   // an org for a brand-new account), so there is nothing else to do here.
   //

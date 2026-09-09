@@ -70,7 +70,7 @@ export const INTEGRATIONS: Integration[] = [
     logo: claudeCodeLogo,
     configLabel: '~/.claude.json',
     restartLabel: 'Restart Claude Code',
-    confirmLabel: 'Then run /mcp in any project — monti should be in the list.',
+    confirmLabel: 'Then run /mcp in any project — scout should be in the list.',
   },
   {
     id: 'codex',
@@ -82,7 +82,7 @@ export const INTEGRATIONS: Integration[] = [
     invertOn: 'dark',
     configLabel: '~/.codex/config.toml',
     restartLabel: 'Restart Codex',
-    confirmLabel: 'Codex reads its MCP servers at startup — ask it what tools it has and the monti ones should be there.',
+    confirmLabel: 'Codex reads its MCP servers at startup — ask it what tools it has and the scout ones should be there.',
   },
   {
     id: 'cursor',
@@ -94,7 +94,7 @@ export const INTEGRATIONS: Integration[] = [
     invertOn: 'light',
     configLabel: '~/.cursor/mcp.json',
     restartLabel: 'Reload Cursor',
-    confirmLabel: 'Then open Cursor Settings → MCP: monti should be listed and switched on.',
+    confirmLabel: 'Then open Cursor Settings → MCP: scout should be listed and switched on.',
   },
   {
     id: 'gemini-cli',
@@ -105,7 +105,7 @@ export const INTEGRATIONS: Integration[] = [
     logo: geminiCliLogo,
     configLabel: '~/.gemini/settings.json',
     restartLabel: 'Restart Gemini CLI',
-    confirmLabel: 'Then run /mcp — monti should be in the list.',
+    confirmLabel: 'Then run /mcp — scout should be in the list.',
   },
   {
     id: 'windsurf',
@@ -117,7 +117,7 @@ export const INTEGRATIONS: Integration[] = [
     invertOn: 'light',
     configLabel: '~/.codeium/windsurf/mcp_config.json',
     restartLabel: 'Reload Windsurf',
-    confirmLabel: 'Then open Cascade’s plugin panel: monti should be listed there.',
+    confirmLabel: 'Then open Cascade’s plugin panel: scout should be listed there.',
   },
   {
     id: 'vscode',
@@ -128,7 +128,7 @@ export const INTEGRATIONS: Integration[] = [
     logo: vscodeLogo,
     configLabel: 'Code/User/mcp.json',
     restartLabel: 'Reload VS Code',
-    confirmLabel: 'Then switch Chat to Agent mode and open the tools picker — the monti tools should be listed.',
+    confirmLabel: 'Then switch Chat to Agent mode and open the tools picker — the scout tools should be listed.',
   },
   {
     id: 'openclaw',
@@ -139,7 +139,7 @@ export const INTEGRATIONS: Integration[] = [
     logo: openclawLogo,
     configLabel: '~/.openclaw/openclaw.json',
     restartLabel: 'Restart OpenClaw',
-    confirmLabel: 'It loads its config at startup — monti should show up among its tools.',
+    confirmLabel: 'It loads its config at startup — scout should show up among its tools.',
   },
   {
     id: 'other',
@@ -153,7 +153,7 @@ export const INTEGRATIONS: Integration[] = [
     invertOn: 'light',
     configLabel: 'whatever your client reads',
     restartLabel: 'Restart your client',
-    confirmLabel: 'Your client should list monti among its MCP servers once it is back up.',
+    confirmLabel: 'Your client should list scout among its MCP servers once it is back up.',
     manualFormat: 'mcp',
   },
 ];
@@ -170,7 +170,7 @@ export function findIntegration(id: string | null | undefined): Integration | un
 // after connecting is blank-page shaped: the tools are wired but nothing tells
 // the agent to reach for them. One paragraph, tool-accurate, and cautious about
 // destructive actions by instruction rather than by hoping.
-export const AGENT_STARTER_PROMPT = `You are connected to Scout Web over MCP (server name: monti). It manages anti-detect browser profiles. Using the monti tools, list my profiles and tell me what you found. When I give you a task: pick or launch the right profile, drive the session with the navigate / read page text / screenshot tools, and close the session when you are done. Ask me before creating or trashing profiles, or changing a profile's proxy or fingerprint.`;
+export const AGENT_STARTER_PROMPT = `You are connected to Scout Web over MCP (server name: scout). It manages anti-detect browser profiles. Using the scout tools, list my profiles and tell me what you found. When I give you a task: pick or launch the right profile, drive the session with the navigate / read page text / screenshot tools, and close the session when you are done. Ask me before creating or trashing profiles, or changing a profile's proxy or fingerprint.`;
 
 export const MCP_TOOL_SUMMARY = [
   'Create, read, update and trash profiles',

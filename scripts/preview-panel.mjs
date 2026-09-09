@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Serves the Monti Panel against fixture data, so its layout can be looked at
+// Serves the Scout Panel against fixture data, so its layout can be looked at
 // without launching a profile.
 //
 //   node scripts/preview-panel.mjs
@@ -38,7 +38,7 @@ const TYPES = {
 // say so on a tab that is always there, rather than hiding the tab), and a window
 // the launcher never touched.
 //
-// `session` is monti-session.json as built-in-extensions.cjs writes it;
+// `session` is scout-session.json as built-in-extensions.cjs writes it;
 // `status` is what background.js answers `get-status` with; `automation` is what
 // it answers `automation-status` with, and its `run`/`last` are summaries as
 // electron/automation/progress.cjs composes them. All three shapes are owned
@@ -491,7 +491,7 @@ const FIXTURES = {
     },
   },
 
-  // No monti-session.json and no run token: the extension is loaded, but this
+  // No scout-session.json and no run token: the extension is loaded, but this
   // window was never launched from the launcher. Every launcher-backed control
   // must be off and must say why.
   nolaunch: {
@@ -519,7 +519,7 @@ function harness() {
 <html lang="en" data-theme="system">
 <head>
 <meta charset="utf-8">
-<title>Monti Panel preview</title>
+<title>Scout Panel preview</title>
 <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
@@ -528,7 +528,7 @@ const QUERY = new URLSearchParams(location.search);
 const FIXTURES = ${JSON.stringify(FIXTURES)};
 const fixture = FIXTURES[QUERY.get('state')] || FIXTURES.ok;
 // The theme rides the query string here; in the real panel it arrives on
-// monti-session.json from the launcher's own setting.
+// scout-session.json from the launcher's own setting.
 if (fixture.session) fixture.session.theme = QUERY.get('theme') || 'light';
 
 // A run's timestamps are the one thing a static fixture cannot state: an absolute
@@ -643,7 +643,7 @@ const server = createServer(async (request, response) => {
 
 server.listen(0, '127.0.0.1', () => {
   const {port} = server.address();
-  console.log('Monti Panel preview — Ctrl-C to stop\n');
+  console.log('Scout Panel preview — Ctrl-C to stop\n');
   for (const state of Object.keys(FIXTURES)) {
     for (const theme of ['light', 'dark']) {
       console.log(`  ${state.padEnd(9)} ${theme.padEnd(5)}  ` +

@@ -11,12 +11,12 @@
 // being asked for, and cannot be removed while it stays picked.
 import {Plus, X} from 'lucide-react';
 import {ParamValueFields} from './ParamValueFields';
-import type {MontiAutomation} from '../../types';
+import type {ScoutAutomation} from '../../types';
 
 export type ProfileVarsDraft = Record<string, Record<string, string>>;
 
 export function ProfileAutomationValues({automations, attachedId, value, onChange}: {
-  automations: MontiAutomation[];
+  automations: ScoutAutomation[];
   // The profile's `Run on launch` pick, or '' -- pinned here so its block is
   // present and undismissable.
   attachedId: string;

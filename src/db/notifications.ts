@@ -5,7 +5,7 @@
 // notification_reads, insert-only -- see the migration for why that beats a
 // read_by array. Everything here is plain inserts and deletes; there is no
 // update path at all.
-import type {MontiNotification} from '../types';
+import type {ScoutNotification} from '../types';
 import {optionalClient, raise, requireClient} from './client';
 import {notificationToRow, rowToNotification} from './mappers';
 import type {NotificationRow, NotificationReadRow} from './rows';
@@ -17,7 +17,7 @@ const COLUMNS = 'id,org_id,kind,title,body,status,automation_id,run_id,created_b
 // an org has ever produced grows without bound on every window focus.
 const LIST_LIMIT = 100;
 
-export async function list(orgId: string): Promise<MontiNotification[]> {
+export async function list(orgId: string): Promise<ScoutNotification[]> {
   const client = optionalClient();
   if (!client) {
     return [];
@@ -32,7 +32,7 @@ export async function list(orgId: string): Promise<MontiNotification[]> {
   return ((data || []) as unknown as NotificationRow[]).map(rowToNotification);
 }
 
-export async function create(orgId: string, notification: MontiNotification): Promise<void> {
+export async function create(orgId: string, notification: ScoutNotification): Promise<void> {
   const client = requireClient();
   const {error} = await client
       .from('notifications')

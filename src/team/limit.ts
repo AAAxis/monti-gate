@@ -16,7 +16,7 @@
 // disabled button's tooltip uses. Letting a click through while the org is
 // unknown costs one refused invite with an accurate message; disabling it costs
 // a user who cannot tell a slow load from a locked feature.
-import type {MontiOrg} from '../types';
+import type {ScoutOrg} from '../types';
 
 export type SeatCap = {
   // Nothing is known yet. Neither allow nor deny on this -- say nothing.
@@ -35,7 +35,7 @@ export type SeatCap = {
 };
 
 export function seatCap(
-    org: MontiOrg | null | undefined,
+    org: ScoutOrg | null | undefined,
     memberCount: number,
     pendingInviteCount = 0,
 ): SeatCap {

@@ -108,7 +108,7 @@ function pacConfigForVerification(creds, token) {
 }
 
 async function verifyProxyReachable(creds, timeoutMs = 6000) {
-  const token = `monti-verify-${crypto.randomUUID()}`;
+  const token = `scout-verify-${crypto.randomUUID()}`;
   await chrome.proxy.settings.set({
     value: pacConfigForVerification(creds, token),
     scope: 'regular',
@@ -336,18 +336,18 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
     .catch((e) => console.error('setPanelBehavior failed:', e));
 }
 
-// Monti Gate (the Monti launcher) now bundles this extension for EVERY
+// Scout Web (the Scout Web) now bundles this extension for EVERY
 // profile (so the toolbar icon/manual toggle is always available), but only
 // wants it to auto-connect on launch when the user actually picked "Free
 // Proxy" mode -- never alongside a real assigned proxy (a second, competing
 // proxy source) or for 'direct' profiles. It signals that per-launch via a
-// small monti-config.json written into this specific bundled copy (see
+// small scout-config.json written into this specific bundled copy (see
 // electron/main.cjs's writeProfileFreeProxyExtension); missing/unreadable
 // defaults to NOT auto-connecting, since that's the safe choice for anyone
-// loading this extension outside of an Monti-managed launch.
+// loading this extension outside of an Scout-managed launch.
 async function shouldAutoConnect() {
   try {
-    const res = await fetch(chrome.runtime.getURL('monti-config.json'));
+    const res = await fetch(chrome.runtime.getURL('scout-config.json'));
     if (!res.ok) return false;
     const cfg = await res.json();
     return cfg.autoConnect === true;
@@ -394,7 +394,7 @@ async function autoConnectWithRetry(maxAttempts = 4, delayMs = 1500) {
     if (result.success) {
       return;
     }
-    console.warn(`Monti auto-connect attempt ${attempt}/${maxAttempts} failed:`, result.error);
+    console.warn(`Scout auto-connect attempt ${attempt}/${maxAttempts} failed:`, result.error);
     if (attempt < maxAttempts) {
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }

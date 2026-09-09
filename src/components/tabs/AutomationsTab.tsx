@@ -45,7 +45,7 @@ import {describeSchedule} from '../../automations/schedule';
 import {sortAutomations} from '../../automations/sort';
 import type {ShareRequest} from '../modals/ShareModal';
 import type {
-  MontiAutomation, MontiConnector, MontiFolder, AutomationRun,
+  ScoutAutomation, ScoutConnector, ScoutFolder, AutomationRun,
 } from '../../types';
 import type {RunStatus} from '../../automations/types';
 
@@ -87,8 +87,8 @@ export function AutomationsTab({
   folderId: string;
   onFolderId: (folderId: string) => void;
   onNewFolder: () => void;
-  onEditFolder: (folder: MontiFolder) => void;
-  onEdit: (automation: MontiAutomation) => void;
+  onEditFolder: (folder: ScoutFolder) => void;
+  onEdit: (automation: ScoutAutomation) => void;
   onNew: () => void;
   // Inserts the pre-written example and opens it. Unlike onNew it writes a row
   // before the editor opens, which is what makes it a normal automation from
@@ -101,8 +101,8 @@ export function AutomationsTab({
   // Opens the profile picker. Running never starts from this button any more:
   // it used to resolve a target with runTarget() and go, which is how a run
   // ended up on a profile nobody chose, failing on that profile's dead proxy.
-  onRun: (automation: MontiAutomation) => void;
-  onHistory: (automation: MontiAutomation) => void;
+  onRun: (automation: ScoutAutomation) => void;
+  onHistory: (automation: ScoutAutomation) => void;
   // Raises the share sheet. One automation at a time, unlike the table tabs --
   // this grid has no selection model to batch with.
   onShare: (request: ShareRequest) => void;
@@ -111,7 +111,7 @@ export function AutomationsTab({
   onOpenSite: (pathname: string) => void;
   // The connector editor, mounted from App like every other modal.
   onNewConnector: () => void;
-  onEditConnector: (connector: MontiConnector) => void;
+  onEditConnector: (connector: ScoutConnector) => void;
   // Which cards arrived since this machine last looked at this tab, frozen for
   // the length of the visit. This used to be worked out here, from a
   // localStorage key of its own; it moved to useNewArrivals when Profiles,
@@ -211,7 +211,7 @@ export function AutomationsTab({
   // nothing to file and nowhere to file it from).
   const automationsEmpty = state.automations.length === 0;
 
-  async function deleteFolder(folder: MontiFolder) {
+  async function deleteFolder(folder: ScoutFolder) {
     if (!window.confirm(
         `Delete folder ${folder.name}? Automations will move to All automations.`)) {
       return;
@@ -224,7 +224,7 @@ export function AutomationsTab({
     }
   }
 
-  async function purgeOne(automation: MontiAutomation) {
+  async function purgeOne(automation: ScoutAutomation) {
     // The one place in the app an automation can actually be destroyed, so it
     // says so plainly. window.confirm rather than a dialog of its own: it is
     // reachable only from inside Trash, which is already the "are you sure"

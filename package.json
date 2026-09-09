@@ -1,10 +1,10 @@
 {
-  "name": "monti-anty",
+  "name": "scout-web",
   "version": "1.0.76",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
-    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && env -u ELECTRON_RUN_AS_NODE MONTI_LAUNCHER_DEV=1 node scripts/start-macos-app.cjs\"",
+    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && env -u ELECTRON_RUN_AS_NODE SCOUT_LAUNCHER_DEV=1 node scripts/start-macos-app.cjs\"",
     "icons": "env -u ELECTRON_RUN_AS_NODE electron scripts/build-icons.cjs",
     "panel-icon": "env -u ELECTRON_RUN_AS_NODE electron scripts/build-panel-icon.cjs",
     "build": "vite build",
@@ -45,7 +45,7 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.monti.anty",
+    "appId": "com.scout.web",
     "productName": "Scout Web",
     "icon": "assets/icons/launcher-light.icns",
     "artifactName": "Scout-Web-${version}-${os}-${arch}.${ext}",
@@ -53,7 +53,7 @@
       {
         "name": "Scout Web",
         "schemes": [
-          "monti"
+          "scout"
         ]
       }
     ],

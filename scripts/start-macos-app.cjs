@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, '..');
 // rather than imported because it is needed *before* that script runs -- see
 // stopRunningLauncher.
 const launcherExecutable = path.join(
-    os.homedir(), 'Applications/Monti Gate.app/Contents/MacOS/Electron');
+    os.homedir(), 'Applications/Scout Web.app/Contents/MacOS/Electron');
 
 if (process.platform !== 'darwin') {
   const electron = path.join(root, 'node_modules/.bin/electron');
@@ -50,16 +50,16 @@ function launcherPids() {
 // 'second-instance' handler merely focuses the window that was already there.
 // So `npm run dev` looks like a restart, prints like a restart, and leaves the
 // old main process serving IPC. A renderer that calls an ipcMain handler added
-// after that process started gets "No handler registered for 'monti:...'", and
+// after that process started gets "No handler registered for 'scout:...'", and
 // nothing about the symptom points at the launcher being stale.
 //
 // Killing here rather than dropping the lock in main.cjs: the lock is what
-// delivers monti:// deep links to the running copy, and a second live instance
+// delivers scout:// deep links to the running copy, and a second live instance
 // would fight over the same userData directory.
 //
-// Matched on the bundle's executable path, never on "Electron" or "monti".
+// Matched on the bundle's executable path, never on "Electron" or "scout".
 // Monti Browser profiles and the per-profile launcher apps under
-// ~/Applications/Monti Profiles are Electron/Chromium processes too, and
+// ~/Applications/Scout Profiles are Electron/Chromium processes too, and
 // killing a user's open browser profiles to restart the launcher would be a
 // worse bug than the one this prevents. The helper processes live under
 // Contents/Frameworks and do not match; they exit with their main process.
@@ -69,7 +69,7 @@ function stopRunningLauncher() {
     return;
   }
 
-  console.log(`Stopping ${pids.length} running Monti Gate process(es) so this restart picks up electron/ changes.`);
+  console.log(`Stopping ${pids.length} running Scout Web process(es) so this restart picks up electron/ changes.`);
   for (const pid of pids) {
     try {
       process.kill(pid, 'SIGTERM');

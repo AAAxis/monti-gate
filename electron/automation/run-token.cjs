@@ -1,7 +1,7 @@
 // Per-launch credentials for the generated start page, and the endpoints they
 // open.
 //
-// The start page (MontiHome/home.html) is a file:// document with no key and no
+// The start page (ScoutHome/home.html) is a file:// document with no key and no
 // way to be given one, but it offers a launch's automations as cards and shows
 // whether the profile's proxy is working. This is how it asks for one of those
 // automations to be run or opened in the launcher, and for that proxy to be
@@ -118,7 +118,7 @@ function createRunTokens({now = () => Date.now(), load = null, save = null} = {}
       // A corrupt or unreadable store costs every open window its session --
       // bad, but recoverable by relaunching, and far better than refusing to
       // start the API at all.
-      console.warn('Monti: could not restore run tokens', error);
+      console.warn('Scout: could not restore run tokens', error);
     }
   }
 
@@ -127,7 +127,7 @@ function createRunTokens({now = () => Date.now(), load = null, save = null} = {}
     try {
       save([...tokens.entries()]);
     } catch (error) {
-      console.warn('Monti: could not persist run tokens', error);
+      console.warn('Scout: could not persist run tokens', error);
     }
   }
 

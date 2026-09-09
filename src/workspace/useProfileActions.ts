@@ -21,7 +21,7 @@ import type {ParsedCsvRow} from '../lib/csv';
 import type {ProxyActions} from './useProxyActions';
 import type {WorkspaceCore} from './core';
 import type {CookieImportFields} from '../lib/cookieUpload';
-import type {MontiFolder, MontiProfile, MontiProxy} from '../types';
+import type {ScoutFolder, ScoutProfile, ScoutProxy} from '../types';
 
 export type ProfileActions = ReturnType<typeof useProfileActions>;
 
@@ -30,11 +30,11 @@ export function useProfileActions(
     proxies: ProxyActions) {
   const {state, setState, withDb, withDbError, patch} = data;
 
-  function proxyFor(profile: MontiProfile) {
+  function proxyFor(profile: ScoutProfile) {
     return matchedProxyForProfile(profile, state.proxies);
   }
 
-  function folderFor(profile: MontiProfile) {
+  function folderFor(profile: ScoutProfile) {
     return state.folders.find((folder) => folder.id === profile.folder_id) || null;
   }
 
@@ -42,7 +42,7 @@ export function useProfileActions(
   // no feedback either way, so a failed save (e.g. a status change) looked
   // identical to a successful one -- the change would show locally but silently
   // never reach the cloud, then vanish on another machine's next fresh load.
-  async function update(profile: MontiProfile, fields: Partial<MontiProfile>): Promise<boolean> {
+  async function update(profile: ScoutProfile, fields: Partial<ScoutProfile>): Promise<boolean> {
     if (!await withDb((activeOrgId) => db.profiles.update(activeOrgId, profile.id, fields))) {
       return false;
     }
@@ -52,10 +52,10 @@ export function useProfileActions(
   }
 
   // One row, keyed on the profile's own id -- which stays exactly what it was,
-  // because it is also the E:\MontiProfiles\<id> directory name. Create and
+  // because it is also the E:\ScoutProfiles\<id> directory name. Create and
   // edit are separate statements on purpose (see db/profiles.ts): only the
   // create path should be able to raise profile_limit_reached.
-  async function save(profile: MontiProfile): Promise<boolean> {
+  async function save(profile: ScoutProfile): Promise<boolean> {
     const isExisting = state.profiles.some((item) => item.id === profile.id);
     if (!await withDb((activeOrgId) => db.profiles.save(activeOrgId, profile, isExisting))) {
       return false;
@@ -72,7 +72,7 @@ export function useProfileActions(
   // with no exists probe -- this is the only path that should be able to raise
   // profile_limit_reached, and it must never fall back to save()'s upsertish
   // behaviour (see db/profiles.ts).
-  async function create(profile: MontiProfile): Promise<string | null> {
+  async function create(profile: ScoutProfile): Promise<string | null> {
     const error = await withDbError((activeOrgId) => db.profiles.create(activeOrgId, profile));
     if (error) {
       return error;
@@ -191,12 +191,12 @@ export function useProfileActions(
 
   // Rotate-on-launch profiles get a fresh identity persisted before the browser
   // starts, so the fingerprint the browser applies is the one that was saved.
-  async function withRotatedFingerprint(profile: MontiProfile): Promise<MontiProfile> {
+  async function withRotatedFingerprint(profile: ScoutProfile): Promise<ScoutProfile> {
     if (!profile.fingerprint?.rotate_on_launch) {
       return profile;
     }
     const rotated = fingerprintFromDraftPatch(randomFingerprintPatch(profile.fingerprint?.os || ''));
-    const next: MontiProfile = {
+    const next: ScoutProfile = {
       ...profile,
       fingerprint: {...profile.fingerprint, ...rotated, rotate_on_launch: true},
     };
@@ -206,7 +206,7 @@ export function useProfileActions(
     return next;
   }
 
-  async function launch(profile: MontiProfile) {
+  async function launch(profile: ScoutProfile) {
     if (!native) {
       toast.setMessage('Native launcher bridge is not available');
       return;
@@ -365,7 +365,7 @@ export function useProfileActions(
     }
   }
 
-  async function exportToCsv(list: MontiProfile[]) {
+  async function exportToCsv(list: ScoutProfile[]) {
     if (!list.length) {
       return;
     }
@@ -378,7 +378,7 @@ export function useProfileActions(
     const header = importColumns.map((column) => column.name);
     const csv = toCsv(header, list, (profile) =>
       profileExportRow(profile, proxyFor(profile), folderFor(profile)));
-    const savedPath = await native.saveTextFile(`monti-profiles-${Date.now()}.csv`, csv);
+    const savedPath = await native.saveTextFile(`scout-profiles-${Date.now()}.csv`, csv);
     if (savedPath) {
       toast.setMessage(`Exported ${list.length} ${list.length === 1 ? 'profile' : 'profiles'} to ${savedPath.split('/').pop()}`);
     }
@@ -396,7 +396,7 @@ export function useProfileActions(
       throw new Error('Native cookie import is not available. Restart Scout Web and try again.');
     }
     const targetIds = targetProfileIds ? new Set(targetProfileIds) : null;
-    const isTarget = (profile: MontiProfile) =>
+    const isTarget = (profile: ScoutProfile) =>
       !profile.deleted_at && (!targetIds || targetIds.has(profile.id));
     const selected = state.profiles.filter(isTarget);
     const matches = await native.matchCookieFiles(folderPath, selected.map((profile) => profile.name));

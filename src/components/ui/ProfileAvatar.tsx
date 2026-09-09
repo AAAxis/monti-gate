@@ -15,10 +15,10 @@ import {initials} from '../../lib/text';
 import {parseAvatar} from '../../lib/profileAvatar';
 import {profileColorStyle} from '../../lib/profileColors';
 import {TagMark} from './TagChip';
-import type {MontiProfile} from '../../types';
+import type {ScoutProfile} from '../../types';
 
 export function ProfileAvatar({profile, small}: {
-  profile: Pick<MontiProfile, 'name' | 'color' | 'avatar'>;
+  profile: Pick<ScoutProfile, 'name' | 'color' | 'avatar'>;
   // The 22px cut used down the proxies and cookies tables' Assigned to columns,
   // where a profile is a footnote on someone else's row rather than the subject
   // of its own.

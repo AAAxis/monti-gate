@@ -15,7 +15,7 @@ export type ApiMethod = 'GET' | 'POST';
 // How a field is spelled in an MCP inputSchema. 'steps' is the automation step
 // tree -- an array of objects whose shape comes from step-schema.json, which is
 // too large to inline into every tool description, so the tool points at
-// monti_automation_schema instead.
+// scout_automation_schema instead.
 //
 // 'strings' and 'tags' generate the same array-of-strings schema and validate
 // identically. Both exist because 'tags' predates any other list-of-strings
@@ -157,7 +157,7 @@ export function referenceGroups(): ApiEntryGroup[] {
 }
 
 // What a search box matches on. Path, label and tool name are the three things
-// someone arrives knowing -- "screenshot", "/v1/proxies", "monti_launch".
+// someone arrives knowing -- "screenshot", "/v1/proxies", "scout_launch".
 //
 // Lowercases the needle itself rather than trusting the caller to. Every caller
 // does today, which is exactly why the one that eventually forgets would ship a

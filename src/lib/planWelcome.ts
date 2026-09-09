@@ -14,7 +14,7 @@
 // lets the welcome show "5 → 300" instead of just "300". A free workspace has
 // its 'free' written silently at startup precisely so the upgrade it has not
 // bought yet will have a number to count up from.
-const KEY = 'monti.planWelcome';
+const KEY = 'scout.planWelcome';
 
 type Acknowledged = Record<string, string>;
 

@@ -17,10 +17,10 @@ import {Modal} from '../ui/Modal';
 import {StatusChip} from '../ui/StatusChip';
 import {useAsyncAction} from '../../useAsyncAction';
 import {useWorkspace} from '../../workspace/WorkspaceProvider';
-import type {MontiCookie} from '../../types';
+import type {ScoutCookie} from '../../types';
 
 export function AssignCookieSetModal({cookie, onClose}: {
-  cookie: MontiCookie;
+  cookie: ScoutCookie;
   onClose: () => void;
 }) {
   const {data, toast, cookies} = useWorkspace();

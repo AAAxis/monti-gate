@@ -1,26 +1,26 @@
-# Monti Gate Agent Notes
+# Scout Web Agent Notes
 
 Handoff memory for agent sessions working on the launcher.
 
-Start with `../MONTI.md` (the tree map) and `LAUNCHER.md` (this folder in detail).
+Start with `../SCOUT.md` (the tree map) and `LAUNCHER.md` (this folder in detail).
 `../CLAUDE.md` holds the invariants. This file is the accumulated behavioral gotchas.
 
 ## Project Split
 
 Two separate apps/processes:
 
-- **Monti Gate** — Electron launcher/manager, this folder (`E:\monti\launcher`).
+- **Scout Web** — Electron launcher/manager, this folder (`E:\scout\launcher`).
 - **Monti Browser** — Chromium-based anonymous browser (`E:\monti\browser\src`), built
   and installed separately.
 
-Do not run the launcher dashboard inside Monti Browser. Monti Gate owns Supabase login,
+Do not run the launcher dashboard inside Monti Browser. Scout Web owns Supabase login,
 profiles, proxies, folders, statuses, bookmarks, shared extensions, API docs/tokens,
 billing, and launch payloads. Monti Browser must stay anonymous and should only receive a
 profile runtime payload from the launcher.
 
 ## Run And Build
 
-From `E:\monti\launcher` (PowerShell):
+From `E:\scout\launcher` (PowerShell):
 
 ```powershell
 npm run typecheck
@@ -33,7 +33,7 @@ and then call `scripts/start-macos-app.cjs`. Run the two halves directly instead
 ```powershell
 npx vite --host 127.0.0.1
 # second shell:
-$env:MONTI_LAUNCHER_DEV = "1"; npx electron .
+$env:SCOUT_LAUNCHER_DEV = "1"; npx electron .
 ```
 
 Node is at `C:\Program Files\nodejs` (v24.18.0, npm 11.16.0). Git is at
@@ -42,7 +42,7 @@ Node is at `C:\Program Files\nodejs` (v24.18.0, npm 11.16.0). Git is at
 To restart the app cleanly:
 
 ```powershell
-Get-Process | Where-Object { $_.Name -match 'electron|Monti' } | Stop-Process -Force
+Get-Process | Where-Object { $_.Name -match 'electron|Scout' } | Stop-Process -Force
 ```
 
 To close currently launched browser profile windows:
@@ -126,7 +126,7 @@ Get-CimInstance Win32_Process |
   `windows` preset and the same `Windows NT 10.0` UA — the distinction is presentational.
 - Monti Browser launch must open a launcher-provided local home file or a real profile
   start URL. It must not open Supabase login, `localhost`, `127.0.0.1`,
-  `monti-launcher`, or `about:blank`.
+  `scout web`, or `about:blank`.
 - Proxy checks are automatic background checks **in the launcher**. Do not add a manual
   check *button* back to the Proxies tab — the chip is the manual check now. The surfaces
   the background sweep cannot serve, plus the chip itself:
@@ -226,7 +226,7 @@ Get-CimInstance Win32_Process |
   both dialogs.
   `ProfileModal` is seven of them — **Account, Credentials, Proxy, Fingerprint, Cookies,
   Launch, Notes** — and the order is the order the questions get asked. Credentials was
-  split out of Account so the block that Monti itself never acts on could carry a heading
+  split out of Account so the block that Scout itself never acts on could carry a heading
   and a hint saying so. Fingerprint stays directly after Proxy for the reason above: those
   two cells are the only way into the fingerprint editor, so the platform it names has to
   be visible near the top. Notes renders only when `draft.saved`; a note is a row keyed on
@@ -252,11 +252,11 @@ Get-CimInstance Win32_Process |
   `<button>`, and a `<label>` around one fires its implicit activation on the wrong
   control. `AssigneeSelect` survives as a plain select for `ImportProfilesModal` only.
 - **`profiles.email` / `password` / `login_url` are a memo, and the UI has to keep saying
-  so.** Monti fills nothing in: no launch payload carries them (`LaunchProfilePayload` in
+  so.** Scout fills nothing in: no launch payload carries them (`LaunchProfilePayload` in
   `src/native.ts`), and the browser never sees them. The only consumer is the automation
   runner, which puts all three in the template context (`electron/automation/runner.cjs`)
   so a Type step can write `{{profile.password}}` and a Go-to step `{{profile.login_url}}`.
-  They are stored in **plaintext** and `monti_get_profile` hands the password to an agent,
+  They are stored in **plaintext** and `scout_get_profile` hands the password to an agent,
   so the Credentials card's `InfoHint` is the only place a user can learn any of this — do
   not trim it. `loginUrl` is writable over MCP and the other two deliberately are not: it
   records *where* a credential is used, not what it is. `login_url` arrived in
@@ -319,7 +319,7 @@ Get-CimInstance Win32_Process |
   files it back under All proxies.
 - Shared extensions and the built-in cookie manager are loaded into browser sessions via
   `--load-extension`.
-- Cookie import is handled through a temporary generated `MontiCookieSeed` extension in
+- Cookie import is handled through a temporary generated `ScoutCookieSeed` extension in
   the profile user data dir.
 - **`cookie_sets.source_url` is the source of truth for a launch; `cookie_sets.cookies` is
   only a read cache for the inspector.** `electron/main.cjs` fetches that URL and holds no
@@ -355,7 +355,7 @@ Get-CimInstance Win32_Process |
   per-profile `cookie_import_*` rather than library entries, and should stay that way:
   one library set per profile turns 40 profiles into 40 single-use sets, which is the
   opposite of a library. Same for the automation bridge's push-local.
-- Profile ids double as on-disk directory names under `E:\MontiProfiles\<id>`. Never
+- Profile ids double as on-disk directory names under `E:\ScoutProfiles\<id>`. Never
   renumber them.
 
 ## Windows Porting Debt
@@ -373,7 +373,7 @@ and by content. Audit before shipping a Windows build.
 
 ## API Port Warning
 
-Port `3001` was owned by Dolphin Anty on the previous (macOS) machine. The Monti API tab
+Port `3001` was owned by Dolphin Anty on the previous (macOS) machine. The Scout API tab
 mentions `http://127.0.0.1:3001`. Confirm what actually holds that port here before
 debugging token auth against it:
 
@@ -383,7 +383,7 @@ Get-NetTCPConnection -LocalPort 3001 -State Listen -ErrorAction SilentlyContinue
   ForEach-Object { Get-Process -Id $_.OwningProcess }
 ```
 
-If a real Monti local API is implemented, use a different port and update the API tab.
+If a real Scout local API is implemented, use a different port and update the API tab.
 
 **API tokens are currently fake.** `tokenForEmail()` in `src/main.tsx` (~line 2168) is a
 client-side FNV-1a hash of the email address — anyone who knows a user's email can
@@ -474,7 +474,7 @@ Assigned column for anyone who configured their tables while working alone.
 `mcp`.** Nine profile/proxy routes also carry an `mcp` name so the agent brief
 can list every tool from one file; filtering the generator on `mcp` alone builds
 a second, field-less copy of each of those nine. `tools/list` then answers with
-thirty tools and `monti_update_profile` resolves to the copy that forwards no
+thirty tools and `scout_update_profile` resolves to the copy that forwards no
 fields. `verify-api-routes` checks for exactly this.
 
 **A folder-scoped key may not author automations.** A key granted one folder
@@ -535,7 +535,7 @@ then promotes AND scopes both statements by category.
 
 **A connector's secret never leaves the main process.** Steps store a
 connector *id*; the renderer reads `connectors` from Supabase and pushes the
-resolved list over `monti:set-connectors`, where `automation/connectors.cjs`
+resolved list over `scout:set-connectors`, where `automation/connectors.cjs`
 holds it in a module-level Map — memory only, like run tokens. That is what
 keeps the credential out of the steps, the vars, the log and `run.json`, which
 is what makes it safe for a run record to be flushed to the cloud and read by
@@ -590,7 +590,7 @@ resolving to `no` is how a branch starts taking the wrong arm.
 to call `runTarget()` — the single attached profile, else whatever row happened
 to be highlighted on the Profiles tab — and the first sign that the guess was
 wrong was the main process refusing the spawn seconds later with "Proxy
-1.2.3.4:5678 did not respond … Fix the proxy in Monti Gate and try again",
+1.2.3.4:5678 did not respond … Fix the proxy in Scout Web and try again",
 a sentence about a profile the user never chose. The dialog shows each profile's
 proxy health before the commit and a profile whose proxy failed its check cannot
 be ticked. `runTarget` still exists for the editor's Check button alone, and now
@@ -660,7 +660,7 @@ list, so such a token can re-check and nothing else.
 Before handing back UI/app changes:
 
 ```powershell
-cd E:\monti\launcher
+cd E:\scout\launcher
 npm run typecheck
 npm run build
 ```

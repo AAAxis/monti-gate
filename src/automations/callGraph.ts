@@ -10,7 +10,7 @@
 // Pure functions, no imports from the workspace: the MCP create/update
 // handlers run the same checks against their would-be-saved state, so what the
 // editor refuses the API refuses identically.
-import type {MontiAutomation} from '../types';
+import type {ScoutAutomation} from '../types';
 import type {AutomationStep} from './types';
 
 // How many callAutomation frames may stack. Matches MAX_STEP_DEPTH in spirit:
@@ -49,8 +49,8 @@ export type ResolvedCallTree = {
 // the workspace with the incoming edit applied, so a save that would create a
 // cycle is refused rather than discovered mid-run.
 export function resolveCallTree(
-    automation: Pick<MontiAutomation, 'id' | 'name' | 'steps'>,
-    all: Pick<MontiAutomation, 'id' | 'name' | 'steps'>[]): ResolvedCallTree {
+    automation: Pick<ScoutAutomation, 'id' | 'name' | 'steps'>,
+    all: Pick<ScoutAutomation, 'id' | 'name' | 'steps'>[]): ResolvedCallTree {
   const byId = new Map(all.map((entry) => [entry.id, entry]));
   const resolved: Record<string, AutomationStep[]> = {};
   const problems: string[] = [];
@@ -58,7 +58,7 @@ export function resolveCallTree(
   // set would wrongly refuse the diamond (A calls B and C, both call D).
   const stack: string[] = [];
 
-  const visit = (entry: Pick<MontiAutomation, 'id' | 'name' | 'steps'>, depth: number) => {
+  const visit = (entry: Pick<ScoutAutomation, 'id' | 'name' | 'steps'>, depth: number) => {
     stack.push(entry.id);
     for (const calleeId of collectCallees(entry.steps)) {
       if (stack.includes(calleeId)) {

@@ -22,7 +22,7 @@
 alter table "public"."proxies"
   add column if not exists "status" "text";
 
--- cookie_sets.color holds the same string MontiProfile.color holds: one of the
+-- cookie_sets.color holds the same string ScoutProfile.color holds: one of the
 -- six PROFILE_COLORS keys, or a #rrggbb the user picked by hand, read only
 -- through profileColorStyle(). It tints the set's icon in the Name cell, which
 -- until now took the colour of the *folder* the set sits in -- so two sets in

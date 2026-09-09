@@ -8,7 +8,7 @@
 import {StrictMode, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {AutomationModal} from './components/modals/AutomationModal';
-import type {MontiAutomation} from './types';
+import type {ScoutAutomation} from './types';
 import {AutomationsTab} from './components/tabs/AutomationsTab';
 import {WorkspaceProvider} from './workspace/WorkspaceProvider';
 import './styles.css';
@@ -21,7 +21,7 @@ function Preview() {
   const [folderId, setFolderId] = useState('');
   // The editor itself, so the header EditorHead draws gets exercised on this
   // side too -- it is the dialog that pattern came from.
-  const [editing, setEditing] = useState<MontiAutomation | null>(null);
+  const [editing, setEditing] = useState<ScoutAutomation | null>(null);
   return (
     <WorkspaceProvider>
       <main style={{padding: 24}}>

@@ -15,7 +15,7 @@
 // actually blocks a launch; if the two ever disagree the dialog offers a
 // profile that the launch then refuses.
 import {matchedProxyForProfile} from '../lib/proxies';
-import type {MontiProfile, MontiProxy} from '../types';
+import type {ScoutProfile, ScoutProxy} from '../types';
 
 // Older than this and a passing check is not evidence any more. Fifteen minutes
 // is chosen against what the check costs: three concurrent curls with a 10s
@@ -31,17 +31,17 @@ export type RunReadiness =
   // it here, and must not claim it is unreachable.
   | {kind: 'direct'}
   | {kind: 'free_proxy'}
-  | {kind: 'ok'; proxy: MontiProxy}
-  | {kind: 'stale'; proxy: MontiProxy}
-  | {kind: 'unchecked'; proxy: MontiProxy}
-  | {kind: 'failed'; proxy: MontiProxy; error: string}
+  | {kind: 'ok'; proxy: ScoutProxy}
+  | {kind: 'stale'; proxy: ScoutProxy}
+  | {kind: 'unchecked'; proxy: ScoutProxy}
+  | {kind: 'failed'; proxy: ScoutProxy; error: string}
   // Assigned mode with nothing usable assigned: no row, a dangling proxy_id, or
   // a row missing a host or port. All three launch nowhere.
   | {kind: 'missing'};
 
 export function runReadiness(
-    profile: MontiProfile,
-    proxies: MontiProxy[],
+    profile: ScoutProfile,
+    proxies: ScoutProxy[],
     now: number = Date.now(),
 ): RunReadiness {
   // Undefined means 'assigned', for profiles saved before proxy_mode existed.
@@ -110,8 +110,8 @@ export function needsCheck(readiness: RunReadiness): boolean {
 // else to decide. Keeping this free of UI is why the wording lives here at all
 // -- the same reasoning RunAutomationModal's blocked-row summary follows.
 export function describeRunBlock(
-    profiles: MontiProfile[],
-    proxies: MontiProxy[],
+    profiles: ScoutProfile[],
+    proxies: ScoutProxy[],
     now: number = Date.now(),
 ): string | null {
   // Trashed profiles are restorable, so they are not profiles you can run
@@ -160,12 +160,12 @@ export function describeRunBlock(
 // sharing one gateway is one curl, not twenty, and without this the five-wide
 // check pool spends its whole width on the same host.
 export function proxiesToCheck(
-    profiles: MontiProfile[],
-    proxies: MontiProxy[],
+    profiles: ScoutProfile[],
+    proxies: ScoutProxy[],
     now: number = Date.now(),
-): MontiProxy[] {
+): ScoutProxy[] {
   const seen = new Set<string>();
-  const out: MontiProxy[] = [];
+  const out: ScoutProxy[] = [];
   for (const profile of profiles) {
     const readiness = runReadiness(profile, proxies, now);
     if (!needsCheck(readiness) || !('proxy' in readiness) || seen.has(readiness.proxy.id)) {

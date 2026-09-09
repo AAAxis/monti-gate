@@ -16,11 +16,11 @@
 import type {User} from '@supabase/supabase-js';
 import {supabase} from '../supabase';
 
-// `monti_`-namespaced for the same reason as the avatar and display-name keys
+// `scout_`-namespaced for the same reason as the avatar and display-name keys
 // in db/account.ts: Supabase refreshes user_metadata from the identity provider
 // on every Google sign-in, so a key Google also owns is liable to be replaced.
-export const TERMS_ACCEPTED_KEY = 'monti_terms_accepted_at';
-export const TERMS_VERSION_KEY = 'monti_terms_version';
+export const TERMS_ACCEPTED_KEY = 'scout_terms_accepted_at';
+export const TERMS_VERSION_KEY = 'scout_terms_version';
 
 export const LEGAL_VERSION = '2026-08-05';
 

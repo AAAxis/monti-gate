@@ -28,7 +28,7 @@ import {describeMissingParams, resolveRunVars, secretVarNames} from '../automati
 import {newId} from './core';
 import type {WorkspaceCore} from './core';
 import type {ProxyActions} from './useProxyActions';
-import type {MontiAutomation, MontiProfile, AutomationRun} from '../types';
+import type {ScoutAutomation, ScoutProfile, AutomationRun} from '../types';
 import type {AutomationVars, RunTrigger} from '../automations/types';
 
 export type AutomationActions = ReturnType<typeof useAutomationActions>;
@@ -119,7 +119,7 @@ export function useAutomationActions(
     void sendTelegram(botToken, link.chat_id, composeFinishTelegram(run), 'HTML');
   }
 
-  function newAutomation(): MontiAutomation {
+  function newAutomation(): ScoutAutomation {
     return {
       id: newId(),
       name: 'New automation',
@@ -147,7 +147,7 @@ export function useAutomationActions(
   // steps are nested arrays that the editor edits in place -- a shallow copy
   // would let the first person who edits the example rewrite what everyone
   // loads next, for the rest of the session.
-  function exampleAutomation(): MontiAutomation {
+  function exampleAutomation(): ScoutAutomation {
     return {
       ...structuredClone(SHOWCASE_AUTOMATION),
       id: newId(),
@@ -157,7 +157,7 @@ export function useAutomationActions(
 
   // create vs replace is the caller's call, never an upsert -- see the comment
   // in src/db/automations.ts for the BEFORE INSERT trigger this avoids.
-  async function save(automation: MontiAutomation, exists: boolean): Promise<string | null> {
+  async function save(automation: ScoutAutomation, exists: boolean): Promise<string | null> {
     const error = await withDbError(
         (activeOrgId) => db.automations.save(activeOrgId, automation, exists));
     if (error) {
@@ -270,7 +270,7 @@ export function useAutomationActions(
     return true;
   }
 
-  async function setPinned(automation: MontiAutomation, pinned: boolean) {
+  async function setPinned(automation: ScoutAutomation, pinned: boolean) {
     patch.automations((list) =>
       list.map((item) => item.id === automation.id ? {...item, pinned} : item));
     await withDb((activeOrgId) =>
@@ -409,8 +409,8 @@ export function useAutomationActions(
   // five stacked dialogs to dismiss. runMany collects the failures and says it
   // once instead.
   async function run(
-      automation: MontiAutomation,
-      profile: MontiProfile,
+      automation: ScoutAutomation,
+      profile: ScoutProfile,
       options: {trigger?: RunTrigger; vars?: AutomationVars; quiet?: boolean} = {},
   ) {
     const bridge = native;
@@ -486,7 +486,7 @@ export function useAutomationActions(
         }
         // Minted here for the same reason the Launch button and the local API
         // both mint one: without it built-in-extensions.cjs writes neither
-        // monti-launch.json nor monti-session.json, and the Scout Web Helper in the
+        // scout-launch.json nor scout-session.json, and the Scout Web Helper in the
         // window this run opens answers every question with "This window was not
         // launched from Scout Web Launcher" -- no proxy card, no automations, and,
         // the part that actually costs something, no cookie sync. A run that
@@ -539,8 +539,8 @@ export function useAutomationActions(
   // at once and hit the runner's own cap, which refuses with a 429 instead of
   // waiting. waitForRun is what turns that cap into a queue.
   async function runMany(
-      automation: MontiAutomation,
-      list: MontiProfile[],
+      automation: ScoutAutomation,
+      list: ScoutProfile[],
       options: {
         trigger?: RunTrigger;
         vars?: AutomationVars;
@@ -551,7 +551,7 @@ export function useAutomationActions(
       } = {},
   ) {
     // `vars` applies to every profile; varsByProfile overrides it for one.
-    const varsFor = (profile: MontiProfile) => ({
+    const varsFor = (profile: ScoutProfile) => ({
       ...options.vars,
       ...options.varsByProfile?.[profile.id],
     });

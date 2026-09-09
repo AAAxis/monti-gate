@@ -168,7 +168,7 @@ export function WorkspaceProvider({children}: {children: ReactNode}) {
 
   // Reload whenever the active organization changes. Everything keyed by an id
   // has to be dropped first: a profile id from org A is also a real directory
-  // under E:\MontiProfiles, so a leaked selection would launch the wrong
+  // under E:\ScoutProfiles, so a leaked selection would launch the wrong
   // firm's data.
   useEffect(() => {
     reset();
@@ -226,7 +226,7 @@ export function WorkspaceProvider({children}: {children: ReactNode}) {
       // -- and OrgProvider re-resolves only on an auth event, so until this line
       // existed a plan change was invisible until the next token refresh or
       // sign-in. That is the whole of the purchase hand-off: the site's
-      // thank-you page sends `monti://open`, electron/main.cjs focuses the
+      // thank-you page sends `scout://open`, electron/main.cjs focuses the
       // window, and this is what turns that focus into the new plan, the new
       // limits and the welcome screen. An admin comp grant and a colleague
       // upgrading the workspace arrive the same way.

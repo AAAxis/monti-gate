@@ -1,4 +1,4 @@
-/* The sign-in shell, the panel it centres, and the Monti mark at its head. The
+/* The sign-in shell, the panel it centres, and the Scout mark at its head. The
  * form inside the panel is in sign-in-form.css.
  *
  * Was styles.css:438-481, before that file became the barrel that imports this
@@ -25,14 +25,14 @@
   width: min(420px, calc(100vw - 40px));
 }
 
-/* The Monti mark at the head of the sign-in panel, drawn as a mask so it takes
+/* The Scout mark at the head of the sign-in panel, drawn as a mask so it takes
  * a colour rather than stamping black line art into the dark theme -- the same
  * technique as .brand-mark and .plan-welcome-glyph.
  *
  * Filled with --plan-accent, which makes this the fourth surface allowed to use
  * the token; see its comment at the top of this file. Deliberate, and for the
  * same reason the other three have it: the sign-in screen is the seam between
- * the site and the app -- the account was made on monti.bot, in cyan, and the
+ * the site and the app -- the account was made on scout.bot, in cyan, and the
  * first launcher screen it leads to should not look like a different company.
  *
  * The art is 832x532, so the box carries that ratio rather than a square that
@@ -42,7 +42,7 @@
   display: block;
   height: 28px;
   justify-self: center;
-  mask-image: var(--monti-mark);
+  mask-image: var(--scout-mark);
   mask-position: center;
   mask-repeat: no-repeat;
   mask-size: contain;

@@ -4,7 +4,7 @@
 // partial unique index (one true per org PER CATEGORY), so promoting a
 // connector is two statements and they have to run in the right order -- see
 // setDefault.
-import type {MontiConnector} from '../types';
+import type {ScoutConnector} from '../types';
 import {optionalClient, raise, requireClient} from './client';
 import {connectorToRow, rowToConnector} from './mappers';
 import type {ConnectorRow} from './rows';
@@ -17,7 +17,7 @@ import type {ConnectorRow} from './rows';
 const COLUMNS =
   'id,org_id,name,category,kind,config,is_default,created_by,created_at,updated_at';
 
-export async function list(orgId: string): Promise<MontiConnector[]> {
+export async function list(orgId: string): Promise<ScoutConnector[]> {
   const client = optionalClient();
   if (!client) {
     return [];
@@ -34,13 +34,13 @@ export async function list(orgId: string): Promise<MontiConnector[]> {
 // Split rather than upserted, like automations and profiles. There is no
 // BEFORE INSERT trigger on this table today, but the split costs nothing and
 // the two callers already know which one they are.
-export async function create(orgId: string, connector: MontiConnector): Promise<void> {
+export async function create(orgId: string, connector: ScoutConnector): Promise<void> {
   const client = requireClient();
   const {error} = await client.from('connectors').insert(connectorToRow(orgId, connector));
   raise(error, 'connectors.create');
 }
 
-export async function replace(orgId: string, connector: MontiConnector): Promise<void> {
+export async function replace(orgId: string, connector: ScoutConnector): Promise<void> {
   const client = requireClient();
   const {id: _id, org_id: _orgId, ...row} = connectorToRow(orgId, connector);
   const {error} = await client
@@ -52,7 +52,7 @@ export async function replace(orgId: string, connector: MontiConnector): Promise
 }
 
 export async function save(
-    orgId: string, connector: MontiConnector, exists: boolean): Promise<void> {
+    orgId: string, connector: ScoutConnector, exists: boolean): Promise<void> {
   return exists ? replace(orgId, connector) : create(orgId, connector);
 }
 

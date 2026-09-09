@@ -7,7 +7,7 @@ import {
   planCsvImport, previewCsvImport, profileExportRow, resolveRow, reviseRow,
 } from './csvImport';
 import type {FolderDecision, ImportLibrary} from './csvImport';
-import type {MontiFolder, MontiProfile, MontiProxy} from '../types';
+import type {ScoutFolder, ScoutProfile, ScoutProxy} from '../types';
 
 const empty: ImportLibrary = {profiles: [], proxies: [], folders: []};
 
@@ -137,7 +137,7 @@ describe('fingerprint columns', () => {
 });
 
 describe('proxies', () => {
-  const existing: MontiProxy = {
+  const existing: ScoutProxy = {
     id: 'p1', name: 'p1', type: 'socks5', host: '1.2.3.4', port: 1080, username: 'u', password: 'a',
   };
 
@@ -183,7 +183,7 @@ describe('reviseRow', () => {
   });
 
   it('accepts one of the library proxies instead', () => {
-    const proxy: MontiProxy = {id: 'p9', name: 'p9', type: 'http', host: '9.9.9.9', port: 80};
+    const proxy: ScoutProxy = {id: 'p9', name: 'p9', type: 'http', host: '9.9.9.9', port: 80};
     const library = {...empty, proxies: [proxy]};
     const [row] = previewCsvImport(parseCsv('name,proxy_name\nAlice,nonsense'), library).rows;
     const fixed = reviseRow(row, {proxyId: 'p9'}, library);
@@ -201,7 +201,7 @@ describe('folders', () => {
   });
 
   it('matches an existing folder by name, case-insensitively', () => {
-    const folder: MontiFolder = {id: 'f1', name: 'team'};
+    const folder: ScoutFolder = {id: 'f1', name: 'team'};
     const {result, touchedProfiles} = commit(csv, {...empty, folders: [folder]});
     expect(result.foldersCreated).toBe(0);
     expect(touchedProfiles.every(({profile}) => profile.folder_id === 'f1')).toBe(true);
@@ -218,7 +218,7 @@ describe('folders', () => {
 });
 
 describe('updating by profile_id', () => {
-  const existing: MontiProfile = {
+  const existing: ScoutProfile = {
     id: 'keep-me',
     name: 'Old',
     created_at: '2020-01-01T00:00:00.000Z',
@@ -281,7 +281,7 @@ describe('an assignee column in the file', () => {
 // useProfileActions.importFromCsv. A row that flipped to exists=true would be
 // an update quietly taking on the importer's chosen assignee.
 describe('which rows count as created', () => {
-  const existing: MontiProfile = {id: 'keep-me', name: 'Old'};
+  const existing: ScoutProfile = {id: 'keep-me', name: 'Old'};
 
   it('marks new rows as inserts and matched rows as updates', () => {
     const {touchedProfiles} = commit(
@@ -306,12 +306,12 @@ describe('tags', () => {
 });
 
 describe('export round-trip', () => {
-  const proxy: MontiProxy = {
+  const proxy: ScoutProxy = {
     id: 'p1', name: 'p1', type: 'socks5', host: '5.6.7.8', port: 9050,
     username: 'user', password: 'p@ss',
   };
-  const folder: MontiFolder = {id: 'f1', name: 'Storefronts'};
-  const profile: MontiProfile = {
+  const folder: ScoutFolder = {id: 'f1', name: 'Storefronts'};
+  const profile: ScoutProfile = {
     id: 'shop-eu-002',
     name: 'Shop, EU "02"',
     status: 'Review',

@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest';
 import {expectedTimezoneFor, proxyLocationLabel, timezoneMismatch, utcOffsetMinutes} from './proxyGeo';
-import type {MontiProxy} from '../types';
+import type {ScoutProxy} from '../types';
 
-function proxy(patch: Partial<MontiProxy> = {}): MontiProxy {
+function proxy(patch: Partial<ScoutProxy> = {}): ScoutProxy {
   return {id: 'p1', name: 'Test', host: '203.0.113.10', port: 8080, ...patch};
 }
 

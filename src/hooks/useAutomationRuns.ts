@@ -21,7 +21,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import * as db from '../db';
 import {describeDbError} from '../db';
 import {native} from '../native';
-import type {MontiAutomation, MontiProfile, AutomationRun} from '../types';
+import type {ScoutAutomation, ScoutProfile, AutomationRun} from '../types';
 import type {
   AutomationStep, AutomationVars, RunLogEntry, RunTrigger,
 } from '../automations/types';
@@ -232,8 +232,8 @@ export function useAutomationRuns(
   // profile the user already has open must not kill their window, and
   // spawnProfileUnchecked pkills the profile before spawning.
   const startRun = useCallback(async (
-      automation: MontiAutomation,
-      profile: MontiProfile,
+      automation: ScoutAutomation,
+      profile: ScoutProfile,
       options: {
         trigger?: RunTrigger;
         vars?: AutomationVars;

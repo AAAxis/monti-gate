@@ -1,6 +1,6 @@
 import {comparable} from './text';
 import {countryName} from '../data/folderIcons';
-import type {MontiProfile, MontiProxy, CloudState} from '../types';
+import type {ScoutProfile, ScoutProxy, CloudState} from '../types';
 
 // What the country columns and the country search agree a proxy's country is.
 //
@@ -10,7 +10,7 @@ import type {MontiProfile, MontiProxy, CloudState} from '../types';
 // on. Rendering the stored string as-is meant a table full of "US" that the
 // "United States" the move dialog seeds its search with could not match --
 // eleven proxies ticked, and "No proxies match that search" over them.
-export function proxyCountryLabel(proxy: MontiProxy) {
+export function proxyCountryLabel(proxy: ScoutProxy) {
   const stored = proxy.country?.trim();
   if (stored && stored.length > 2) {
     return stored;
@@ -23,7 +23,7 @@ export function proxyCountryLabel(proxy: MontiProxy) {
 // table and the move dialog filter through this so they can never disagree
 // about whether a proxy matches -- the country name is in here even when the
 // row only ever stored the code.
-export function proxySearchText(proxy: MontiProxy) {
+export function proxySearchText(proxy: ScoutProxy) {
   return [proxy.name, proxy.host, String(proxy.port || ''), proxy.username,
     proxy.country, proxy.country_code, proxyCountryLabel(proxy), proxy.type]
       .filter(Boolean)
@@ -31,7 +31,7 @@ export function proxySearchText(proxy: MontiProxy) {
       .toLowerCase();
 }
 
-export function proxyOptionLabel(proxy: MontiProxy) {
+export function proxyOptionLabel(proxy: ScoutProxy) {
   const name = proxy.name || `${proxy.host}:${proxy.port || ''}`;
   const type = (proxy.type || 'http').toUpperCase();
   const port = proxy.port ? proxy.port : 'no port';
@@ -56,7 +56,7 @@ export function proxyDedupeKey(type: string, host: string, port: number, usernam
 // (the old fallback) meant a CSV row saying socks5://same-host:same-port never
 // matched it and imported a duplicate instead. An untyped record answers to
 // both, and the import fills the type in rather than creating a second row.
-export function proxyDedupeKeys(proxy: Pick<MontiProxy, 'type' | 'host' | 'port' | 'username'>) {
+export function proxyDedupeKeys(proxy: Pick<ScoutProxy, 'type' | 'host' | 'port' | 'username'>) {
   const types = proxy.type ? [proxy.type] : ['http', 'socks5'];
   return types.map((type) => proxyDedupeKey(type, proxy.host, proxy.port, proxy.username || ''));
 }
@@ -64,7 +64,7 @@ export function proxyDedupeKeys(proxy: Pick<MontiProxy, 'type' | 'host' | 'port'
 // Accepts either a real URL (http://user:pass@host:port, socks5://...) or the
 // colon-delimited "type:host:port:user:pass" shorthand people paste from proxy
 // vendors, which is not a URL at all.
-export function parseProxyLink(value: string): Omit<MontiProxy, 'id' | 'name'> | null {
+export function parseProxyLink(value: string): Omit<ScoutProxy, 'id' | 'name'> | null {
   const trimmed = value.trim();
   if (!trimmed) {
     return null;
@@ -161,7 +161,7 @@ function fieldSplits(text: string): string[][] {
 }
 
 // The two field orders in circulation, given one candidate division of a line.
-function fromParts(parts: string[]): Omit<MontiProxy, 'id' | 'name'> | null {
+function fromParts(parts: string[]): Omit<ScoutProxy, 'id' | 'name'> | null {
   const named = proxyTypeNamed(parts[0]);
   const type = named || 'socks5';
   const rest = named ? parts.slice(1) : parts;
@@ -226,7 +226,7 @@ function asCredentials(text: string) {
 
 // The delimited vendor shorthand, with or without a scheme in front, and with or
 // without an @ dividing the credentials from the endpoint.
-function fromShorthand(trimmed: string): Omit<MontiProxy, 'id' | 'name'> | null {
+function fromShorthand(trimmed: string): Omit<ScoutProxy, 'id' | 'name'> | null {
   // Flattening "://" to ":" makes a scheme-prefixed line the same shape as
   // the bare shorthand; without this the leading "//" stayed glued to the
   // host and every such line imported a hostname curl could not resolve.
@@ -274,7 +274,7 @@ function fromShorthand(trimmed: string): Omit<MontiProxy, 'id' | 'name'> | null 
 // a connection string when what parsed out of it really looks like one, because
 // "hunter2:1080" parses just as cleanly as a proxy does.
 export function splitPastedConnection(raw: string, {strict = false} = {}):
-    (Omit<MontiProxy, 'id' | 'name'> & {explicitType: boolean}) | null {
+    (Omit<ScoutProxy, 'id' | 'name'> & {explicitType: boolean}) | null {
   // No separator, nothing to split -- and parseProxyLink would happily read a
   // bare word as a hostname, which is not what a paste into Username meant.
   // Any of the separators, not just the colon: a line copied out of a
@@ -306,7 +306,7 @@ export function splitPastedConnection(raw: string, {strict = false} = {}):
 // splits userinfo from host, a : splits user from password. parseProxyLink
 // decodes them back, so this round-trips whatever was typed.
 export function formatProxyLink(
-    proxy: Pick<MontiProxy, 'type' | 'host' | 'port' | 'username' | 'password'>) {
+    proxy: Pick<ScoutProxy, 'type' | 'host' | 'port' | 'username' | 'password'>) {
   const type = proxy.type || 'socks5';
   const endpoint = `${proxy.host}:${proxy.port}`;
   // No credentials means no userinfo at all, rather than an empty ":@". Both
@@ -358,7 +358,7 @@ export function defaultProxyName(host: string, port: number) {
 // different subject from a single connection string, and this is the module
 // everything in the app imports a proxy helper from.
 
-export function matchedProxyForProfile(profile: MontiProfile, proxies: MontiProxy[]) {
+export function matchedProxyForProfile(profile: ScoutProfile, proxies: ScoutProxy[]) {
   const current = proxies.find((proxy) =>
     comparable(proxy.id) === comparable(profile.proxy_id));
   if (current) {
@@ -380,7 +380,7 @@ export function matchedProxyForProfile(profile: MontiProfile, proxies: MontiProx
 //
 // Trashed profiles do not count. A soft-deleted profile is not launching
 // anything, so a proxy held only by one is free to be reused.
-export function profilesUsingProxy(proxy: MontiProxy, profiles: MontiProfile[]) {
+export function profilesUsingProxy(proxy: ScoutProxy, profiles: ScoutProfile[]) {
   return profiles.filter((profile) =>
     !profile.deleted_at && comparable(profile.proxy_id) === comparable(proxy.id));
 }
@@ -388,7 +388,7 @@ export function profilesUsingProxy(proxy: MontiProxy, profiles: MontiProfile[]) 
 // Defined over profilesUsingProxy rather than repeating its filter, so the
 // Assigned/Not-assigned dropdown and the column that names the profiles can
 // never disagree about what "assigned" means.
-export function isProxyAssigned(proxy: MontiProxy, profiles: MontiProfile[]) {
+export function isProxyAssigned(proxy: ScoutProxy, profiles: ScoutProfile[]) {
   return profilesUsingProxy(proxy, profiles).length > 0;
 }
 

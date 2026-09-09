@@ -7,7 +7,7 @@
 //
 // Why a local page rather than a real site: without a working proxy the browser
 // fails closed at startup to 127.0.0.1:39217/v1.0/internal/proxy-error, which
-// is StartupBrowserCreatorImpl's Monti-launch gate doing its job. That gate is
+// is StartupBrowserCreatorImpl's Scout-launch gate doing its job. That gate is
 // startup-only, and Chromium bypasses the proxy for loopback -- so a CDP
 // Page.navigate to 127.0.0.1 lands normally and the run is genuinely
 // end-to-end. Verified before this script was written.
@@ -29,7 +29,7 @@ const store = require('../electron/automation/store.cjs');
 
 const DEFAULT_APP = path.join(
     process.env.HOME || '',
-    'Library/Application Support/monti-anty/browser');
+    'Library/Application Support/Scout Web/browser');
 const CDP_PORT = 39557;
 const PAGE_PORT = 8733;
 
@@ -142,7 +142,7 @@ async function waitForCdp(port, timeoutMs) {
 
 async function main() {
   const executable = resolveExecutable();
-  const workDir = mkdtempSync(path.join(tmpdir(), 'monti-verify-automation-'));
+  const workDir = mkdtempSync(path.join(tmpdir(), 'scout-verify-automation-'));
   // store.cjs only ever asks for userData, so this stub is the whole Electron
   // surface the runner needs.
   const app = {getPath: () => workDir};

@@ -71,7 +71,7 @@ const BUILT_IN_EXTENSIONS = [
     // (re-importing the same seed sets the same values; a reset sync watermark
     // costs one extra push), and it is the same price the MontiCookieManager ->
     // MontiPanel rename already paid once, deliberately.
-    placement: {kind: 'hashed', prefix: 'MontiPanel-'},
+    placement: {kind: 'hashed', prefix: 'ScoutPanel-'},
     // Directories that must not sit in every profile forever. Nothing loads
     // them: they are not in --load-extension. 'MontiPanel' is here for the same
     // reason 'MontiCookieManager' is -- it is now a previous name.
@@ -96,7 +96,7 @@ const BUILT_IN_EXTENSIONS = [
     // native button existed. Only ever removes THIS entry's own id, so a button
     // the user pinned by hand is left alone -- see unpinRetiredExtensions.
     unpin: true,
-    // The Monti Panel: the browser's side-panel dashboard. Cookie export/import
+    // The Scout Panel: the browser's side-panel dashboard. Cookie export/import
     // and sync, the session's proxy readout, and this launch's automations,
     // plus (when this profile has a cookie file assigned) the seed the
     // extension's own background.js imports once on first run.
@@ -117,13 +117,13 @@ const BUILT_IN_EXTENSIONS = [
       // verdict as homeProxyStatus composed it in the renderer, the theme to
       // paint it in, and the automations this launch may run. Written only when
       // the renderer supplied one, so the panel reads the file's absence as
-      // "this window was not launched from Monti Launcher" -- the same contract
-      // monti-launch.json already has for sync.
+      // "this window was not launched from Scout Web" -- the same contract
+      // scout-launch.json already has for sync.
       //
-      // No 0600 here, unlike monti-launch.json below: this file carries no
+      // No 0600 here, unlike scout-launch.json below: this file carries no
       // credential. The run token stays in that one.
       if (payload.sessionPanel) {
-        fs.writeFileSync(path.join(extensionDir, 'monti-session.json'),
+        fs.writeFileSync(path.join(extensionDir, 'scout-session.json'),
             JSON.stringify(payload.sessionPanel, null, 2));
       }
       // The per-launch credential the sync engine spends against the loopback
@@ -132,7 +132,7 @@ const BUILT_IN_EXTENSIONS = [
       // as "sync unavailable" (e.g. the extension loaded outside a profile
       // launch). 0600 like the other file that carries this token.
       if (payload.startPage && payload.startPage.token) {
-        fs.writeFileSync(path.join(extensionDir, 'monti-launch.json'), JSON.stringify({
+        fs.writeFileSync(path.join(extensionDir, 'scout-launch.json'), JSON.stringify({
           token: payload.startPage.token,
           apiPort: payload.startPage.port,
         }, null, 2), {mode: 0o600});
@@ -165,7 +165,7 @@ const BUILT_IN_EXTENSIONS = [
     key: 'sms_activate',
     defaultEnabled: true,
     source: {kind: 'folder', dir: 'onlinesim-sms'},
-    placement: {kind: 'stable', name: path.join('MontiBundled', 'SMSActivate')},
+    placement: {kind: 'stable', name: path.join('ScoutBundled', 'SMSActivate')},
   },
   {
     key: 'foxywall_free_proxy',
@@ -182,7 +182,7 @@ const BUILT_IN_EXTENSIONS = [
     // genuinely new extension identity every time, so it can never reuse a
     // stale cached service worker. Stale siblings are pruned before each write,
     // or they would accumulate one directory per launch forever.
-    placement: {kind: 'per-launch', prefix: 'MontiFreeProxy-'},
+    placement: {kind: 'per-launch', prefix: 'ScoutFreeProxy-'},
     // FoxyWall is bundled for every profile (so its toolbar icon/manual toggle
     // is always available), but must only auto-connect on launch when the user
     // actually picked Free Proxy mode -- never for 'direct' (no proxy at all)
@@ -190,7 +190,7 @@ const BUILT_IN_EXTENSIONS = [
     // second, competing proxy source). This config file is the signal
     // background.js reads before deciding whether to auto-connect.
     configure: (payload, extensionDir) => {
-      fs.writeFileSync(path.join(extensionDir, 'monti-config.json'), JSON.stringify({
+      fs.writeFileSync(path.join(extensionDir, 'scout-config.json'), JSON.stringify({
         autoConnect: Boolean(payload.useFreeProxy),
       }));
     },
@@ -492,13 +492,13 @@ function unpinRetiredExtensions(payload, deps) {
   return pinned.filter((id) => retire.has(id));
 }
 
-// The id the Monti Panel extension will load under in this profile, or '' if
+// The id the Scout Panel extension will load under in this profile, or '' if
 // the extension is disabled or its directory does not exist yet. Passed to the
 // browser as --monti-panel-extension-id so its native "Monti Helper" toolbar
 // button can drive this extension's side panel. Only meaningful after
 // materializeBuiltIns has copied the folder: the id is derived from a
 // realpath()ed directory that has to exist.
-function montiPanelExtensionId(payload) {
+function scoutPanelExtensionId(payload) {
   const entry = BUILT_IN_EXTENSIONS.find((candidate) => candidate.key === 'cookie_manager');
   if (!entry || !builtInEnabled(payload.builtInExtensions, entry)) {
     return '';
@@ -538,7 +538,7 @@ module.exports = {
   BUILT_IN_EXTENSIONS,
   BUILT_IN_EXTENSION_KEYS,
   CAPTCHA_PLUGIN_ID,
-  montiPanelExtensionId,
+  scoutPanelExtensionId,
   builtInEnabled,
   builtInExtension,
   materializeBuiltIns,

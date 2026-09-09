@@ -22,7 +22,7 @@ import {useOrg} from '../org';
 import {useWorkspace} from '../workspace/WorkspaceProvider';
 import type {CellOption} from '../components/ui/CellControls';
 import type {ProxyCellActions, ProxyCellOptions} from './proxyColumns';
-import type {MontiFolder, CloudState} from '../types';
+import type {ScoutFolder, CloudState} from '../types';
 
 // Static: the two protocols the native checker and the launch payload speak.
 // There is no shared list to import -- the proxy editor's <select> spells its
@@ -36,7 +36,7 @@ export const PROXY_TYPE_OPTIONS: CellOption[] = [
 // folder's own glyph in its own colour, then the name. Shared by the Proxies
 // and Cookies tables (cookieCellActions imports it), which is why it lives
 // here rather than being copied.
-export function folderCellOptions(folders: MontiFolder[]): CellOption[] {
+export function folderCellOptions(folders: ScoutFolder[]): CellOption[] {
   return folders.map((folder) => ({
     value: folder.id,
     label: folder.name,

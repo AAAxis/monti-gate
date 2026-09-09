@@ -54,7 +54,7 @@ function readCatalog() {
 
 function downloadBuffer(url, redirectsLeft = 5) {
   return new Promise((resolve, reject) => {
-    https.get(url, {headers: {'User-Agent': 'MontiAnty/1.0'}}, (res) => {
+    https.get(url, {headers: {'User-Agent': 'ScoutWeb/1.0'}}, (res) => {
       if ([301, 302, 303, 307, 308].includes(res.statusCode) && res.headers.location &&
           redirectsLeft > 0) {
         res.resume();
@@ -194,7 +194,7 @@ function namesAgree(expected, actual) {
 async function main() {
   const catalog = readCatalog();
   fs.mkdirSync(ASSET_DIR, {recursive: true});
-  const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'monti-catalog-'));
+  const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'scout-catalog-'));
   const mismatches = [];
   const failures = [];
 

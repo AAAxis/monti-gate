@@ -6,7 +6,7 @@ const {launcherIconIcns} = require('../electron/profile-icons.cjs');
 
 const root = path.resolve(__dirname, '..');
 const sourceApp = path.join(root, 'node_modules/electron/dist/Electron.app');
-const targetApp = path.join(os.homedir(), 'Applications/Monti Gate.app');
+const targetApp = path.join(os.homedir(), 'Applications/Scout Web.app');
 const targetContents = path.join(targetApp, 'Contents');
 const targetResources = path.join(targetContents, 'Resources');
 const plistPath = path.join(targetContents, 'Info.plist');
@@ -36,7 +36,7 @@ function replacePlistString(plist, key, value) {
   return plist.replace('</dict>', `<key>${key}</key><string>${escaped}</string>\n</dict>`);
 }
 
-// LaunchServices decides who handles monti:// from CFBundleURLTypes in the
+// LaunchServices decides who handles scout:// from CFBundleURLTypes in the
 // bundle's Info.plist -- app.setAsDefaultProtocolClient() alone does not
 // register the scheme on macOS. Without this the deep link silently goes
 // nowhere, which looks exactly like a broken button.
@@ -85,11 +85,11 @@ fs.mkdirSync(path.dirname(targetApp), {recursive: true});
 fs.cpSync(sourceApp, targetApp, {recursive: true, verbatimSymlinks: true});
 
 let plist = fs.readFileSync(plistPath, 'utf8');
-plist = replacePlistString(plist, 'CFBundleName', 'Monti Gate');
-plist = replacePlistString(plist, 'CFBundleDisplayName', 'Monti Gate');
-plist = replacePlistString(plist, 'CFBundleIdentifier', 'com.monti.anty');
+plist = replacePlistString(plist, 'CFBundleName', 'Scout Web');
+plist = replacePlistString(plist, 'CFBundleDisplayName', 'Scout Web');
+plist = replacePlistString(plist, 'CFBundleIdentifier', 'com.scout.web');
 plist = replacePlistString(plist, 'CFBundleIconFile', 'app');
-plist = setPlistUrlScheme(plist, {name: 'com.monti.anty.deeplink', scheme: 'monti'});
+plist = setPlistUrlScheme(plist, {name: 'com.scout.web.deeplink', scheme: 'scout'});
 fs.writeFileSync(plistPath, plist);
 
 if (fs.existsSync(iconSource)) {
@@ -111,7 +111,7 @@ if (fs.existsSync(iconSource)) {
 // to the project root rather than a stub so Electron reads the real
 // package.json -- `name` there is what decides the userData directory, and a
 // stub with a different name would silently strand every existing setting in
-// ~/Library/Application Support/monti-anty. Verified: this leaves
+// ~/Library/Application Support/scout-web. Verified: this leaves
 // app.isPackaged false, so the auto-updater stays off in a dev bundle.
 const appPayload = path.join(targetResources, 'app');
 fs.rmSync(appPayload, {recursive: true, force: true});

@@ -1,7 +1,7 @@
 // Bookmark favicons, fetched from the bookmarked site itself.
 //
 // Deliberately NOT routed through Google's /s2/favicons or DuckDuckGo's ip3:
-// Monti is an anti-detect product, and handing a third party the list of
+// Scout is an anti-detect product, and handing a third party the list of
 // domains its users bookmark (from the users' own IPs) is exactly the kind of
 // leak the product exists to prevent. The cost is that some sites have no
 // discoverable icon -- those fall back to the letter monogram in the renderer.

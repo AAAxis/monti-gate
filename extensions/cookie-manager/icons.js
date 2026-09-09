@@ -14,7 +14,7 @@
 // its own file rather than folded into sidepanel.js: it is a vocabulary, not
 // behaviour, and it is the part most likely to be read while drawing something
 // new.
-const MontiIcons = (() => {
+const ScoutIcons = (() => {
   const PATHS = {
     circle: '<circle cx="12" cy="12" r="9"/>',
     alertTriangle: '<path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>' +

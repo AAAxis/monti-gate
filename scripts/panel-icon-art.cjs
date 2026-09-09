@@ -1,4 +1,4 @@
-// The Monti Panel's toolbar icon, as SVG strings.
+// The Scout Panel's toolbar icon, as SVG strings.
 //
 // Separate from icon-art.cjs next door, which draws macOS app tiles: those are
 // 1024px Dock icons inside Apple's rounded-square grid, and this is a 16pt
@@ -9,7 +9,7 @@
 //   1. Chrome neither inverts nor re-tints an extension's action icon, and the
 //      toolbar is near-white in the light theme and near-charcoal in the dark
 //      one. One bitmap has to survive both.
-//   2. The mark is drawn once, from src/assets/monti-mark.svg, and never
+//   2. The mark is drawn once, from src/assets/scout-mark.svg, and never
 //      redrawn by hand. It is the product's logo; a simplified "version of it"
 //      authored to survive 16px is a different logo.
 //
@@ -42,9 +42,9 @@
 // decision, not a reach for the nearest token. A toolbar glyph is not it.
 //
 // Superseded, deliberately: the fork carries chrome/app/vector_icons/
-// monti_logo.icon, a 16dp vector with no baked colour that the toolbar tints
+// scout_logo.icon, a 16dp vector with no baked colour that the toolbar tints
 // with kColorToolbarButtonIcon like every other side-panel icon. Once the
-// native Monti Assistant button ships, THAT is the icon users see and this one
+// native Scout Assistant button ships, THAT is the icon users see and this one
 // only matters to installs still on an older browser build.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -65,7 +65,7 @@ const VARIANTS = {
 // clipPath id is namespaced, which matters the moment two of these end up in
 // one document. See src/assets/README.md before swapping the file.
 function markInner() {
-  const source = fs.readFileSync(path.join(__dirname, '../src/assets/monti-mark.svg'), 'utf8');
+  const source = fs.readFileSync(path.join(__dirname, '../src/assets/scout-mark.svg'), 'utf8');
   const open = source.indexOf('>', source.indexOf('<svg')) + 1;
   const close = source.lastIndexOf('</svg>');
   return source.slice(open, close);

@@ -14,17 +14,17 @@ import {join} from 'node:path';
 import {describe, expect, it} from 'vitest';
 import {homeProxyStatus} from './homePage';
 import type {SessionPanelData} from '../native';
-import type {MontiProfile, MontiProxy} from '../types';
+import type {ScoutProfile, ScoutProxy} from '../types';
 
-const profile = (over: Partial<MontiProfile> = {}) => ({
+const profile = (over: Partial<ScoutProfile> = {}) => ({
   id: 'p1',
   name: 'Profile One',
   proxy_mode: 'assigned',
   fingerprint: {os: 'Windows 11', screen: '1920x1200', timezone: 'America/Los_Angeles'},
   ...over,
-} as MontiProfile);
+} as ScoutProfile);
 
-const proxy = (over: Partial<MontiProxy> = {}) => ({
+const proxy = (over: Partial<ScoutProxy> = {}) => ({
   id: 'x1',
   host: '1.2.3.4',
   port: 8080,
@@ -36,7 +36,7 @@ const proxy = (over: Partial<MontiProxy> = {}) => ({
   region: 'California',
   timezone: 'America/Los_Angeles',
   ...over,
-} as MontiProxy);
+} as ScoutProxy);
 
 // Exactly the keys sidepanel.js reads off a field. `mono` picks the monospace
 // value column, `note` is the quiet trailing value, `noteTone` colours it, and
@@ -45,7 +45,7 @@ const FIELD_KEYS = new Set(['label', 'value', 'icon', 'mono', 'note', 'noteTone'
 
 // The glyph names the panel actually carries, read off its own file rather than
 // listed again here. `icon` is a string on this side and a lookup into
-// MontiIcons.PATHS on the other, and MontiIcons.make() answers an unknown name
+// ScoutIcons.PATHS on the other, and ScoutIcons.make() answers an unknown name
 // with a bare circle -- so a typo does not throw, it silently labels a row with
 // the wrong shape, which is worse than labelling it with none.
 //
@@ -95,7 +95,7 @@ describe('the field contract the side panel renders', () => {
     // The mismatch case, which is the only one that reaches for --danger.
     const mismatched = homeProxyStatus(
         profile({fingerprint: {os: 'Windows 11', screen: '1920x1200', timezone: 'Europe/Berlin'}} as
-          Partial<MontiProfile>),
+          Partial<ScoutProfile>),
         proxy());
     const tones = [...(homeProxyStatus(profile(), proxy()).fields || []),
       ...(mismatched.fields || [])]
@@ -124,7 +124,7 @@ describe('the field contract the side panel renders', () => {
 
 // The other half of the snapshot, and the tripwire that was missing.
 //
-// monti-session.json is written into every launched profile's directory, which
+// scout-session.json is written into every launched profile's directory, which
 // is not 0600 and is read by a document that goes on to visit arbitrary sites.
 // The pressure to widen it is constant and reasonable-sounding -- the panel
 // wants a badge, so put `pinned` in the snapshot; it wants a description, so

@@ -25,7 +25,7 @@ import {
   defaultProxyName, hasProxySeparator, namesProxyType, parseProxyLink, proxyDedupeKey,
   proxyDedupeKeys,
 } from './proxies';
-import type {MontiProxy} from '../types';
+import type {ScoutProxy} from '../types';
 
 // One row of a pasted or imported proxy list, already classified against the
 // proxies that exist. `duplicate` rows are kept rather than dropped so the
@@ -34,7 +34,7 @@ import type {MontiProxy} from '../types';
 export type ParsedProxyLine = {
   line: number;
   raw: string;
-  proxy: Omit<MontiProxy, 'id'> | null;
+  proxy: Omit<ScoutProxy, 'id'> | null;
   duplicate: boolean;
   // False when the row was a bare "host:port:user:pass" and the type is only
   // parseProxyLink's socks5 default, so the import dialog knows which rows its
@@ -197,7 +197,7 @@ function fromLines(content: string, seen: Set<string>): ParsedProxyLine[] {
   return results;
 }
 
-export function parseProxyList(content: string, existing: MontiProxy[]): ParsedProxyLine[] {
+export function parseProxyList(content: string, existing: ScoutProxy[]): ParsedProxyLine[] {
   // Every key an existing proxy answers to, plus every key this file has already
   // used -- one set, threaded through whichever path runs, so a repeated row is
   // a duplicate whether the repeat came from the library or from line four.

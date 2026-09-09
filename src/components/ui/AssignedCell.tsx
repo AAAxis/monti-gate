@@ -19,14 +19,14 @@
 // Lives here rather than in a tab because both tables ask exactly the same
 // question and a second copy would drift.
 import {ProfileAvatar} from './ProfileAvatar';
-import type {MontiProfile} from '../../types';
+import type {ScoutProfile} from '../../types';
 
 // Four avatars is about what fits before the column starts competing with the
 // row's own name; the rest become "+N", and the cell's title carries them all.
 const ASSIGNED_AVATAR_LIMIT = 4;
 
 export function AssignedCell({holders, emptyLabel = 'Not assigned'}: {
-  holders: MontiProfile[];
+  holders: ScoutProfile[];
   emptyLabel?: string;
 }) {
   if (!holders.length) {

@@ -1,4 +1,4 @@
-// The Monti Panel: one side panel describing one browser session.
+// The Scout Panel: one side panel describing one browser session.
 //
 // Replaces the toolbar popup this extension used to open. Everything that popup
 // could do is still here, plus the proxy readout the generated start page used
@@ -9,7 +9,7 @@
 //     set-paused, pull-from-launcher, save-as-set, export-cookies,
 //     import-cookies, recheck-proxy, run-automation). See that file's SyncState
 //     comments for the authoritative field contract.
-//   - monti-session.json, written per launch by the launcher's
+//   - scout-session.json, written per launch by the launcher's
 //     built-in-extensions.cjs from its own homeProxyStatus() output. The panel
 //     renders that object; it never composes proxy wording of its own, so the
 //     panel and the start page cannot describe one session two ways.
@@ -41,7 +41,7 @@ function setStatus(text, isError) {
 
 // Both live in sync-status.js so the branch ordering below can be tested; see
 // that file's header for why it is a separate script.
-const {classifySync, relativeTime} = MontiSyncStatus;
+const {classifySync, relativeTime} = ScoutSyncStatus;
 
 // Why a launcher-backed read came back empty, in words, every time.
 //
@@ -64,7 +64,7 @@ const {classifySync, relativeTime} = MontiSyncStatus;
 const STALE_WORKER_REASON =
   'This window is running an older version of the Monti Helper background ' +
   'script, which does not have this feature yet. Close the profile and launch ' +
-  'it again from Monti Gate.';
+  'it again from Scout Web.';
 
 function failureReason(result) {
   const error = (result && result.error) || '';
@@ -72,19 +72,19 @@ function failureReason(result) {
     return STALE_WORKER_REASON;
   }
   if (result && result.available === false) {
-    return 'This window was not launched from Monti Gate.';
+    return 'This window was not launched from Scout Web.';
   }
-  return error || 'Monti Gate did not answer.';
+  return error || 'Scout Web did not answer.';
 }
 
-MontiIcons.hydrate(document, 14);
+ScoutIcons.hydrate(document, 14);
 
 // The tab strip. Created before any render function runs -- renderSync and
 // renderProxy publish their tone to it, and renderAutomations decides whether
 // its tab exists at all, so it has to be here rather than beside the first
 // paint at the bottom of this file. See tabs.js for why the tone is passed in
 // rather than computed there.
-const tabs = MontiTabs.create({strip: $('[role="tablist"]')});
+const tabs = ScoutTabs.create({strip: $('[role="tablist"]')});
 
 // ── Session ────────────────────────────────────────────────────────────────────
 // The launch snapshot: profile, theme, proxy verdict, automations. Null when the
@@ -113,13 +113,13 @@ function renderProxyFields(fields) {
 
     const label = document.createElement('dt');
     // The glyph is looked up by the name the launcher put on the field, never
-    // built from it -- MontiIcons.make() indexes a fixed table and falls back to
+    // built from it -- ScoutIcons.make() indexes a fixed table and falls back to
     // a circle, so a field naming an icon this panel does not carry draws a
     // placeholder rather than nothing. Guarded on presence because a session
     // snapshot written by an older launcher has no `icon` at all, and those rows
     // still have to render.
     if (field.icon) {
-      label.appendChild(MontiIcons.make(field.icon, 13));
+      label.appendChild(ScoutIcons.make(field.icon, 13));
     }
     label.appendChild(document.createTextNode(field.label));
 
@@ -166,7 +166,7 @@ function renderProxy(status) {
   // The same verdict on the tab, because behind a tab this card is invisible.
   tabs.setTone('session', tone);
   $('#proxy-icon').replaceChildren(
-      MontiIcons.make(tone === 'ok' ? 'checkCircle' : 'alertTriangle', 16));
+      ScoutIcons.make(tone === 'ok' ? 'checkCircle' : 'alertTriangle', 16));
   $('#proxy-icon').classList.remove('spin');
   $('#proxy-title').textContent = status.title;
   // The rows say everything `detail` says, better -- it is the one-line form
@@ -185,14 +185,14 @@ function renderProxyUnavailable() {
   // Mirrors the bare className above: no session to report on is an absence of
   // signal, not a fault, so the tab stays unmarked.
   tabs.setTone('session', 'off');
-  $('#proxy-icon').replaceChildren(MontiIcons.make('circle', 16));
+  $('#proxy-icon').replaceChildren(ScoutIcons.make('circle', 16));
   $('#proxy-icon').classList.remove('spin');
   $('#proxy-title').textContent = 'No session details';
   $('#proxy-detail').textContent =
-      'This window was not launched from Monti Gate, so there is no proxy to report on.';
+      'This window was not launched from Scout Web, so there is no proxy to report on.';
   renderProxyFields(null);
   $('#recheck').disabled = true;
-  $('#recheck').title = 'Relaunch this profile from Monti Gate to re-check its proxy.';
+  $('#recheck').title = 'Relaunch this profile from Scout Web to re-check its proxy.';
 }
 
 $('#recheck').addEventListener('click', () => {
@@ -201,7 +201,7 @@ $('#recheck').addEventListener('click', () => {
   const icon = button.querySelector('.icon');
   button.disabled = true;
   icon.classList.add('spin');
-  $('#proxy-icon').replaceChildren(MontiIcons.make('loader', 16));
+  $('#proxy-icon').replaceChildren(ScoutIcons.make('loader', 16));
   $('#proxy-icon').classList.add('spin');
   $('#proxy-title').textContent = 'Checking proxy…';
 
@@ -332,7 +332,7 @@ function renderAutomations(automations) {
       'No automations in this workspace';
     $('#automations-empty-detail').textContent = failed ?
       automationsError :
-      'Build a workflow in Monti Gate and it will show up here. Anything your ' +
+      'Build a workflow in Scout Web and it will show up here. Anything your ' +
         'team creates appears in this list too — pinning one, or setting it as ' +
         'this profile’s own, just moves it to the top.';
   }
@@ -346,7 +346,7 @@ function renderAutomations(automations) {
 
     const icon = document.createElement('span');
     icon.className = 'icon';
-    MontiIcons.set(icon, 'play', 14);
+    ScoutIcons.set(icon, 'play', 14);
     // Two spellings of the same field, because the launcher stores both. A key
     // becomes an attribute the stylesheet matches; a hex is set directly. Note
     // what is NOT done: an unrecognized value is dropped rather than written
@@ -423,7 +423,7 @@ async function loadAutomations() {
 }
 
 function paintRunCard() {
-  const view = MontiRunView.describe(runState.run || runState.last, Date.now());
+  const view = ScoutRunView.describe(runState.run || runState.last, Date.now());
   const card = $('#run-card');
   card.hidden = !view;
   // The tab's dot, from the same tone the card is painted in -- so a run that
@@ -438,10 +438,10 @@ function paintRunCard() {
     row.dataset.state = running ? 'running' : 'idle';
     const icon = row.querySelector('.icon');
     if (running && icon.dataset.icon !== 'loader') {
-      MontiIcons.set(icon, 'loader', 14);
+      ScoutIcons.set(icon, 'loader', 14);
       icon.classList.add('spin');
     } else if (!running && icon.dataset.icon !== 'play') {
-      MontiIcons.set(icon, 'play', 14);
+      ScoutIcons.set(icon, 'play', 14);
       icon.classList.remove('spin');
     }
     // A second run against the same profile is refused by the runner (409), so
@@ -453,7 +453,7 @@ function paintRunCard() {
   }
   card.className = `card run-card tone-${view.tone}`;
   const icon = $('#run-icon');
-  icon.replaceChildren(MontiIcons.make(view.icon, 16));
+  icon.replaceChildren(ScoutIcons.make(view.icon, 16));
   icon.classList.toggle('spin', view.spin);
   $('#run-title').textContent = view.title;
   $('#run-step').textContent = view.step;
@@ -588,7 +588,7 @@ $('#run-stop').addEventListener('click', () => withBusy($('#run-stop'), async ()
 $('#open-automations').addEventListener('click', () => withBusy($('#open-automations'), async () => {
   const result = await send({type: 'open-automations'});
   if (!result.ok) {
-    setStatus(result.error || 'Could not reach Monti Gate', true);
+    setStatus(result.error || 'Could not reach Scout Web', true);
   }
 }));
 
@@ -597,7 +597,7 @@ $('#open-automations').addEventListener('click', () => withBusy($('#open-automat
 // greyed out at once, with the card above saying only "Sync unavailable", left
 // no way to tell a missing feature from a missing launcher.
 const SYNC_BLOCKED_REASON =
-  'Relaunch this profile from Monti Gate to enable these. ' +
+  'Relaunch this profile from Scout Web to enable these. ' +
   'They each need a credential the Launcher hands out at launch, and this window did not get one.';
 
 // The set this window loaded that it is not assigned to, held so the two
@@ -611,7 +611,7 @@ function renderSync(sync) {
   // classifySync is the sole author of this tone, and now of this tab's dot too.
   tabs.setTone('cookies', state.tone);
   const icon = $('#sync-icon');
-  icon.replaceChildren(MontiIcons.make(state.icon, 16));
+  icon.replaceChildren(ScoutIcons.make(state.icon, 16));
   icon.classList.toggle('spin', Boolean(state.spin));
   $('#sync-title').textContent = state.title;
   $('#sync-detail').textContent = state.detail;
@@ -657,7 +657,7 @@ function renderSync(sync) {
     syncPickerToSuppressed();
   }
   // Save-as goes over the same run-token route as sync, so it needs the same
-  // "was this window launched from Monti Gate" precondition -- unlike
+  // "was this window launched from Scout Web" precondition -- unlike
   // sync-now/pull it does not also need inSync/paused, since it is not part of
   // the automatic loop.
   $('#save-as-toggle').disabled = !sync.available;
@@ -679,13 +679,13 @@ function renderSync(sync) {
 function renderSeed(seed) {
   const container = $('#seed-status');
   if (seed.imported) {
-    MontiIcons.set($('#seed-icon'), 'checkCircle', 14);
+    ScoutIcons.set($('#seed-icon'), 'checkCircle', 14);
     const when = seed.seededAt ? ` on ${new Date(seed.seededAt).toLocaleDateString()}` : '';
     $('#seed-text').textContent =
         `${seed.seededCount} cookie${seed.seededCount === 1 ? '' : 's'} auto-imported${when}`;
     container.className = 'note-line seeded';
   } else {
-    MontiIcons.set($('#seed-icon'), 'circle', 14);
+    ScoutIcons.set($('#seed-icon'), 'circle', 14);
     $('#seed-text').textContent = 'No seed cookies for this profile';
     container.className = 'note-line';
   }
@@ -705,7 +705,7 @@ function renderImportResult(result) {
   }
   const {fileName, imported, total, failed} = result;
   const ok = imported > 0 && !failed;
-  MontiIcons.set($('#import-result-icon'),
+  ScoutIcons.set($('#import-result-icon'),
       ok ? 'checkCircle' : (imported ? 'alertTriangle' : 'xCircle'), 14);
   const counted = `${imported} of ${total} cookie${total === 1 ? '' : 's'}`;
   $('#import-result-text').textContent = failed ?
@@ -817,7 +817,7 @@ darkQuery.addEventListener('change', (event) => reportToolbarTheme(event.matches
 // repaints off writes that already happen -- no polling, and no second copy of
 // the state to keep level with the first.
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.montiSyncState) void refresh();
+  if (area === 'local' && changes.scoutSyncState) void refresh();
 });
 
 // Debounced for the reason background.js documents: an idle jar fires two
@@ -844,12 +844,12 @@ async function withBusy(button, work) {
   const icon = button.querySelector('.icon');
   const original = icon ? icon.dataset.icon : null;
   button.disabled = true;
-  if (icon) { MontiIcons.set(icon, 'loader', 14); icon.classList.add('spin'); }
+  if (icon) { ScoutIcons.set(icon, 'loader', 14); icon.classList.add('spin'); }
   try {
     await work();
   } finally {
     button.disabled = false;
-    if (icon && original) { MontiIcons.set(icon, original, 14); icon.classList.remove('spin'); }
+    if (icon && original) { ScoutIcons.set(icon, original, 14); icon.classList.remove('spin'); }
   }
 }
 
@@ -1158,7 +1158,7 @@ function renderLauncherList(result, jarDomains) {
     // it, the same way SYNC_BLOCKED_REASON does.
     note.textContent =
         'No cookie set is assigned to this profile. Assign one from the Cookies tab in ' +
-        'Monti Gate, or use "Save to Cookies tab…" above to create one from this session.';
+        'Scout Web, or use "Save to Cookies tab…" above to create one from this session.';
     list.appendChild(note);
     return;
   }
@@ -1347,7 +1347,7 @@ $('#save-as-form').addEventListener('submit', (event) => {
       // reason for every failure it can produce; the fallback only covers a
       // reply that somehow carried none, and still says what to try.
       setStatus(result.error ||
-          'Could not save to the Cookies tab. Relaunch this profile from Monti Gate and try again.',
+          'Could not save to the Cookies tab. Relaunch this profile from Scout Web and try again.',
       true);
     }
   });
@@ -1379,7 +1379,7 @@ $('#export-menu').addEventListener('click', (event) => {
         setStatus('Copying…');
         const cookies = await chrome.cookies.getAll({});
         if (!cookies.length) { setStatus('No cookies to copy'); return; }
-        await navigator.clipboard.writeText(MontiCookieFormat.toCookieJson(cookies));
+        await navigator.clipboard.writeText(ScoutCookieFormat.toCookieJson(cookies));
         setStatus(`Copied ${cookies.length} cookies to clipboard`);
         return;
       }
@@ -1400,7 +1400,7 @@ $('#import-file').addEventListener('change', async (event) => {
   label.classList.add('busy');
   setStatus('Importing…');
   try {
-    const cookies = MontiCookieFormat.parseCookieContent(await file.text());
+    const cookies = ScoutCookieFormat.parseCookieContent(await file.text());
     if (!cookies.length) throw new Error('No cookies found in that file');
     const result = await send({type: 'import-cookies', cookies});
     if (!result.ok && result.error && !('count' in result)) {
