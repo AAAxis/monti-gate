@@ -40,7 +40,7 @@ export function ProfileSummary({draft, onRotate, onEdit}: {
   const proxyRows: Row[] = [
     {icon: <Blend size={14} />, label: 'Mode',
       value: draft.proxy_mode === 'assigned' ? 'Assigned proxy' :
-        draft.proxy_mode === 'direct' ? 'Direct' : 'Free Proxy'},
+        'Direct'},
     {icon: <Network size={14} />, label: 'Proxy',
       value: proxy?.name || (draft.proxy_id ? 'Selected proxy' : 'No proxy')},
     {icon: <Globe size={14} />, label: 'Start page',

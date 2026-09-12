@@ -325,7 +325,7 @@ export function ProfileModal({
     }
     if (draft.proxy_mode === 'assigned' &&
         (!draft.proxy_id || !state.proxies.some((proxy) => proxy.id === draft.proxy_id))) {
-      toast.setMessage('Proxy is required, or pick Direct / Free Proxy instead.');
+      toast.setMessage('Proxy is required, or pick Direct instead.');
       return;
     }
     const createdAt = draft.saved ?
@@ -365,6 +365,9 @@ export function ProfileModal({
       `${profile.name} saved — kept the first ${MAX_PROFILE_TAGS} tags` :
       `${profile.name} saved`);
   }
+
+  // Free Proxy is retired; a profile still saved that way launches as Direct.
+  const effectiveMode = draft.proxy_mode === 'free_proxy' ? 'direct' : draft.proxy_mode;
 
   return (
     <>
@@ -774,26 +777,22 @@ export function ProfileModal({
                       <strong>Direct</strong> sends traffic straight out with no proxy and no
                       fallback extension — your own IP.
                     </p>
-                    <p>
-                      <strong>Free Proxy</strong> loads the bundled FoxyWall Proxy extension
-                      instead of assigning one, and connects through it.
-                    </p>
                   </InfoHint>
                 }
                 wide
                 group
               >
                 <div className="choice-chips" role="radiogroup" aria-label="Proxy mode">
-                  {(['assigned', 'direct', 'free_proxy'] as const).map((mode) => (
+                  {(['assigned', 'direct'] as const).map((mode) => (
                     <button
-                      aria-checked={draft.proxy_mode === mode}
-                      className={draft.proxy_mode === mode ? 'choice-chip active' : 'choice-chip'}
+                      aria-checked={effectiveMode === mode}
+                      className={effectiveMode === mode ? 'choice-chip active' : 'choice-chip'}
                       key={mode}
                       onClick={() => set({proxy_mode: mode})}
                       role="radio"
                       type="button"
                     >
-                      {mode === 'assigned' ? 'Assigned proxy' : mode === 'direct' ? 'Direct' : 'Free Proxy'}
+                      {mode === 'assigned' ? 'Assigned proxy' : 'Direct'}
                     </button>
                   ))}
                 </div>

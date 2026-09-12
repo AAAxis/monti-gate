@@ -107,7 +107,7 @@ export const BUILT_IN_EXTENSIONS: BuiltInExtension[] = [
   },
   {
     key: 'foxywall_free_proxy',
-    defaultEnabled: true,
+    defaultEnabled: false,
     name: 'FoxyWall Proxy',
     tagline: 'The free-proxy backend, bundled into every profile.',
     note: 'Only auto-connects for profiles set to Free Proxy mode. This switch stops it being bundled at all.',

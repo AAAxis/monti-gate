@@ -98,7 +98,9 @@ export function buildLaunchPayload(
     color: profile.color || null,
     userDataDir: profileDataDir(profile.id),
     proxy,
-    useFreeProxy: (profile.proxy_mode || 'assigned') === 'free_proxy',
+    // Free Proxy (the bundled FoxyWall extension) is retired: it was broken.
+    // Profiles still saved as free_proxy launch as Direct.
+    useFreeProxy: false,
     // Filtered here rather than in main.cjs so a switched-off extension is
     // never named in the launch payload at all -- main only ever sees the set
     // it is meant to materialize. Undefined means enabled, so rows saved

@@ -169,7 +169,8 @@ const BUILT_IN_EXTENSIONS = [
   },
   {
     key: 'foxywall_free_proxy',
-    defaultEnabled: true,
+    // Off by default: FoxyWall is broken and Free Proxy mode is hidden.
+    defaultEnabled: false,
     source: {kind: 'folder', dir: 'foxywall'},
     // Chrome caches an unpacked (--load-extension) service worker's script body
     // independently of its manifest version or file content -- reloading the

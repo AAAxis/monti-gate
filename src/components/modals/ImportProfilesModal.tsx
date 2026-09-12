@@ -1156,9 +1156,6 @@ function ProxyPicker({review, library, onPatch}: {
         <button className="ghost" onClick={() => onPatch({proxyMode: 'direct'})}>
           No proxy (direct)
         </button>
-        <button className="ghost" onClick={() => onPatch({proxyMode: 'free_proxy'})}>
-          Free proxy
-        </button>
       </div>
 
       <Field label="Or use one of your proxies">
