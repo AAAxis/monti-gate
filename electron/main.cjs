@@ -388,6 +388,7 @@ function managedBrowserAppPath() {
   const currentDir = readManagedBrowserCurrentDir();
   const root = currentDir && fs.existsSync(currentDir) ? currentDir : managedBrowserRoot();
   const candidates = process.platform === 'darwin' ? [
+    path.join(root, 'Scout Web.app'),
     path.join(root, 'Monti Browser.app'),
     path.join(root, 'Monti.app'),
   ] : process.platform === 'win32' ? [
@@ -422,8 +423,10 @@ function bundledBrowserRoot() {
 function bundledBrowserAppPath() {
   const root = bundledBrowserRoot();
   const candidates = process.platform === 'darwin' ? [
+    path.join(root, 'mac', 'Scout Web.app'),
     path.join(root, 'mac', 'Monti Browser.app'),
     path.join(root, 'mac', 'Monti.app'),
+    path.join(root, 'Scout Web.app'),
     path.join(root, 'Monti Browser.app'),
     path.join(root, 'Monti.app'),
   ] : process.platform === 'win32' ? [
@@ -447,10 +450,12 @@ function browserAppCandidates(preferredAppPath) {
     managedBrowserAppPath(),
     bundledBrowserAppPath(),
     preferredAppPath,
+    // The bundle name follows chrome/app/theme/chromium/BRANDING's
+    // PRODUCT_FULLNAME, so a drag-to-Applications install lands under
+    // whatever that said at build time. Scout Web is current; the Monti
+    // names are what every install before that BRANDING change produced.
+    '/Applications/Scout Web.app',
     '/Applications/Monti Browser.app',
-    // The DMG's staged bundle is named "Monti.app" (matches its internal
-    // CFBundleName), so a drag-to-Applications install lands here instead of
-    // the "Monti Browser" name the launcher defaulted to.
     '/Applications/Monti.app',
   ];
   return [...new Set(candidates.filter(Boolean))];
@@ -2375,6 +2380,7 @@ function writeProfileIcon(payload, browserAppPath, resourcesDir) {
   const candidates = [
     profileIconIcns(payload.color, nativeTheme.shouldUseDarkColors),
     path.join(browserAppPath, 'Contents/Resources/app.icns'),
+    '/Applications/Scout Web.app/Contents/Resources/app.icns',
     '/Applications/Monti Browser.app/Contents/Resources/app.icns',
     '/Applications/Monti.app/Contents/Resources/app.icns',
   ];
