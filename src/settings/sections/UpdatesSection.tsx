@@ -107,7 +107,7 @@ function launcherView(
     notes: ReleaseEntry[]): ComponentView {
   const base = {
     key: 'launcher' as const,
-    name: 'Scout Web',
+    name: 'Scout Gate',
     description: 'This app: profiles, proxies, cookies and automations.',
     icon: <AppWindow size={17} />,
     version: state?.currentVersion || '',
