@@ -106,14 +106,6 @@ export const BUILT_IN_EXTENSIONS: BuiltInExtension[] = [
     slug: 'sms-activate',
   },
   {
-    key: 'foxywall_free_proxy',
-    defaultEnabled: false,
-    name: 'FoxyWall Proxy',
-    tagline: 'The free-proxy backend, bundled into every profile.',
-    note: 'Only auto-connects for profiles set to Free Proxy mode. This switch stops it being bundled at all.',
-    slug: 'foxywall',
-  },
-  {
     key: 'captcha_plugin',
     defaultEnabled: false,
     name: 'Captcha Plugin',

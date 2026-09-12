@@ -168,35 +168,6 @@ const BUILT_IN_EXTENSIONS = [
     placement: {kind: 'stable', name: path.join('ScoutBundled', 'SMSActivate')},
   },
   {
-    key: 'foxywall_free_proxy',
-    // Off by default: FoxyWall is broken and Free Proxy mode is hidden.
-    defaultEnabled: false,
-    source: {kind: 'folder', dir: 'foxywall'},
-    // Chrome caches an unpacked (--load-extension) service worker's script body
-    // independently of its manifest version or file content -- reloading the
-    // browser against the same stable path on an already-used profile can keep
-    // running a stale background.js from hours earlier no matter how many times
-    // the source file changes or its manifest version is bumped (confirmed via
-    // live CDP inspection: chrome.runtime.getManifest().version reflected a
-    // fresh bump, but functions/consts only present in newer source were still
-    // undefined). A fresh, uniquely-named directory per launch gives Chrome a
-    // genuinely new extension identity every time, so it can never reuse a
-    // stale cached service worker. Stale siblings are pruned before each write,
-    // or they would accumulate one directory per launch forever.
-    placement: {kind: 'per-launch', prefix: 'ScoutFreeProxy-'},
-    // FoxyWall is bundled for every profile (so its toolbar icon/manual toggle
-    // is always available), but must only auto-connect on launch when the user
-    // actually picked Free Proxy mode -- never for 'direct' (no proxy at all)
-    // or 'assigned' (a real proxy already owns the connection; this would be a
-    // second, competing proxy source). This config file is the signal
-    // background.js reads before deciding whether to auto-connect.
-    configure: (payload, extensionDir) => {
-      fs.writeFileSync(path.join(extensionDir, 'scout-config.json'), JSON.stringify({
-        autoConnect: Boolean(payload.useFreeProxy),
-      }));
-    },
-  },
-  {
     key: 'captcha_plugin',
     defaultEnabled: false,
     source: {kind: 'webstore', id: CAPTCHA_PLUGIN_ID},

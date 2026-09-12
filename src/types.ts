@@ -350,12 +350,12 @@ export type SharedBookmark = {
 };
 
 // Per-extension on/off switches for the built-in (non-removable) "stock"
-// extensions -- these ship with every install (cookie-manager, SMS-Activate)
-// or are conditionally bundled per profile (foxywall_free_proxy, gated on a
-// profile's proxy_mode === 'free_proxy').
+// extensions -- these ship with every install (cookie-manager, SMS-Activate).
+// FoxyWall (foxywall_free_proxy) was removed in 1.0.87; a saved key for it is
+// simply ignored.
 //
 // What a missing key means is NOT uniform, and is defined once per extension in
-// electron/built-in-extensions.cjs rather than inferred here. The first three
+// electron/built-in-extensions.cjs rather than inferred here. The first two
 // default to enabled, so cloud state saved before their toggles existed does
 // not silently lose them. captcha_plugin defaults to disabled: its files are
 // not vendored in extensions/ but downloaded on enable (~56 MB), so an org that
@@ -363,7 +363,6 @@ export type SharedBookmark = {
 export type BuiltInExtensionToggles = {
   cookie_manager?: boolean;
   sms_activate?: boolean;
-  foxywall_free_proxy?: boolean;
   captcha_plugin?: boolean;
 };
 

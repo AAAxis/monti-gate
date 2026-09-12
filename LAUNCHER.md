@@ -16,7 +16,7 @@ accounts, cloud state, billing, and deciding what a browser session gets handed.
 | `src/native.ts` | | Typed wrapper over the preload bridge. |
 | `electron/main.cjs` | **87 KB** | Main process. Browser executable resolution, launch payload assembly, proxy assignment written into the profile dir, cookie-seed extension generation, session-restore clearing, auto-update. |
 | `electron/preload.cjs` | | contextBridge surface. |
-| `extensions/` | | Vendored unpacked extensions: `cookie-manager`, `foxywall`, `onlinesim-sms`. Loaded into sessions via `--load-extension`. Which built-ins exist, and where each one's files come from, is the table in `electron/built-in-extensions.cjs` — Captcha Plugin is listed there but not here, since it is fetched from the Web Store on enable rather than vendored. |
+| `extensions/` | | Vendored unpacked extensions: `cookie-manager`, `onlinesim-sms`. Loaded into sessions via `--load-extension`. Which built-ins exist, and where each one's files come from, is the table in `electron/built-in-extensions.cjs` — Captcha Plugin is listed there but not here, since it is fetched from the Web Store on enable rather than vendored. |
 | `scripts/` | | `verify-launch.mjs`, plus two **macOS-only** helpers (`start-macos-app.cjs`, `ensure-macos-app.cjs`) that `npm start`/`npm run dev` call. |
 | `docs/process-boundary.md` | | The browser/launcher contract. Authoritative. |
 | `bundled-browser/` | empty (`.gitkeep`) | electron-builder copies this to `resources/browser` at package time. |
