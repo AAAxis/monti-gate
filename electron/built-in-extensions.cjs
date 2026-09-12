@@ -53,7 +53,7 @@ const BUILT_IN_EXTENSIONS = [
     //   - Copying a new background.js over the old one at a stable path. Chrome
     //     caches an unpacked worker's script body against its path, so the new
     //     bytes were never read. This is the "Unknown message" / "running an
-    //     older version of the Monti Helper background script" failure.
+    //     older version of the Scout Helper background script" failure.
     //   - Renaming the SCRIPT inside a stable directory (background.<hash>.js),
     //     to move the cache key without moving the id. That is worse, and it is
     //     what shipped for one launch on 2026-08-09: an MV3 service worker
@@ -80,7 +80,7 @@ const BUILT_IN_EXTENSIONS = [
     // than a default.
     //
     // It used to be pinned, because the panel had no other way in. The shipped
-    // browser now carries a native, labelled "Monti Helper" toolbar button
+    // browser now carries a native, labelled "Scout Helper" toolbar button
     // (chrome/browser/ui/views/toolbar/monti_toolbar_button.*, driven by
     // --monti-panel-extension-id and auto-pinned once per profile by
     // PinnedToolbarActionsModel), and that button owns the panel. Pinning the
@@ -494,7 +494,7 @@ function unpinRetiredExtensions(payload, deps) {
 
 // The id the Scout Panel extension will load under in this profile, or '' if
 // the extension is disabled or its directory does not exist yet. Passed to the
-// browser as --monti-panel-extension-id so its native "Monti Helper" toolbar
+// browser as --monti-panel-extension-id so its native "Scout Helper" toolbar
 // button can drive this extension's side panel. Only meaningful after
 // materializeBuiltIns has copied the folder: the id is derived from a
 // realpath()ed directory that has to exist.

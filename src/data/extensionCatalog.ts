@@ -77,7 +77,7 @@ export const BUILT_IN_EXTENSIONS: BuiltInExtension[] = [
     // built_in_extensions state agree on, and renaming it would read as a
     // missing key, fall back to defaultEnabled, and discard every org's saved
     // preference.
-    name: 'Scout Web Helper',
+    name: 'Scout Helper',
     tagline: 'The side panel in every profile window: proxy status, cookies and this launch’s automations.',
     // Spells out what else goes away, because the name no longer does. Turning
     // this off used to cost cookie tooling alone; it now also takes the proxy

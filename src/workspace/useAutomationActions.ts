@@ -486,7 +486,7 @@ export function useAutomationActions(
         }
         // Minted here for the same reason the Launch button and the local API
         // both mint one: without it built-in-extensions.cjs writes neither
-        // scout-launch.json nor scout-session.json, and the Scout Web Helper in the
+        // scout-launch.json nor scout-session.json, and the Scout Helper in the
         // window this run opens answers every question with "This window was not
         // launched from Scout Web Launcher" -- no proxy card, no automations, and,
         // the part that actually costs something, no cookie sync. A run that

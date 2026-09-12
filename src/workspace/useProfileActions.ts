@@ -251,7 +251,7 @@ export function useProfileActions(
       const tiles = startPageAutomations(state.automations, target)
           .map((tile) => buildRunTile(tile, target, state.automations));
 
-      // The Scout Web Helper panel offers EVERY automation in the workspace, not
+      // The Scout Helper panel offers EVERY automation in the workspace, not
       // just this profile's pinned tiles -- that is what
       // /v1/automations/run-any-from-page is for, and the panel resolves the
       // chosen one through the launcher window on demand.

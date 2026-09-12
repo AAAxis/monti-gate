@@ -755,7 +755,7 @@ function extractBrowserArchive(archivePath, destinationDir) {
 // Windows reads out of the .exe change here. Its own name, not the launcher's:
 // two different programs both called "Scout Web" in Task Manager would be
 // worse than the name it had.
-const BROWSER_PRODUCT_NAME = 'Scout Web Browser';
+const BROWSER_PRODUCT_NAME = 'Scout Web';
 
 // The browser's icon and name on Windows.
 //
@@ -2190,7 +2190,7 @@ function fallbackHomeHtml(profileName) {
       .replaceAll('>', '&gt;');
   return `<!doctype html><html><head><meta charset="utf-8"><title>${safeName}</title>
 <style>:root{color-scheme:light dark;--surface:#f7f7f7;--ink:#1f1f1f;--ink-soft:#676767}@media (prefers-color-scheme:dark){:root{--surface:#1b1b1b;--ink:#e9e9e9;--ink-soft:#9e9e9e}}body{margin:0;display:grid;min-height:100vh;place-items:center;background:var(--surface);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{text-align:center}h1{font-size:20px;letter-spacing:-0.01em;margin:0 0 4px}p{color:var(--ink-soft);font-size:13px}</style>
-</head><body><main><h1>${safeName}</h1><p>Anonymous Monti Browser session</p></main></body></html>`;
+</head><body><main><h1>${safeName}</h1><p>Anonymous Scout Web session</p></main></body></html>`;
 }
 
 function writeHomeFile(payload) {
@@ -2625,14 +2625,14 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
     if (['checking', 'downloading', 'installing'].includes(resourceState.browserStatus)) {
       return {
         ok: false,
-        error: 'Monti Browser is still downloading. Try again when the additional resources finish installing.',
+        error: 'Scout Web is still downloading. Try again when the additional resources finish installing.',
       };
     }
     return {
       ok: false,
       error:
         resourceState.error ||
-        'Monti Browser is not installed and no downloadable browser resource is available yet.',
+        'Scout Web is not installed and no downloadable browser resource is available yet.',
     };
   }
   // Proxy reachability is checked here, before the browser is ever spawned,
@@ -2697,7 +2697,7 @@ async function spawnProfileUnchecked(payload, extraArgs = []) {
   const uniqueExtensionPaths = [...new Set(extensionPaths)].filter(isLoadableExtensionDir);
   // After builtInExtensionPaths, never before: the id is derived from the
   // extension's on-disk directory, which that call creates. The browser's
-  // native "Monti Helper" toolbar button opens this extension's side panel.
+  // native "Scout Helper" toolbar button opens this extension's side panel.
   const panelExtensionId = builtInExtensions.scoutPanelExtensionId(payload);
   // On GPU-less/RDP hosts a --window-size switch is the difference between a
   // window that shows and one that never does: with software rendering the

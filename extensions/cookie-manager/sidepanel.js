@@ -62,7 +62,7 @@ const {classifySync, relativeTime} = ScoutSyncStatus;
 // upgrade, and it is fixed by relaunching the profile -- which nothing on
 // screen would have told anyone.
 const STALE_WORKER_REASON =
-  'This window is running an older version of the Monti Helper background ' +
+  'This window is running an older version of the Scout Helper background ' +
   'script, which does not have this feature yet. Close the profile and launch ' +
   'it again from Scout Web.';
 
@@ -769,7 +769,7 @@ async function loadSession() {
   document.documentElement.dataset.theme = session.theme || 'system';
   if (session.profile && session.profile.name) {
     $('#profile-name').textContent = session.profile.name;
-    document.title = `${session.profile.name} — Monti Helper`;
+    document.title = `${session.profile.name} — Scout Helper`;
     // And the id, on the Session card. Not the name again -- the heading three
     // lines above already says that, and a second copy would be decoration.
     // The id is what a person needs when two profiles share a name, which is

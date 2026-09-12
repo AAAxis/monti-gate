@@ -215,7 +215,7 @@ function browserView(
   const installed = state?.installedVersion || state?.browserVersion || '';
   const base = {
     key: 'browser' as const,
-    name: 'Scout Web Browser',
+    name: 'Scout Web',
     description: 'The browser profiles launch into. It updates separately from the launcher.',
     icon: <Globe size={17} />,
     version: installed,

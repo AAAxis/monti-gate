@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Monti Helper",
+  "name": "Scout Helper",
   "version": "3.1.0",
-  "description": "Session dashboard for Monti Browser profiles: proxy status, cookies and automations.",
+  "description": "Session dashboard for Scout Web profiles: proxy status, cookies and automations.",
   "permissions": ["cookies", "downloads", "sidePanel", "storage", "tabs", "clipboardWrite"],
   "host_permissions": ["<all_urls>"],
   "icons": {
@@ -12,7 +12,7 @@
     "128": "icons/on-light/icon-128.png"
   },
   "action": {
-    "default_title": "Monti Helper",
+    "default_title": "Scout Helper",
     "default_icon": {
       "16": "icons/on-light/icon-16.png",
       "32": "icons/on-light/icon-32.png",
