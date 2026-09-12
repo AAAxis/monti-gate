@@ -87,7 +87,7 @@ fs.cpSync(sourceApp, targetApp, {recursive: true, verbatimSymlinks: true});
 let plist = fs.readFileSync(plistPath, 'utf8');
 plist = replacePlistString(plist, 'CFBundleName', 'Scout Web');
 plist = replacePlistString(plist, 'CFBundleDisplayName', 'Scout Web');
-plist = replacePlistString(plist, 'CFBundleIdentifier', 'com.scout.web');
+plist = replacePlistString(plist, 'CFBundleIdentifier', 'com.monti.anty');
 plist = replacePlistString(plist, 'CFBundleIconFile', 'app');
 plist = setPlistUrlScheme(plist, {name: 'com.scout.web.deeplink', scheme: 'scout'});
 fs.writeFileSync(plistPath, plist);

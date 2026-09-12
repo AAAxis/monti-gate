@@ -2,7 +2,7 @@
 
 Electron + React + Vite desktop app. The **control plane**: everything to do with
 accounts, cloud state, billing, and deciding what a browser session gets handed.
-`npm` package name `scout-web`, appId `com.scout.web`.
+`npm` package name `scout-web`, appId `com.monti.anty` (kept from before the rebrand: ShipIt only installs an update whose bundle id matches the running app).
 
 ## Layout
 

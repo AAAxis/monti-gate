@@ -1,6 +1,6 @@
 {
   "name": "scout-web",
-  "version": "1.0.84",
+  "version": "1.0.85",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
@@ -45,7 +45,7 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.scout.web",
+    "appId": "com.monti.anty",
     "productName": "Scout Web",
     "icon": "assets/icons/launcher-light.icns",
     "artifactName": "Scout-Web-${version}-${os}-${arch}.${ext}",
